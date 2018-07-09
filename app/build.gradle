@@ -21,6 +21,7 @@ android {
 }
 repositories {
     maven {
+        maven { url 'https://oss.sonatype.org/content/groups/public' }
         google()
         mavenCentral()
         url "https://jitpack.io"
@@ -28,6 +29,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.github.viethoa:customdialogs:3.0.0'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     implementation 'com.android.support:design:25.4.0'

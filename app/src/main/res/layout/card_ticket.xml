@@ -13,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/custom_ripple"
-        android:focusable="true">
+        android:focusable="true"
+        android:padding="3dp">
 
         <TextView
             android:id="@+id/textView_ticket_id"
@@ -41,7 +42,6 @@
             android:id="@+id/textView_ticket_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/textView_ticket_time"
             android:layout_alignParentStart="true"
             android:layout_marginStart="25dp"
             android:alpha=".54"
@@ -52,22 +52,18 @@
             android:textColor="@color/black"
             android:textSize="10sp" />
 
-
         <TextView
             android:id="@+id/statusView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/textView_client_name"
-            android:layout_marginEnd="19dp"
+            android:layout_alignTop="@+id/textView_ticket_number"
+            android:layout_toEndOf="@+id/textView_ticket_number"
+            android:alpha=".54"
             android:background="@drawable/rectangle1"
-            android:backgroundTint="@color/grey_200"
             android:fontFamily="sans-serif-medium"
             android:text="Open"
             android:textColor="@color/black"
-            android:textSize="12sp"
-            android:alpha=".6"
-            />
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/textView_ticket_subject"
@@ -136,22 +132,16 @@
             android:id="@+id/priority_view"
             android:layout_width="5dp"
             android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginBottom="1dp"
-            android:layout_marginTop="1dp"
             android:background="@color/error_red" />
 
         <com.github.curioustechizen.ago.RelativeTimeTextView
             android:id="@+id/textView_ticket_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="6dp"
-            android:layout_marginTop="8dp"
-            android:layout_toLeftOf="@+id/priority_view"
-            android:layout_toStartOf="@+id/priority_view"
+            android:layout_alignBottom="@+id/agentassigned"
+            android:layout_alignParentEnd="true"
             android:alpha=".50"
             android:fontFamily="sans-serif-medium"
             android:maxLines="1"

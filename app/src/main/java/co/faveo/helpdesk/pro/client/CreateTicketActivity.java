@@ -99,7 +99,6 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
     int gallery,document,camera,audio=0;
     private static final int PICKFILE_REQUEST_CODE = 1234;
     String token;
-    @BindView(R.id.attachment_close)
     ImageButton imageButtonAttachmentClose;
     TextView attachmentFileName;
     RelativeLayout attachment_layout;
@@ -160,7 +159,16 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
 
 
         setUpViews();
-
+        imageButtonAttachmentClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attachment_layout.setVisibility(View.GONE);
+                attachmentFileName.setText("");
+                //attachmentFileSize.setText("");
+                path="";
+                //toolbarAttachment.setVisibility(View.GONE);
+            }
+        });
 
 
 
@@ -263,7 +271,42 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
         imageViewBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                if (!msgedittext.getText().toString().equals("")||!subedittext.getText().toString().equals("")){
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(CreateTicketActivity.this);
+
+                    // Setting Dialog Message
+                    alertDialog.setMessage(R.string.discard);
+
+                    // Setting Icon to Dialog
+                    alertDialog.setIcon(R.mipmap.ic_launcher);
+
+                    // Setting Positive "Yes" Button
+
+                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Write your code here to invoke YES event
+                            //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+
+                    // Setting Negative "NO" Button
+                    alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Write your code here to invoke NO event
+                            //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+                            dialog.cancel();
+                        }
+                    });
+
+                    // Showing Alert Message
+                    alertDialog.show();
+                }
+                else{
+                    finish();
+                }
+
+
             }
         });
 
@@ -1223,6 +1266,44 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
 //                    t.cancel(); // also just top the timer thread, otherwise, you may receive a crash report
 //                }
 //            }, 3000);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!msgedittext.getText().toString().equals("")||!subedittext.getText().toString().equals("")){
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(CreateTicketActivity.this);
+
+            // Setting Dialog Message
+            alertDialog.setMessage(R.string.discard);
+
+            // Setting Icon to Dialog
+            alertDialog.setIcon(R.mipmap.ic_launcher);
+
+            // Setting Positive "Yes" Button
+
+            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // Write your code here to invoke YES event
+                    //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
+
+            // Setting Negative "NO" Button
+            alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // Write your code here to invoke NO event
+                    //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+                    dialog.cancel();
+                }
+            });
+
+            // Showing Alert Message
+            alertDialog.show();
+        }
+        else{
+            finish();
         }
     }
 }

@@ -12,7 +12,8 @@
     <color name="navigationBarColor">#FFFFFF</color>
     <color name="colorAccent">#FFFFFF</color>
     <color name="background_dim_overlay">#44000000</color>
-
+    <color name="openColor">#FF8C00</color>
+    <color name="closeColor">#228B22</color>
     <color name="error_red">#b71c1c</color>
     <color name="enabled_color">#F7FE2E</color>
     <color name="disabled_color">#000000</color>

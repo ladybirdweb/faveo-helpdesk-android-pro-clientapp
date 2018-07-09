@@ -87,10 +87,10 @@
     <string name="permission_camera_denied">you have denied permission for the app</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="no_records">No records found</string>
-    <string name="mytickets">My Tickets</string>
+    <string name="mytickets">My Open Tickets</string>
     <string name="open">Open</string>
     <string name="all_caught_up">All tickets are loaded</string>
-    <string name="closed">closed</string>
+    <string name="closed">Closed</string>
     <string name="refreshPage">are you sure you want to refresh the page?</string>
     <string name="fill_firstname">please provide first name</string>
     <string name="fill_all_the_details">please fill all the details</string>
@@ -116,14 +116,14 @@
     <string name="update">Update</string>
     <string name="show">show</string>
     <string name="this_field_is_required">this field is required</string>
-    <string name="passwordNotMatch">password did not match that for the login provided</string>
+    <string name="passwordNotMatch">password did not match</string>
     <string name="passwordmustmatch">password must be same</string>
     <string name="differentpassword">please select different password</string>
     <string name="passwordchange">password changed successfully</string>
     <string name="passwordconfirm">are you sure you want to change the password?</string>
     <string name="passwordchangesuccess">password has been changed successfully.To use the app you have to log in again.Select ok to continue.</string>
     <string name="subject">Subject</string>
-    <string name="not_available">not available</string>
+    <string name="not_available">Not available</string>
     <string name="assignedto">Assignee name</string>
     <string name="name">Name</string>
     <string name="due_date">Due date</string>
@@ -138,4 +138,11 @@
     <string name="sending_msg">sending your message</string>
     <string name="wrong_user_id">user id is not valid</string>
     <string name="posted_reply">posted your reply</string>
+    <string name="successfullyChanged">status successfully changed</string>
+    <string name="statusConfirmation">are you sure you want to change the status?</string>
+    <string name="noticket">please selct some ticket</string>
+    <string name="myclosed">My Closed Tickets</string>
+    <string name="cancel">cancel</string>
+    <string name="discard">discard changes?</string>
+    <string name="action_search">Search</string>
 </resources>

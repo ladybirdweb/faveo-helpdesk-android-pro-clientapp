@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView android:layout_height="match_parent"
-    android:layout_width="match_parent"
+<android.support.v4.widget.NestedScrollView android:layout_height="match_parent"
+    android:layout_width="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:theme="@style/MyMaterialTheme">
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_history_menu_bottom"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="#ffffff"
     android:orientation="vertical"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
@@ -96,19 +96,19 @@
                 android:visibility="gone" />
         </android.support.design.widget.TextInputLayout>
 
-        <Button
-            android:id="@+id/updateButton"
-            android:layout_width="110dp"
-            android:layout_height="30dp"
-            android:layout_gravity="end"
-            android:background="@drawable/rectangle1"
-            android:backgroundTint="@color/faveo"
-            android:drawableLeft="@drawable/ic_refresh_black_24dp"
-            android:drawablePadding="-15sp"
-            android:text="@string/update"
-            android:textAllCaps="false"
-            android:textColor="@color/white" />
+        <!--<Button-->
+            <!--android:id="@+id/updateButton"-->
+            <!--android:layout_width="110dp"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:layout_gravity="end"-->
+            <!--android:background="@drawable/rectangle1"-->
+            <!--android:backgroundTint="@color/faveo"-->
+            <!--android:drawableLeft="@drawable/ic_refresh_black_24dp"-->
+            <!--android:drawablePadding="-15sp"-->
+            <!--android:text="@string/update"-->
+            <!--android:textAllCaps="false"-->
+            <!--android:textColor="@color/white" />-->
     </LinearLayout>
 
 </RelativeLayout>
-</ScrollView>
+</android.support.v4.widget.NestedScrollView>

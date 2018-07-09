@@ -10,7 +10,7 @@ public class DataModel {
     public String name;
     private String count;
 
-    public DataModel(int icon, String name) {
+    public DataModel(int icon, String name,String count) {
         this.icon = icon;
         this.name = name;
         this.count = count;

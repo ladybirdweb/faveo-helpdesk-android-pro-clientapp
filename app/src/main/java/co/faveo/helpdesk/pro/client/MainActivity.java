@@ -26,7 +26,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements
-        FragmentDrawer.FragmentDrawerListener,About.OnFragmentInteractionListener,MyTickets.OnFragmentInteractionListener,EditCustomer.OnFragmentInteractionListener{
+        FragmentDrawer.FragmentDrawerListener,About.OnFragmentInteractionListener,MyOpenTickets.OnFragmentInteractionListener,EditCustomer.OnFragmentInteractionListener,
+MyClosedTickets.OnFragmentInteractionListener{
     Toolbar toolbar;
     Context context;
     @Override
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements
         Prefs.putString("ticketThread", "");
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbarMain);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements
                 getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
         drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
         drawerFragment.setDrawerListener(this);
-        MyTickets inboxTickets = new MyTickets();
+        MyOpenTickets inboxTickets = new MyOpenTickets();
         //inboxTickets.setArguments(bundle);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements
 
     }
     public void setActionBarTitle(final String title) {
-        Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbarTop = (Toolbar) findViewById(R.id.toolbarMain);
         TextView mTitle = (TextView) toolbarTop.findViewById(R.id.title);
         mTitle.setText(title.toUpperCase());
 
@@ -143,11 +144,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(MainActivity.this);
-
-        // Setting Dialog Title
-        alertDialog.setTitle(getString(R.string.confirmLogOut));
-
-        // Setting Dialog Message
         alertDialog.setMessage(getString(R.string.confirmMessage));
 
         // Setting Icon to Dialog

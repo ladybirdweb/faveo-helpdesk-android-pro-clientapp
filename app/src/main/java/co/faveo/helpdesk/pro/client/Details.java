@@ -276,19 +276,19 @@ public class Details extends Fragment {
                     e.printStackTrace();
                 }
 
-                if (jsonObject2.getString("duedate").equals("") || jsonObject2.getString("duedate") == null) {
+                if (jsonObject2.getString("duedate").equals("") || jsonObject2.getString("duedate").equals("null")) {
                     editTextDueDate.setText(getString(R.string.not_available));
                 } else {
                     editTextDueDate.setText(Helper.parseDate(jsonObject2.getString("duedate")));
                 }
 
-                if (jsonObject2.getString("created_at").equals("") || jsonObject2.getString("created_at") == null) {
+                if (jsonObject2.getString("created_at").equals("") || jsonObject2.getString("created_at").equals("null")) {
                     editTextCreatedDate.setText(getString(R.string.not_available));
                 } else {
                     editTextCreatedDate.setText(Helper.parseDate(jsonObject2.getString("created_at")));
                 }
 
-                if (jsonObject2.getString("updated_at").equals("") || jsonObject2.getString("updated_at") == null) {
+                if (jsonObject2.getString("updated_at").equals("") || jsonObject2.getString("updated_at").equals("null")) {
                     editTextLastResponseDate.setText(getString(R.string.not_available));
                 } else {
                     editTextLastResponseDate.setText(Helper.parseDate(jsonObject2.getString("updated_at")));

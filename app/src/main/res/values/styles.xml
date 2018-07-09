@@ -3,16 +3,22 @@
     <style name="MyMaterialTheme" parent="MyMaterialTheme.Base">
 
     </style>
-
+    <style name="CustomDialog" parent="@android:style/Theme.Holo.Dialog">
+        <item name="android:windowBackground">@color/faveo</item>
+    </style>
     <style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
+        <item name="windowActionModeOverlay">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/faveo_blue</item>
+        <item name="android:actionModeCloseDrawable">@drawable/ic_arrow_back_black_24dp</item>
         <item name="android:windowAnimationStyle">@null</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="android:listPreferredItemHeightSmall">40dp</item>
         <item name="actionBarTheme">@style/AppThemeOverlay.ActionBar</item>
+
     </style>
     <style name="AppThemes" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#f2f2f2</item>

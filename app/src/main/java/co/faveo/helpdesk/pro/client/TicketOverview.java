@@ -14,8 +14,10 @@ public class TicketOverview {
     public String ticketStatus;
     public String placeholder;
     public String agentName;
+    public String priorityColor;
+    public String agentPicture;
 
-    public TicketOverview(int ticketID, String ticketNumber, String clientName, String ticketSubject, String ticketTime, String ticketStatus, String placeholder, String agentName) {
+    public TicketOverview(int ticketID, String ticketNumber, String clientName, String ticketSubject, String ticketTime, String ticketStatus, String placeholder, String agentName,String priorityColor,String agentPicture) {
         this.ticketID = ticketID;
         this.ticketNumber = ticketNumber;
         this.clientName = clientName;
@@ -24,6 +26,24 @@ public class TicketOverview {
         this.ticketStatus = ticketStatus;
         this.placeholder = placeholder;
         this.agentName = agentName;
+        this.priorityColor=priorityColor;
+        this.agentPicture=agentPicture;
+    }
+
+    public String getPriorityColor() {
+        return priorityColor;
+    }
+
+    public void setPriorityColor(String priorityColor) {
+        this.priorityColor = priorityColor;
+    }
+
+    public String getAgentPicture() {
+        return agentPicture;
+    }
+
+    public void setAgentPicture(String agentPicture) {
+        this.agentPicture = agentPicture;
     }
 
     public int getTicketID() {

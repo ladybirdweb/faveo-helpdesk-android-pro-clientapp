@@ -36,7 +36,6 @@ public class Helper {
             String lastName = jsonArray.getJSONObject(i).getJSONObject("from").getString("last_name");
             String username = jsonArray.getJSONObject(i).getJSONObject("from").getString("user_name");
             // String email = jsonArray.getJSONObject(i).getString("email");
-            //String profilePic= String.valueOf(android.R.drawable.ic_delete);
             String ticketNumber = jsonArray.getJSONObject(i).getString("ticket_number");
             String ID = jsonArray.getJSONObject(i).getString("id");
             //String title = jsonArray.getJSONObject(i).getString("ticket_title");
@@ -50,11 +49,12 @@ public class Helper {
             String ticketStatusName = jsonArray.getJSONObject(i).getString("status_name");
             //String ticketStatusName="open";
             String updatedAt = jsonArray.getJSONObject(i).getString("updated_at");
-            //String priorityColor = jsonArray.getJSONObject(i).getJSONObject("priority").getString("color");
+            String priorityColor = jsonArray.getJSONObject(i).getString("priority_colour");
             //String attachment = jsonArray.getJSONObject(i).getString("attachment_count");
-
+            String profilePic = null;
             //String last_replier=jsonArray.getJSONObject(i).getString("last_replier");
             if (jsonArray.getJSONObject(i).get("assignee")!=JSONObject.NULL) {
+               profilePic =jsonArray.getJSONObject(i).getJSONObject("assignee").getString("profile_pic");
                 if (jsonArray.getJSONObject(i).getJSONObject("assignee").getString("first_name").equals("") && jsonArray.getJSONObject(i).getJSONObject("assignee").getString("last_name").equals("")) {
                     agentName = jsonArray.getJSONObject(i).getJSONObject("assignee").getString("user_name");
                 } else if ((jsonArray.getJSONObject(i).getJSONObject("assignee").getString("first_name").equals("null") ||
@@ -98,7 +98,7 @@ public class Helper {
             else
                 clientname = firstName + " " + lastName;
             return new TicketOverview(Integer.parseInt(ID),
-                    ticketNumber, clientname, title, updatedAt, ticketStatusName, clientname,agentname);
+                    ticketNumber, clientname, title, updatedAt, ticketStatusName, clientname,agentname,priorityColor,profilePic);
         } catch (JSONException e) {
             e.printStackTrace();
         }

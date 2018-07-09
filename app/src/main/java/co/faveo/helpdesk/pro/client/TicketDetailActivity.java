@@ -1,5 +1,7 @@
 package co.faveo.helpdesk.pro.client;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -12,10 +14,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -44,6 +49,8 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
     Details fragmentDetail;
     View viewpriority,viewCollapsePriority;
     ArrayList<Data> statusItems;
+    ProgressDialog progressDialog;
+    String status;
     LoaderTextView loaderTextViewusername,loaderTextViewStatus,loaderTextViewTitle,loaderTextViewNumber;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +69,7 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
         AppBarLayout mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar);
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbarTicketDetail);
         setSupportActionBar(mToolbar);
+        progressDialog=new ProgressDialog(this);
         imageViewBack= (ImageView) findViewById(R.id.imageViewBackTicketDetail);
         floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_add);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -72,18 +80,24 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
         viewpriority=mToolbar.findViewById(R.id.viewPriority);
         viewCollapsePriority=mAppBarLayout.findViewById(R.id.viewPriority1);
         setupViewPager();
-        String json1 = Prefs.getString("DEPENDENCY", "");
-        //statusItems.add(new Data(0, "Please select help topic"));
-
-        statusItems=new ArrayList<>();
-        JSONObject jsonObject1;
+        JSONObject jsonObject;
+        String json = Prefs.getString("DEPENDENCY", "");
         try {
-            jsonObject1 = new JSONObject(json1);
-            JSONArray jsonArrayHelpTopics = jsonObject1.getJSONArray("status");
-            for (int i = 0; i < jsonArrayHelpTopics.length(); i++) {
-                Data data1 = new Data(Integer.parseInt(jsonArrayHelpTopics.getJSONObject(i).getString("id")), jsonArrayHelpTopics.getJSONObject(i).getString("name"));
-                statusItems.add(data1);
+            jsonObject = new JSONObject(json);
+            JSONArray jsonArrayStaffs = jsonObject.getJSONArray("status");
+
+            for (int i = 0; i < jsonArrayStaffs.length(); i++) {
+                switch (jsonArrayStaffs.getJSONObject(i).getString("name")) {
+                    case "Open":
+                        Prefs.putString("openid", jsonArrayStaffs.getJSONObject(i).getString("id"));
+                        break;
+                    case "Closed":
+                        Prefs.putString("closedid", jsonArrayStaffs.getJSONObject(i).getString("id"));
+                        break;
+                }
+
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -100,13 +114,9 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
             public void onClick(View view) {
                 Intent intent=new Intent(TicketDetailActivity.this,TicketReplyActivity.class);
                 startActivity(intent);
-                //Toasty.info(TicketDetailActivity.this,"clicked", Toast.LENGTH_LONG).show();
             }
         });
         if (InternetReceiver.isConnected()){
-//            progressDialog=new ProgressDialog(this);
-//            progressDialog.setMessage(getString(R.string.pleasewait));
-//            progressDialog.show();
             Log.d("threadisrunning","true");
                     new FetchTicketDetail(Prefs.getString("TICKETid",null)).execute();
         }
@@ -209,6 +219,223 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main_new, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //int id1 = item.getItemId();
+        status = Prefs.getString("ticketstatus", null);
+        Log.d("status",status);
+        if (item.getItemId()==R.id.action_statusOpen){
+            if (status.equals("Open")){
+                Toasty.warning(TicketDetailActivity.this, "Ticket is already in "+status+" state", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(TicketDetailActivity.this);
+                // Setting Dialog Message
+                alertDialog.setMessage(getString(R.string.statusConfirmation));
+
+                // Setting Icon to Dialog
+                alertDialog.setIcon(R.mipmap.ic_launcher);
+
+                // Setting Positive "Yes" Button
+                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Write your code here to invoke YES event
+                        //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
+                        new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("openid",null))).execute();
+                        progressDialog.show();
+                        progressDialog.setMessage(getString(R.string.pleasewait));
+
+                    }
+                });
+
+                // Setting Negative "NO" Button
+                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Write your code here to invoke NO event
+                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+                        dialog.cancel();
+                    }
+                });
+
+                // Showing Alert Message
+                alertDialog.show();
+            }
+        }
+        else if (item.getItemId()==R.id.action_statusClosed){
+            if (status.equals("Closed")){
+                Toasty.warning(TicketDetailActivity.this, "Ticket is already in "+status+" state", Toast.LENGTH_SHORT).show();
+            }
+            else{
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(TicketDetailActivity.this);
+                // Setting Dialog Message
+                alertDialog.setMessage(getString(R.string.statusConfirmation));
+
+                // Setting Icon to Dialog
+                alertDialog.setIcon(R.mipmap.ic_launcher);
+
+                // Setting Positive "Yes" Button
+                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Write your code here to invoke YES event
+                        //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
+                        new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("closedid",null))).execute();
+                        progressDialog.show();
+                        progressDialog.setMessage(getString(R.string.pleasewait));
+
+                    }
+                });
+
+                // Setting Negative "NO" Button
+                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Write your code here to invoke NO event
+                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+                        dialog.cancel();
+                    }
+                });
+
+                // Showing Alert Message
+                alertDialog.show();
+
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+    /**
+     * Async task for changing the status of the ticket.
+     */
+    private class StatusChange extends AsyncTask<String, Void, String> {
+        int ticketId, statusId;
+
+        StatusChange(int ticketId, int statusId) {
+
+            this.ticketId = ticketId;
+            this.statusId = statusId;
+
+        }
+
+        protected String doInBackground(String... urls) {
+            return new Helpdesk().postStatusChanged(ticketId, statusId);
+            //return new Helpdesk().postStatusChanged(ticketId,statusId);
+        }
+
+        protected void onPostExecute(String result) {
+            //progressDialog.dismiss();
+            //progressDialog.dismiss();
+//            if (result == null) {
+//                Toasty.error(TicketDetailActivity.this, getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show();
+//                return;
+            try {
+                String state = Prefs.getString("403", null);
+                if (state.equals("403") && !state.equals("null")) {
+                    Toasty.warning(TicketDetailActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
+                    Prefs.putString("403", "null");
+                    return;
+                }
+            }catch (NullPointerException e){
+                e.printStackTrace();
+            }
+
+            try{
+                JSONObject jsonObject=new JSONObject(result);
+                JSONArray jsonArray=jsonObject.getJSONArray("message");
+                for (int i=0;i<jsonArray.length();i++){
+                    String message=jsonArray.getString(i);
+                    if (message.contains("Permission denied")){
+                        Toasty.warning(TicketDetailActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
+                        Prefs.putString("403", "null");
+                        return;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+//                if (message1.contains("The ticket id field is required.")){
+//                    Toasty.warning(TicketDetailActivity.this, getString(R.string.please_select_ticket), Toast.LENGTH_LONG).show();
+//                }
+//                else if (message1.contains("The status id field is required.")){
+//                    Toasty.warning(TicketDetailActivity.this, getString(R.string.please_select_status), Toast.LENGTH_LONG).show();
+//                }
+//               else
+//            try {
+//                JSONObject jsonObject = new JSONObject(result);
+//                JSONObject jsonObject1 = jsonObject.getJSONObject("response");
+//                JSONArray jsonArray = jsonObject1.getJSONArray("message");
+//                for (int i = 0; i < jsonArray.length(); i++) {
+//                    String message = jsonArray.getString(i);
+//                    if (message.equals("Permission denied, you do not have permission to access the requested page.")) {
+//                        Toasty.warning(TicketDetailActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
+//                        Prefs.putString("403", "null");
+//                        return;
+//                    }
+//                }
+//
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+
+//            }
+            try {
+
+                JSONObject jsonObject = new JSONObject(result);
+                //JSONObject jsonObject1 = jsonObject.getJSONObject("response");
+                //JSONObject jsonObject2=jsonObject.getJSONObject("error");
+                //String message1=jsonObject2.getString("ticket_id");
+                String message2 = jsonObject.getString("message");
+
+
+//                if (message2.contains("permission denied")&&Prefs.getString("403",null).equals("403")){
+//
+//                }
+                if (!message2.equals("null")){
+                    Toasty.success(TicketDetailActivity.this, getString(R.string.successfullyChanged), Toast.LENGTH_LONG).show();
+                    Prefs.putString("ticketstatus", "Deleted");
+                    finish();
+                    startActivity(new Intent(TicketDetailActivity.this, MainActivity.class));
+                }
+
+//                if (message2.contains("Status changed to Deleted")) {
+//                    Toasty.success(TicketDetailActivity.this, getString(R.string.status_deleted), Toast.LENGTH_LONG).show();
+//                    Prefs.putString("ticketstatus", "Deleted");
+//                    finish();
+//                    startActivity(new Intent(TicketDetailActivity.this, MainActivity.class));
+//                } else if (message2.contains("Status changed to Open")) {
+//                    Toasty.success(TicketDetailActivity.this, getString(R.string.status_opened), Toast.LENGTH_LONG).show();
+//                    Prefs.putString("ticketstatus", "Open");
+//                    finish();
+//                    startActivity(new Intent(TicketDetailActivity.this, MainActivity.class));
+//                } else if (message2.contains("Status changed to Closed")) {
+//                    Toasty.success(TicketDetailActivity.this, getString(R.string.status_closed), Toast.LENGTH_LONG).show();
+//                    Prefs.putString("ticketstatus", "Closed");
+//                    finish();
+//                    startActivity(new Intent(TicketDetailActivity.this, MainActivity.class));
+//                } else if (message2.contains("Status changed to Resolved")) {
+//                    Toasty.success(TicketDetailActivity.this, getString(R.string.status_resolved), Toast.LENGTH_LONG).show();
+//                    Prefs.putString("ticketstatus", "Resolved");
+//                    finish();
+//                    startActivity(new Intent(TicketDetailActivity.this, MainActivity.class));
+//                }
+            } catch (JSONException | NullPointerException e) {
+                e.printStackTrace();
+
+            }
+
+
+        }
+
+
     }
 
     private class FetchTicketDetail extends AsyncTask<String, Void, String> {

@@ -8,7 +8,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@color/colorAccent"
     android:orientation="vertical"
     tools:context=".frontend.activities.MainActivity">
@@ -165,6 +165,7 @@
                     android:layout_height="match_parent"
                     android:id="@+id/listviewNavigation"
                     android:nestedScrollingEnabled="true"
+                    android:visibility="visible"
                     >
 
                 </ListView>
@@ -208,31 +209,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/grey_200" />
-            <LinearLayout
-                android:id="@+id/helpSection"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:background="@color/colorAccent">
 
-                <ImageView
-                    android:id="@+id/helpimage"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_margin="22dp"
-                    android:src="@drawable/supporticon"
-                    android:tint="@color/grey_500"
-                    />
-
-                <TextView
-                    android:id="@+id/helptext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:fontFamily="sans-serif-bold"
-                    android:gravity="center"
-                    android:text="@string/support"
-                    android:textColor="@color/black"
-                    android:textSize="14sp" />
-            </LinearLayout>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

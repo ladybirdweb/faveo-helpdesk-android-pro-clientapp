@@ -12,13 +12,13 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:fillViewport="true"
-        android:overScrollMode="never">
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@color/windowBackground"
             android:orientation="vertical"
             android:id="@+id/scrollLinearLayout">
@@ -250,6 +250,103 @@
                 android:text="@string/change_password"
                 android:textColor="@color/white"
                 />
+
+            <!--<LinearLayout-->
+                <!--android:id="@+id/forgotpassworlayout"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:visibility="visible"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="vertical"-->
+                <!--&gt;-->
+
+                <!--<android.support.design.widget.TextInputLayout-->
+                    <!--android:id="@+id/input_layoutoldpassword"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="8dp"-->
+                    <!--app:errorEnabled="false"-->
+                    <!--app:passwordToggleEnabled="true">-->
+
+                    <!--<android.support.v7.widget.AppCompatEditText-->
+                        <!--android:id="@+id/inputoldpassword"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:hint="@string/oldpassword"-->
+                        <!--android:imeOptions="actionDone"-->
+                        <!--android:inputType="textPassword" />-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/passwordoldError"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="20dp"-->
+                        <!--android:text="@string/this_field_is_required"-->
+                        <!--android:textColor="#ff0000"-->
+                        <!--android:visibility="gone" />-->
+                <!--</android.support.design.widget.TextInputLayout>-->
+
+                <!--<android.support.design.widget.TextInputLayout-->
+                    <!--android:id="@+id/input_layoutnewpassword"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="8dp"-->
+                    <!--app:errorEnabled="false"-->
+                    <!--app:passwordToggleEnabled="true">-->
+
+                    <!--<android.support.v7.widget.AppCompatEditText-->
+                        <!--android:id="@+id/inputnewpassword"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:hint="@string/newpassword"-->
+                        <!--android:imeOptions="actionDone"-->
+                        <!--android:inputType="textPassword" />-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/passwordErrornew"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="20dp"-->
+                        <!--android:text="@string/this_field_is_required"-->
+                        <!--android:textColor="#ff0000"-->
+                        <!--android:visibility="gone" />-->
+                <!--</android.support.design.widget.TextInputLayout>-->
+
+                <!--<android.support.design.widget.TextInputLayout-->
+                    <!--android:id="@+id/input_layout_password"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="8dp"-->
+                    <!--app:errorEnabled="false"-->
+                    <!--app:passwordToggleEnabled="true">-->
+
+                    <!--<android.support.v7.widget.AppCompatEditText-->
+                        <!--android:id="@+id/input_password"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:hint="@string/confirmpassword"-->
+                        <!--android:imeOptions="actionDone"-->
+                        <!--android:inputType="textPassword" />-->
+
+                    <!--<TextView-->
+                        <!--android:id="@+id/passwordError"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="20dp"-->
+                        <!--android:text="@string/this_field_is_required"-->
+                        <!--android:textColor="#ff0000"-->
+                        <!--android:visibility="gone" />-->
+                <!--</android.support.design.widget.TextInputLayout>-->
+
+                <!--<Button-->
+                    <!--android:id="@+id/updateButton"-->
+                    <!--android:layout_width="110dp"-->
+                    <!--android:layout_height="30dp"-->
+                    <!--android:layout_gravity="end"-->
+                    <!--android:background="@drawable/rectangle1"-->
+                    <!--android:backgroundTint="@color/faveo"-->
+                    <!--android:drawableLeft="@drawable/ic_refresh_black_24dp"-->
+                    <!--android:drawablePadding="-15sp"-->
+                    <!--android:text="@string/update"-->
+                    <!--android:textAllCaps="false"-->
+                    <!--android:textColor="@color/white" />-->
+            <!--</LinearLayout>-->
 
 
         </LinearLayout>

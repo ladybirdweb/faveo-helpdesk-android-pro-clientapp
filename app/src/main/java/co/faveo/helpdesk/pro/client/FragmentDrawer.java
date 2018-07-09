@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,7 +41,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -80,6 +80,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
     String title;
     static String token;
     int responseCodeForShow;
+    int opencount=0,closecount=0;
     //    @BindView(R.id.inbox_count)
 //    TextView inbox_count;
 //    @BindView(R.id.my_tickets_count)
@@ -91,7 +92,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
 //    @BindView(R.id.closed_tickets_count)
 //    TextView closed_tickets_count;
     @BindView(R.id.usernametv)
-    TextView userName;
+    TextView userNameText;
     @BindView(R.id.domaintv)
     TextView domainAddress;
     @BindView(R.id.roleTv)
@@ -110,16 +111,10 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
     LinearLayout linearLayoutCreate;
     @BindView(R.id.client_list)
     LinearLayout linearClientList;
-    @BindView(R.id.helpSection)
-    LinearLayout linearHelp;
     @BindView(R.id.about)
     LinearLayout linearLayoutAbout;
     @BindView(R.id.logout)
     LinearLayout linearLog;
-    @BindView(R.id.helpimage)
-    ImageView imageviewhelp;
-    @BindView(R.id.helptext)
-    TextView textviewhelp;
     @BindView(R.id.aboutimage)
     ImageView imageviewabout;
     @BindView(R.id.abouttext)
@@ -164,13 +159,13 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
         listView= (ListView) layout.findViewById(R.id.listviewNavigation);
         layout.findViewById(R.id.create_ticket).setOnClickListener(this);
         layout.findViewById(R.id.client_list).setOnClickListener(this);
-        layout.findViewById(R.id.helpSection).setOnClickListener(this);
         layout.findViewById(R.id.about).setOnClickListener(this);
         layout.findViewById(R.id.logout).setOnClickListener(this);
-        drawerItem = new DataModel[1];
+        drawerItem = new DataModel[2];
         ButterKnife.bind(this, layout);
         confirmationDialog=new ConfirmationDialog();
-        drawerItem[0] = new DataModel(R.drawable.inbox_tickets,getString(R.string.inbox));
+        drawerItem[0] = new DataModel(R.drawable.inbox_tickets,getString(R.string.mytickets),Prefs.getString("openCount", null));
+        drawerItem[1]=new DataModel(R.drawable.closed_ticket,getString(R.string.myclosed),Prefs.getString("closeCount",null));
         //drawerItem[1] = new DataModel(R.drawable.closed_ticket,getString(R.string.closed_tickets),Prefs.getString("closedTickets", null));
         drawerItemCustomAdapter=new DrawerItemCustomAdapter(getActivity(),R.layout.list_view_item_row,drawerItem);
         listView.setAdapter(drawerItemCustomAdapter);
@@ -187,7 +182,24 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 title = getString(R.string.mytickets);
                 fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
                 if (fragment == null)
-                    fragment = new MyTickets();
+                    fragment = new MyOpenTickets();
+                if (fragment != null) {
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.container_body, fragment);
+                    // fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                    ((MainActivity) getActivity()).setActionBarTitle(title);
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                }
+            }
+            else if (position==1){
+                Fragment fragment=null;
+                option=1;
+                title = getString(R.string.myclosed);
+                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
+                if (fragment == null)
+                    fragment = new MyClosedTickets();
                 if (fragment != null) {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -226,18 +238,11 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
         }
         userRole.setText(Prefs.getString("ROLE", ""));
         domainAddress.setText(Prefs.getString("BASE_URL", ""));
-        userName.setText(Prefs.getString("PROFILE_NAME", ""));
+        userNameText.setText(Prefs.getString("PROFILE_NAME", ""));
         try {
             String cameFromSetting = Prefs.getString("cameFromSetting", null);
             if (cameFromSetting.equals("true")) {
                 option = 5;
-                textviewhelp.setTextColor(getResources().getColor(R.color.faveo));
-                imageviewhelp.setColorFilter(getResources().getColor(R.color.faveo));
-                linearHelp.setBackgroundColor(getResources().getColor(R.color.grey_200));
-
-                textviewhelp.setTextColor(getResources().getColor(R.color.black));
-                imageviewhelp.setColorFilter(getResources().getColor(R.color.grey_500));
-                linearHelp.setBackgroundColor(getResources().getColor(R.color.colorAccent));
 
                 textviewabout.setTextColor(getResources().getColor(R.color.black));
                 imageviewabout.setColorFilter(getResources().getColor(R.color.grey_500));
@@ -292,8 +297,11 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                //new SendPostRequest().execute();
-                new FetchDependency().execute();
+                new SendPostRequest().execute();
+                //new FetchDependency().execute();
+                opencount=0;
+                closecount=0;
+                new FetchFirst(getActivity()).execute();
                 drawerItemCustomAdapter.notifyDataSetChanged();
                 getActivity().invalidateOptionsMenu();
             }
@@ -321,163 +329,185 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
         });
 
     }
-//    public class SendPostRequest extends AsyncTask<String, Void, String> {
+    public class SendPostRequest extends AsyncTask<String, Void, String> {
+
+        protected void onPreExecute(){}
+
+        protected String doInBackground(String... arg0) {
+            try {
+
+                URL url = new URL(Constants.URL + "authenticate"); // here is your URL path
+
+                JSONObject postDataParams = new JSONObject();
+                postDataParams.put("username", Prefs.getString("USERNAME", null));
+                postDataParams.put("password", Prefs.getString("PASSWORD", null));
+                Log.e("params",postDataParams.toString());
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000 /* milliseconds */);
+                conn.setConnectTimeout(15000 /* milliseconds */);
+                //MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(getPostDataString(postDataParams));
+
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int responseCode=conn.getResponseCode();
+
+                if (responseCode == HttpsURLConnection.HTTP_OK) {
+                    Log.d("ifresponseCode",""+responseCode);
+                    BufferedReader in=new BufferedReader(new
+                            InputStreamReader(
+                            conn.getInputStream()));
+
+                    StringBuffer sb = new StringBuffer("");
+                    String line="";
+
+                    while((line = in.readLine()) != null) {
+                        sb.append(line);
+                        break;
+                    }
+                    in.close();
+                    return sb.toString();
+                }
+                else {
+                    if (responseCode==400){
+                        Log.d("cameInThisBlock","true");
+                        responseCodeForShow=400;
+                    }
+                    else if (responseCode==405){
+                        responseCodeForShow=405;
+                    }
+                    else if (responseCode==302){
+                        responseCodeForShow=302;
+                    }
+                    Log.d("elseresponseCode",""+responseCode);
+                    return new String("false : "+responseCode);
+                }
+            }
+            catch(Exception e){
+                return new String("Exception: " + e.getMessage());
+            }
+
+        }
+
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d("resultFromNewCall",result);
+                if (isAdded()) {
+                    if (responseCodeForShow == 400) {
+                        //final Toast toast = Toasty.info(getActivity(), getString(R.string.urlchange), Toast.LENGTH_SHORT);
+                        //toast.show();
+//                        new CountDownTimer(10000, 1000) {
+//                            public void onTick(long millisUntilFinished) {
+//                                toast.show();
+//                            }
 //
-//        protected void onPreExecute(){}
+//                            public void onFinish() {
+//                                toast.cancel();
+//                            }
+//                        }.start();
+                        Prefs.clear();
+//                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+//                        startActivity(intent);
+                        return;
+                    }
+
+
+                    if (responseCodeForShow == 405) {
+//                        final Toast toast = Toasty.info(getActivity(), getString(R.string.urlchange), Toast.LENGTH_SHORT);
+//                        toast.show();
+//                        new CountDownTimer(10000, 1000) {
+//                            public void onTick(long millisUntilFinished) {
+//                                toast.show();
+//                            }
 //
-//        protected String doInBackground(String... arg0) {
-//            try {
-//
-//                URL url = new URL(Constants.URL + "authenticate"); // here is your URL path
-//
-//                JSONObject postDataParams = new JSONObject();
-//                postDataParams.put("username", Prefs.getString("USERNAME", null));
-//                postDataParams.put("password", Prefs.getString("PASSWORD", null));
-//                Log.e("params",postDataParams.toString());
-//                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//                conn.setReadTimeout(15000 /* milliseconds */);
-//                conn.setConnectTimeout(15000 /* milliseconds */);
-//                //MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-//                conn.setRequestMethod("POST");
-//                conn.setDoInput(true);
-//                conn.setDoOutput(true);
-//                OutputStream os = conn.getOutputStream();
-//                BufferedWriter writer = new BufferedWriter(
-//                        new OutputStreamWriter(os, "UTF-8"));
-//                writer.write(getPostDataString(postDataParams));
-//
-//                writer.flush();
-//                writer.close();
-//                os.close();
-//
-//                int responseCode=conn.getResponseCode();
-//
-//                if (responseCode == HttpsURLConnection.HTTP_OK) {
-//                    Log.d("ifresponseCode",""+responseCode);
-//                    BufferedReader in=new BufferedReader(new
-//                            InputStreamReader(
-//                            conn.getInputStream()));
-//
-//                    StringBuffer sb = new StringBuffer("");
-//                    String line="";
-//
-//                    while((line = in.readLine()) != null) {
-//                        sb.append(line);
-//                        break;
-//                    }
-//                    in.close();
-//                    return sb.toString();
-//                }
-//                else {
-//                    if (responseCode==400){
-//                        Log.d("cameInThisBlock","true");
-//                        responseCodeForShow=400;
-//                    }
-//                    else if (responseCode==405){
-//                        responseCodeForShow=405;
-//                    }
-//                    else if (responseCode==302){
-//                        responseCodeForShow=302;
-//                    }
-//                    Log.d("elseresponseCode",""+responseCode);
-//                    return new String("false : "+responseCode);
-//                }
-//            }
-//            catch(Exception e){
-//                return new String("Exception: " + e.getMessage());
-//            }
-//
-//        }
-//
-//
-//        @Override
-//        protected void onPostExecute(String result) {
-//            Log.d("resultFromNewCall",result);
-//                if (isAdded()) {
-//                    if (responseCodeForShow == 400) {
-//                        //final Toast toast = Toasty.info(getActivity(), getString(R.string.urlchange), Toast.LENGTH_SHORT);
-//                        //toast.show();
-////                        new CountDownTimer(10000, 1000) {
-////                            public void onTick(long millisUntilFinished) {
-////                                toast.show();
-////                            }
-////
-////                            public void onFinish() {
-////                                toast.cancel();
-////                            }
-////                        }.start();
+//                            public void onFinish() {
+//                                toast.cancel();
+//                            }
+//                        }.start();
 //                        Prefs.clear();
-////                        Intent intent = new Intent(getActivity(), LoginActivity.class);
-////                        startActivity(intent);
-//                        return;
-//                    }
+//                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+//                        startActivity(intent);
+                        return;
+                    }
+
+
+                    if (responseCodeForShow == 302) {
+//                        final Toast toast = Toasty.info(getActivity(), getString(R.string.urlchange), Toast.LENGTH_SHORT);
+//                        toast.show();
+//                        new CountDownTimer(10000, 1000) {
+//                            public void onTick(long millisUntilFinished) {
+//                                toast.show();
+//                            }
 //
-//
-//                    if (responseCodeForShow == 405) {
-////                        final Toast toast = Toasty.info(getActivity(), getString(R.string.urlchange), Toast.LENGTH_SHORT);
-////                        toast.show();
-////                        new CountDownTimer(10000, 1000) {
-////                            public void onTick(long millisUntilFinished) {
-////                                toast.show();
-////                            }
-////
-////                            public void onFinish() {
-////                                toast.cancel();
-////                            }
-////                        }.start();
-////                        Prefs.clear();
-////                        Intent intent = new Intent(getActivity(), LoginActivity.class);
-////                        startActivity(intent);
-//                        return;
-//                    }
-//
-//
-//                    if (responseCodeForShow == 302) {
-////                        final Toast toast = Toasty.info(getActivity(), getString(R.string.urlchange), Toast.LENGTH_SHORT);
-////                        toast.show();
-////                        new CountDownTimer(10000, 1000) {
-////                            public void onTick(long millisUntilFinished) {
-////                                toast.show();
-////                            }
-////
-////                            public void onFinish() {
-////                                toast.cancel();
-////                            }
-////                        }.start();
-////                        Prefs.clear();
-////                        Intent intent = new Intent(getActivity(), LoginActivity.class);
-////                        startActivity(intent);
-//                        return;
-//                    }
-//                }
-//
-//            try {
-//                JSONObject jsonObject=new JSONObject(result);
-//                JSONObject jsonObject1=jsonObject.getJSONObject("data");
-//                token = jsonObject1.getString("token");
-//                JSONObject jsonObject2=jsonObject1.getJSONObject("user");
-//                String role=jsonObject2.getString("role");
-//                if (role.equals("user")){
-//                    final Toast toast = Toasty.info(getActivity(), getString(R.string.roleChanged),Toast.LENGTH_SHORT);
-//                    toast.show();
-//                    new CountDownTimer(10000, 1000)
-//                    {
-//                        public void onTick(long millisUntilFinished) {toast.show();}
-//                        public void onFinish() {toast.cancel();}
-//                    }.start();
-//                    Prefs.clear();
-//                    //Prefs.putString("role",role);
-//                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-//                    //Toasty.info(getActivity(), getString(R.string.roleChanged), Toast.LENGTH_LONG).show();
-//                    startActivity(intent);
-//                }
-//                Prefs.putString("TOKEN", token);
-//                Log.d("TOKEN",token);
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+//                            public void onFinish() {
+//                                toast.cancel();
+//                            }
+//                        }.start();
+//                        Prefs.clear();
+//                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+//                        startActivity(intent);
+                        return;
+                    }
+                }
+
+            try {
+                JSONObject jsonObject=new JSONObject(result);
+                JSONObject jsonObject1=jsonObject.getJSONObject("data");
+                token = jsonObject1.getString("token");
+                JSONObject jsonObject2=jsonObject1.getJSONObject("user");
+                String role=jsonObject2.getString("role");
+                String firstName = jsonObject2.getString("first_name");
+                String lastName = jsonObject2.getString("last_name");
+                String userName = jsonObject2.getString("user_name");
+                String email=jsonObject2.getString("email");
+                String clientname;
+                if (firstName == null || firstName.equals(""))
+                    clientname = userName;
+                else
+                    clientname = firstName + " " + lastName;
+                Prefs.putString("clientNameForFeedback",clientname);
+                Prefs.putString("emailForFeedback",email);
+                Prefs.putString("PROFILE_NAME",clientname);
+                Prefs.putString("TOKEN", token);
+                Log.d("TOKEN",token);
+                try {
+                    String letter = Prefs.getString("profilePicture", null);
+                    Log.d("profilePicture", letter);
+                    if (letter.contains("jpg") || letter.contains("png") || letter.contains("jpeg")) {
+                        //profilePic.setColorFilter(getContext().getResources().getColor(R.color.white));
+                        //profilePic.setColorFilter(context.getResources().getColor(R.color.faveo), PorterDuff.Mode.SRC_IN);
+                        Picasso.with(context).load(letter).transform(new CircleTransform()).into(profilePic);
+                    }
+                    else {
+                        int color= Color.parseColor("#ffffff");
+                        String letter1 = String.valueOf(Prefs.getString("PROFILE_NAME", "").charAt(0));
+                        ColorGenerator generator = ColorGenerator.MATERIAL;
+                        TextDrawable drawable = TextDrawable.builder()
+                                .buildRound(letter1,color);
+                        //profilePic.setAlpha(0.2f);
+                        profilePic.setColorFilter(context.getResources().getColor(R.color.faveo), PorterDuff.Mode.SRC_IN);
+                        profilePic.setImageDrawable(drawable);
+                    }
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+                userRole.setText(Prefs.getString("ROLE", ""));
+                domainAddress.setText(Prefs.getString("BASE_URL", ""));
+                userNameText.setText(Prefs.getString("PROFILE_NAME", ""));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     public String getPostDataString(JSONObject params) throws Exception {
 
         StringBuilder result = new StringBuilder();
@@ -596,8 +626,8 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 else
                     Prefs.putString("unassignedTickets", unasigned + "");
                 if (isAdded()) {
-                    drawerItem[0] = new DataModel(R.drawable.inbox_tickets,getString(R.string.inbox));
-                    //drawerItem[1] = new DataModel(R.drawable.closed_ticket,getString(R.string.closed_tickets),Prefs.getString("closedTickets", null));
+                    drawerItem[0] = new DataModel(R.drawable.inbox_tickets,getString(R.string.mytickets),Prefs.getString("openCount", null));
+                    drawerItem[1] = new DataModel(R.drawable.closed_ticket,getString(R.string.myclosed),Prefs.getString("closeCount", null));
                     drawerItemCustomAdapter = new DrawerItemCustomAdapter(getActivity(), R.layout.list_view_item_row, drawerItem);
                     listView.setAdapter(drawerItemCustomAdapter);
                     drawerItemCustomAdapter.notifyDataSetChanged();
@@ -672,7 +702,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
 //                title = getString(R.string.my_tickets);
 //                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
 //                if (fragment == null)
-//                    fragment = new MyTickets();
+//                    fragment = new MyOpenTickets();
 //                break;
 //            case R.id.unassigned_tickets:
 //                title = getString(R.string.unassigned_tickets);
@@ -700,13 +730,6 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 title = getString(R.string.client_list);
                 textViewClientList.setTextColor(getResources().getColor(R.color.faveo));
                 clientImage.setColorFilter(getResources().getColor(R.color.faveo));
-
-                textviewhelp.setTextColor(getResources().getColor(R.color.black));
-                imageviewhelp.setColorFilter(getResources().getColor(R.color.grey_500));
-                linearHelp.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-
-
-
                 textviewabout.setTextColor(getResources().getColor(R.color.black));
                 imageviewabout.setColorFilter(getResources().getColor(R.color.grey_500));
                 linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
@@ -719,39 +742,34 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 if (fragment == null)
                     fragment = new EditCustomer();
                 break;
-            case R.id.helpSection:
-                option=6;
-                textviewhelp.setTextColor(getResources().getColor(R.color.faveo));
-                imageviewhelp.setColorFilter(getResources().getColor(R.color.faveo));
-                linearHelp.setBackgroundColor(getResources().getColor(R.color.grey_200));
-
-                textviewabout.setTextColor(getResources().getColor(R.color.black));
-                imageviewabout.setColorFilter(getResources().getColor(R.color.grey_500));
-                linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                textViewClientList.setTextColor(getResources().getColor(R.color.black));
-                clientImage.setColorFilter(getResources().getColor(R.color.grey_500));
-
-                textviewlogout.setTextColor(getResources().getColor(R.color.black));
-                imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
-                linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-//                Intent intent=new Intent(getActivity(),SettingsActivity.class);
-//                startActivity(intent);
-//                title = getString(R.string.helpSection);
-//                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
-//                if (fragment == null)
-//                    fragment = new HelpSection();
-                break;
+//            case R.id.helpSection:
+//                option=6;
+//                textviewhelp.setTextColor(getResources().getColor(R.color.faveo));
+//                imageviewhelp.setColorFilter(getResources().getColor(R.color.faveo));
+//                linearHelp.setBackgroundColor(getResources().getColor(R.color.grey_200));
+//
+//                textviewabout.setTextColor(getResources().getColor(R.color.black));
+//                imageviewabout.setColorFilter(getResources().getColor(R.color.grey_500));
+//                linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+//                linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+//                textViewClientList.setTextColor(getResources().getColor(R.color.black));
+//                clientImage.setColorFilter(getResources().getColor(R.color.grey_500));
+//
+//                textviewlogout.setTextColor(getResources().getColor(R.color.black));
+//                imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
+//                linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+////                Intent intent=new Intent(getActivity(),SettingsActivity.class);
+////                startActivity(intent);
+////                title = getString(R.string.helpSection);
+////                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
+////                if (fragment == null)
+////                    fragment = new HelpSection();
+//                break;
             case R.id.about:
                 option=6;
                 textviewabout.setTextColor(getResources().getColor(R.color.faveo));
                 imageviewabout.setColorFilter(getResources().getColor(R.color.faveo));
                 linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.grey_200));
-
-
-                textviewhelp.setTextColor(getResources().getColor(R.color.black));
-                imageviewhelp.setColorFilter(getResources().getColor(R.color.grey_500));
-                linearHelp.setBackgroundColor(getResources().getColor(R.color.colorAccent));
 
                 linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 textViewClientList.setTextColor(getResources().getColor(R.color.black));
@@ -774,9 +792,6 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 textviewlogout.setTextColor(getResources().getColor(R.color.black));
                 imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
                 linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                textviewhelp.setTextColor(getResources().getColor(R.color.black));
-                imageviewhelp.setColorFilter(getResources().getColor(R.color.grey_500));
-                linearHelp.setBackgroundColor(getResources().getColor(R.color.colorAccent));
 
                 linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 textViewClientList.setTextColor(getResources().getColor(R.color.black));
@@ -837,7 +852,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             listItem = inflater.inflate(layoutResourceId, parent, false);
             ImageView imageViewIcon = (ImageView) listItem.findViewById(R.id.imageView2);
             final TextView textViewName = (TextView) listItem.findViewById(R.id.inboxtv);
-            //TextView countNumber= (TextView) listItem.findViewById(R.id.inbox_count);
+            TextView countNumber= (TextView) listItem.findViewById(R.id.inbox_count);
 
             DataModel folder = data[position];
             if (option==0){
@@ -848,13 +863,9 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     textviewlogout.setTextColor(getResources().getColor(R.color.black));
                     imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
                     linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-
                     textviewlogout.setTextColor(getResources().getColor(R.color.black));
                     imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
                     linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                    textviewhelp.setTextColor(getResources().getColor(R.color.black));
-                    imageviewhelp.setColorFilter(getResources().getColor(R.color.grey_500));
-                    linearHelp.setBackgroundColor(getResources().getColor(R.color.colorAccent));
 
 //                    linearSettings.setBackgroundColor(getResources().getColor(R.color.colorAccent));
 //                    textViewsetting.setTextColor(getResources().getColor(R.color.black));
@@ -881,9 +892,6 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     textviewlogout.setTextColor(getResources().getColor(R.color.black));
                     imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
                     linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                    textviewhelp.setTextColor(getResources().getColor(R.color.black));
-                    imageviewhelp.setColorFilter(getResources().getColor(R.color.grey_500));
-                    linearHelp.setBackgroundColor(getResources().getColor(R.color.colorAccent));
 
 //                    linearSettings.setBackgroundColor(getResources().getColor(R.color.colorAccent));
 //                    textViewsetting.setTextColor(getResources().getColor(R.color.black));
@@ -910,9 +918,6 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     textviewlogout.setTextColor(getResources().getColor(R.color.black));
                     imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
                     linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                    textviewhelp.setTextColor(getResources().getColor(R.color.black));
-                    imageviewhelp.setColorFilter(getResources().getColor(R.color.grey_500));
-                    linearHelp.setBackgroundColor(getResources().getColor(R.color.colorAccent));
 
                     linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     textViewClientList.setTextColor(getResources().getColor(R.color.black));
@@ -935,9 +940,6 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     textviewlogout.setTextColor(getResources().getColor(R.color.black));
                     imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
                     linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                    textviewhelp.setTextColor(getResources().getColor(R.color.black));
-                    imageviewhelp.setColorFilter(getResources().getColor(R.color.grey_500));
-                    linearHelp.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     textViewClientList.setTextColor(getResources().getColor(R.color.black));
                     clientImage.setColorFilter(getResources().getColor(R.color.grey_500));
@@ -959,9 +961,6 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     textviewlogout.setTextColor(getResources().getColor(R.color.black));
                     imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
                     linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                    textviewhelp.setTextColor(getResources().getColor(R.color.black));
-                    imageviewhelp.setColorFilter(getResources().getColor(R.color.grey_500));
-                    linearHelp.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     textViewClientList.setTextColor(getResources().getColor(R.color.black));
                     clientImage.setColorFilter(getResources().getColor(R.color.grey_500));
@@ -984,9 +983,6 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     textviewlogout.setTextColor(getResources().getColor(R.color.black));
                     imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
                     linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                    textviewhelp.setTextColor(getResources().getColor(R.color.black));
-                    imageviewhelp.setColorFilter(getResources().getColor(R.color.grey_500));
-                    linearHelp.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     textViewClientList.setTextColor(getResources().getColor(R.color.black));
                     clientImage.setColorFilter(getResources().getColor(R.color.grey_500));
@@ -1002,7 +998,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             }
             imageViewIcon.setImageResource(folder.getIcon());
             textViewName.setText(folder.getName());
-            //countNumber.setText(folder.getCount());
+            countNumber.setText(folder.getCount());
             drawerItemCustomAdapter.notifyDataSetChanged();
 
 
@@ -1010,6 +1006,79 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             return listItem;
         }
 
+    }
+
+    private class FetchFirst extends AsyncTask<String, Void, String> {
+        Context context;
+
+        FetchFirst(Context context) {
+            this.context = context;
+        }
+
+        protected String doInBackground(String... urls) {
+//            if (nextPageURL.equals("null")) {
+//                return "all done";
+//            }
+            String result = new Helpdesk().getTicketsByAgent();
+            if (result == null)
+                return null;
+            String data;
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                JSONObject jsonObject1=jsonObject.getJSONObject("data");
+                //total = jsonObject1.getInt("total");
+//                try {
+//                    data = jsonObject1.getString("data");
+//                } catch (JSONException e) {
+//                    data = jsonObject.getString("result");
+//                }
+                JSONArray jsonArray = jsonObject1.getJSONArray("ticket");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject2=jsonArray.getJSONObject(i);
+                    String status=jsonObject2.getString("status_name");
+                    if (status.equals("Open")){
+                        opencount++;
+
+                    }
+                    else if (status.equals("Closed")){
+
+                        closecount++;
+
+                    }
+
+                }
+                Prefs.putString("openCount", String.valueOf(opencount));
+                Prefs.putString("closeCount", String.valueOf(closecount));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return "success";
+        }
+
+        protected void onPostExecute(String result) {
+            new FetchDependency().execute();
+            try {
+                String methodNotAllowed = Prefs.getString("MethodNotAllowed", null);
+
+                if (methodNotAllowed.equalsIgnoreCase("true")){
+                    Prefs.clear();
+                    Intent intent=new Intent(getActivity(), LoginActivity.class);
+                    startActivity(intent);
+                }
+            }catch (NullPointerException e){
+                e.printStackTrace();
+            }
+            if (result == null) {
+                Toasty.error(getActivity(), getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if (result.equals("all done")) {
+
+                Toasty.info(context, getString(R.string.all_caught_up), Toast.LENGTH_SHORT).show();
+                //return;
+            }
+        }
     }
 
 

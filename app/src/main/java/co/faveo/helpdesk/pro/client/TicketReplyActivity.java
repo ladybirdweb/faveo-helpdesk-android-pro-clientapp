@@ -122,6 +122,8 @@ public class TicketReplyActivity extends AppCompatActivity implements Permission
             attachment_layout.setVisibility(View.GONE);
 
         }
+
+
         //bottomNavigationView= (BottomNavigationView) findViewById(R.id.navigation);
         //bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         option= Prefs.getString("cameFromNotification", null);
@@ -212,7 +214,40 @@ public class TicketReplyActivity extends AppCompatActivity implements Permission
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+
+                if (!editTextReplyMessage.getText().toString().equals("")){
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(TicketReplyActivity.this);
+
+                    alertDialog.setMessage(getString(R.string.discard));
+
+                    // Setting Icon to Dialog
+                    alertDialog.setIcon(R.mipmap.ic_launcher);
+
+                    // Setting Positive "Yes" Button
+
+                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Write your code here to invoke YES event
+                            //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+
+                    // Setting Negative "NO" Button
+                    alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Write your code here to invoke NO event
+                            //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+                            dialog.cancel();
+                        }
+                    });
+                    alertDialog.setCancelable(false);
+                    // Showing Alert Message
+                    alertDialog.show();
+                }
+                else{
+                    finish();
+                }
             }
         });
         buttonSend.setOnClickListener(new View.OnClickListener() {
@@ -359,17 +394,40 @@ public class TicketReplyActivity extends AppCompatActivity implements Permission
 
     @Override
     public void onBackPressed() {
-//        if (!TicketDetailActivity.isShowing) {
-//            Log.d("isShowing", "false");
-//            Intent intent = new Intent(this, TicketDetailActivity.class);
-//            startActivity(intent);
-//        } else {
-//            Intent intent = new Intent(this, TicketDetailActivity.class);
-//            startActivity(intent);
-//            Log.d("isShowing", "true");
-//        }
+        if (!editTextReplyMessage.getText().toString().equals("")){
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(TicketReplyActivity.this);
 
-        super.onBackPressed();
+            alertDialog.setMessage(getString(R.string.discard));
+
+            // Setting Icon to Dialog
+            alertDialog.setIcon(R.mipmap.ic_launcher);
+
+            // Setting Positive "Yes" Button
+
+            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // Write your code here to invoke YES event
+                    //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
+
+            // Setting Negative "NO" Button
+            alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // Write your code here to invoke NO event
+                    //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+                    dialog.cancel();
+                }
+            });
+                alertDialog.setCancelable(false);
+            // Showing Alert Message
+            alertDialog.show();
+        }
+        else{
+            finish();
+        }
+
     }
 
 
@@ -846,6 +904,8 @@ public class TicketReplyActivity extends AppCompatActivity implements Permission
                 .setErrorCallback(TicketReplyActivity.this)
                 .request(PICKFILE_REQUEST_CODE);
     }
+
+
 
     @Override
     protected void onResume() {

@@ -69,11 +69,11 @@
 
 
     </android.support.design.widget.AppBarLayout>
-    <View
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/faveo"/>
+    <!--<View-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="2dp"-->
+        <!--android:background="@color/faveo"/>-->
 
     <!--<WebView-->
         <!--android:layout_width="match_parent"-->

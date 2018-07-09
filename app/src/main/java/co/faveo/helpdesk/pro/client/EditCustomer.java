@@ -2,6 +2,7 @@ package co.faveo.helpdesk.pro.client;
 
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +21,7 @@ import android.support.v7.widget.AppCompatEditText;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,11 +38,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.pixplicity.easyprefs.library.Prefs;
+import com.viethoa.DialogUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import es.dmoral.toasty.Toasty;
+
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
 
 /**
@@ -113,9 +118,10 @@ public class EditCustomer extends Fragment {
         buttonPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MyBottomSheetDialog myBottomSheetDialog = new MyBottomSheetDialog(getActivity());
-                myBottomSheetDialog.setCanceledOnTouchOutside(true);
-                myBottomSheetDialog.show();
+DialogCustomView();
+//                MyBottomSheetDialog myBottomSheetDialog = new MyBottomSheetDialog(getActivity());
+//                myBottomSheetDialog.setCanceledOnTouchOutside(true);
+//                myBottomSheetDialog.show();
             }
         });
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.myprofile));
@@ -183,6 +189,169 @@ public class EditCustomer extends Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    protected void DialogCustomView() {
+        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+        View promptView = layoutInflater.inflate(R.layout.bottom_sheet_layout, null);
+                 final AppCompatEditText appCompatEditTextold,appCompatEditTextnew,appCompatEditTextconfirm;
+         final TextView textViewOld,textViewNew,textViewConfirm;
+         final TextInputLayout textInputLayoutOld,textInputLayoutNew,textInputLayoutConfirm;
+        appCompatEditTextold= (AppCompatEditText) promptView.findViewById(R.id.inputoldpassword);
+        appCompatEditTextnew= (AppCompatEditText) promptView.findViewById(R.id.inputnewpassword);
+        appCompatEditTextconfirm= (AppCompatEditText) promptView.findViewById(R.id.input_password);
+        textViewOld= (TextView) promptView.findViewById(R.id.passwordoldError);
+        textViewNew= (TextView) promptView.findViewById(R.id.passwordErrornew);
+        textViewConfirm= (TextView) promptView.findViewById(R.id.passwordError);
+        textInputLayoutOld= (TextInputLayout) promptView.findViewById(R.id.input_layoutoldpassword);
+        textInputLayoutNew= (TextInputLayout) promptView.findViewById(R.id.input_layoutnewpassword);
+        textInputLayoutConfirm= (TextInputLayout) promptView.findViewById(R.id.input_layout_password);
+        final AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setView(promptView)
+                .setPositiveButton(android.R.string.ok, null) //Set to null. We override the onclick
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+
+                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                Button button1 = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        // TODO Do something
+                        if (appCompatEditTextold.getText().toString().equals("") && appCompatEditTextnew.getText().toString().equals("") && appCompatEditTextconfirm.getText().toString().equals("")) {
+                            textInputLayoutOld.startAnimation(animation);
+                            textViewOld.setVisibility(View.VISIBLE);
+                            appCompatEditTextold.requestFocus();
+                            textViewOld.postDelayed(new Runnable() {
+                                public void run() {
+                                    textViewOld.setVisibility(View.GONE);
+                                }
+                            }, 3000);
+                        } else if (appCompatEditTextnew.getText().toString().equals("")) {
+                            textInputLayoutNew.startAnimation(animation);
+                            textViewNew.setVisibility(View.VISIBLE);
+                            appCompatEditTextnew.requestFocus();
+                            textViewNew.postDelayed(new Runnable() {
+                                public void run() {
+                                    textViewNew.setVisibility(View.GONE);
+                                }
+                            }, 3000);
+                        } else if (appCompatEditTextconfirm.getText().toString().equals("")) {
+                            textInputLayoutConfirm.startAnimation(animation);
+                            textViewConfirm.setVisibility(View.VISIBLE);
+                            appCompatEditTextconfirm.requestFocus();
+                            textViewConfirm.postDelayed(new Runnable() {
+                                public void run() {
+                                    textViewConfirm.setVisibility(View.GONE);
+                                }
+                            }, 3000);
+                        } else if (appCompatEditTextold.getText().toString().equals("")) {
+                            textInputLayoutOld.startAnimation(animation);
+                            textViewOld.setVisibility(View.VISIBLE);
+                            appCompatEditTextold.requestFocus();
+                            textViewOld.postDelayed(new Runnable() {
+                                public void run() {
+                                    textViewOld.setVisibility(View.GONE);
+                                }
+                            }, 3000);
+                        } else {
+                            String password = Prefs.getString("PASSWORD", null);
+                            if (!appCompatEditTextold.getText().toString().equals(password)) {
+                                textInputLayoutOld.startAnimation(animation);
+                                textViewOld.setVisibility(View.VISIBLE);
+                                textViewOld.setText(getString(R.string.passwordNotMatch));
+                                appCompatEditTextold.requestFocus();
+                                textViewOld.postDelayed(new Runnable() {
+                                    public void run() {
+                                        textViewOld.setVisibility(View.GONE);
+                                    }
+                                }, 3000);
+                                return;
+                            } else {
+                                if (!appCompatEditTextnew.getText().toString().equals(appCompatEditTextconfirm.getText().toString())) {
+                                    textInputLayoutNew.startAnimation(animation);
+                                    textViewNew.setVisibility(View.VISIBLE);
+                                    textViewNew.setText(getString(R.string.passwordmustmatch));
+                                    appCompatEditTextnew.requestFocus();
+                                    textViewNew.postDelayed(new Runnable() {
+                                        public void run() {
+                                            textViewNew.setVisibility(View.GONE);
+                                        }
+                                    }, 3000);
+
+                                } else if (appCompatEditTextnew.getText().toString().equals(password)) {
+                                    textInputLayoutNew.startAnimation(animation);
+                                    textViewNew.setVisibility(View.VISIBLE);
+                                    textViewNew.setText(getString(R.string.differentpassword));
+                                    appCompatEditTextnew.requestFocus();
+                                    textViewNew.postDelayed(new Runnable() {
+                                        public void run() {
+                                            textViewNew.setVisibility(View.GONE);
+                                        }
+                                    }, 3000);
+                                } else {
+                                    final String finalOldPass = appCompatEditTextold.getText().toString().trim();
+                                    final String finalNewPass = appCompatEditTextnew.getText().toString().trim();
+                                    final String finalConfirmPass = appCompatEditTextconfirm.getText().toString().trim();
+                                    progressDialog.setMessage(getString(R.string.pleasewait));
+                                        progressDialog.show();
+                                        // Write your code here to invoke YES event
+                                       new PasswordChange(getActivity(),finalOldPass,finalNewPass,finalConfirmPass).execute();
+                                }
+                            }
+                        }
+                    }
+                });
+                button1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+        dialog.show();
+//        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+//        View promptView = layoutInflater.inflate(R.layout.bottom_sheet_layout, null);
+//
+//        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.MyMaterialTheme));
+//        alertDialogBuilder.setView(promptView);
+//         AppCompatEditText appCompatEditTextold,appCompatEditTextnew,appCompatEditTextconfirm;
+//         TextView textViewOld,textViewNew,textViewConfirm;
+//         TextInputLayout textInputLayoutOld,textInputLayoutNew,textInputLayoutConfirm;
+//        appCompatEditTextold= (AppCompatEditText) promptView.findViewById(R.id.inputoldpassword);
+//        appCompatEditTextnew= (AppCompatEditText) promptView.findViewById(R.id.inputnewpassword);
+//        appCompatEditTextconfirm= (AppCompatEditText) promptView.findViewById(R.id.input_password);
+//        textViewOld= (TextView) promptView.findViewById(R.id.passwordoldError);
+//        textViewNew= (TextView) promptView.findViewById(R.id.passwordErrornew);
+//        textViewConfirm= (TextView) promptView.findViewById(R.id.passwordError);
+//        textInputLayoutOld= (TextInputLayout) promptView.findViewById(R.id.input_layoutoldpassword);
+//        textInputLayoutNew= (TextInputLayout) promptView.findViewById(R.id.input_layoutnewpassword);
+//        textInputLayoutConfirm= (TextInputLayout) promptView.findViewById(R.id.input_layout_password);
+//
+//
+//        alertDialogBuilder.setCancelable(false)
+//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//
+//
+//                    }
+//                })
+//                .setNegativeButton("Cancel",
+//                        new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int id) {
+//                                dialog.cancel();
+//                            }
+//                        });
+//
+//        // create an alert dialog
+//        AlertDialog alert = alertDialogBuilder.create();
+//        alert.show();
     }
 
     private class EditClient extends AsyncTask<String, Void, String> {
@@ -286,9 +455,7 @@ public class EditCustomer extends Fragment {
                 if (!email.equals("")||!email.equals("null")){
                     editTextemail.setText(email);
                 }
-
-
-            } catch (JSONException e) {
+                } catch (JSONException e) {
                 Toasty.error(getActivity(), getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
@@ -301,7 +468,7 @@ public class EditCustomer extends Fragment {
         private Context context;
         private TextView textViewOld,textViewNew,textViewConfirm;
         private TextInputLayout textInputLayoutOld,textInputLayoutNew,textInputLayoutConfirm;
-        Button button;
+        //Button button;
         @SuppressLint("StaticFieldLeak")
         private  MyBottomSheetDialog instance;
 
@@ -330,7 +497,7 @@ public class EditCustomer extends Fragment {
                     // do something
                 }
             };
-            button= (Button) bottomSheetView.findViewById(R.id.updateButton);
+            //button= (Button) bottomSheetView.findViewById(R.id.updateButton);
             appCompatEditTextold= (AppCompatEditText) bottomSheetView.findViewById(R.id.inputoldpassword);
             appCompatEditTextnew= (AppCompatEditText) bottomSheetView.findViewById(R.id.inputnewpassword);
             appCompatEditTextconfirm= (AppCompatEditText) bottomSheetView.findViewById(R.id.input_password);
@@ -340,123 +507,123 @@ public class EditCustomer extends Fragment {
             textInputLayoutOld= (TextInputLayout) bottomSheetView.findViewById(R.id.input_layoutoldpassword);
             textInputLayoutNew= (TextInputLayout) bottomSheetView.findViewById(R.id.input_layoutnewpassword);
             textInputLayoutConfirm= (TextInputLayout) bottomSheetView.findViewById(R.id.input_layout_password);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (appCompatEditTextold.getText().toString().equals("")&&appCompatEditTextnew.getText().toString().equals("")&&appCompatEditTextconfirm.getText().toString().equals("")){
-                            textInputLayoutOld.startAnimation(animation);
-                            textViewOld.setVisibility(View.VISIBLE);
-                            appCompatEditTextold.requestFocus();
-                        textViewOld.postDelayed(new Runnable() {
-                            public void run() {
-                                textViewOld.setVisibility(View.GONE);
-                            }
-                        }, 3000);
-                    }
-                  else if (appCompatEditTextnew.getText().toString().equals("")){
-                        textInputLayoutNew.startAnimation(animation);
-                        textViewNew.setVisibility(View.VISIBLE);
-                        appCompatEditTextnew.requestFocus();
-                        textViewNew.postDelayed(new Runnable() {
-                            public void run() {
-                                textViewNew.setVisibility(View.GONE);
-                            }
-                        }, 3000);
-                    }
-                  else if (appCompatEditTextconfirm.getText().toString().equals("")){
-                        textInputLayoutConfirm.startAnimation(animation);
-                        textViewConfirm.setVisibility(View.VISIBLE);
-                        appCompatEditTextconfirm.requestFocus();
-                        textViewConfirm.postDelayed(new Runnable() {
-                            public void run() {
-                                textViewConfirm.setVisibility(View.GONE);
-                            }
-                        }, 3000);
-                    }
-                    else if (appCompatEditTextold.getText().toString().equals("")){
-                        textInputLayoutOld.startAnimation(animation);
-                        textViewOld.setVisibility(View.VISIBLE);
-                        appCompatEditTextold.requestFocus();
-                        textViewOld.postDelayed(new Runnable() {
-                            public void run() {
-                                textViewOld.setVisibility(View.GONE);
-                            }
-                        }, 3000);
-                    }
-                    else{
-                        String password=Prefs.getString("PASSWORD", null);
-                        if (!appCompatEditTextold.getText().toString().equals(password)){
-                            textInputLayoutOld.startAnimation(animation);
-                            textViewOld.setVisibility(View.VISIBLE);
-                            textViewOld.setText(getString(R.string.passwordNotMatch));
-                            appCompatEditTextold.requestFocus();
-                            textViewOld.postDelayed(new Runnable() {
-                                public void run() {
-                                    textViewOld.setVisibility(View.GONE);
-                                }
-                            }, 3000);
-                                return;
-                        }
-                        else{
-                            if (!appCompatEditTextnew.getText().toString().equals(appCompatEditTextconfirm.getText().toString())){
-                                textInputLayoutNew.startAnimation(animation);
-                                textViewNew.setVisibility(View.VISIBLE);
-                                textViewNew.setText(getString(R.string.passwordmustmatch));
-                                appCompatEditTextnew.requestFocus();
-                                textViewNew.postDelayed(new Runnable() {
-                                    public void run() {
-                                        textViewNew.setVisibility(View.GONE);
-                                    }
-                                }, 3000);
-
-                            }
-                            else if (appCompatEditTextnew.getText().toString().equals(password)){
-                                textInputLayoutNew.startAnimation(animation);
-                                textViewNew.setVisibility(View.VISIBLE);
-                                textViewNew.setText(getString(R.string.differentpassword));
-                                appCompatEditTextnew.requestFocus();
-                                textViewNew.postDelayed(new Runnable() {
-                                    public void run() {
-                                        textViewNew.setVisibility(View.GONE);
-                                    }
-                                }, 3000);
-                            }
-                            else{
-                                final String finalOldPass=appCompatEditTextold.getText().toString().trim();
-                                final String finalNewPass=appCompatEditTextnew.getText().toString().trim();
-                                final String finalConfirmPass=appCompatEditTextconfirm.getText().toString().trim();
-                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-                                // Setting Dialog Message
-                                alertDialog.setMessage(getString(R.string.passwordconfirm));
-                                // Setting Icon to Dialog
-                                alertDialog.setIcon(R.mipmap.ic_launcher);
-                                // Setting Positive "Yes" Button
-                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                    @SuppressLint("MissingPermission")
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        progressDialog.setMessage(getString(R.string.pleasewait));
-                                        progressDialog.show();
-                                        // Write your code here to invoke YES event
-                                       new PasswordChange(getActivity(),finalOldPass,finalNewPass,finalConfirmPass).execute();
-                                    }
-                                });
-                                // Setting Negative "NO" Button
-                                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // Write your code here to invoke NO event
-                                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-                                        dialog.cancel();
-                                    }
-                                });
-
-                                // Showing Alert Message
-                                alertDialog.show();
-
-                            }
-                        }
-                    }
-                }
-            });
+//            button.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if (appCompatEditTextold.getText().toString().equals("")&&appCompatEditTextnew.getText().toString().equals("")&&appCompatEditTextconfirm.getText().toString().equals("")){
+//                            textInputLayoutOld.startAnimation(animation);
+//                            textViewOld.setVisibility(View.VISIBLE);
+//                            appCompatEditTextold.requestFocus();
+//                        textViewOld.postDelayed(new Runnable() {
+//                            public void run() {
+//                                textViewOld.setVisibility(View.GONE);
+//                            }
+//                        }, 3000);
+//                    }
+//                  else if (appCompatEditTextnew.getText().toString().equals("")){
+//                        textInputLayoutNew.startAnimation(animation);
+//                        textViewNew.setVisibility(View.VISIBLE);
+//                        appCompatEditTextnew.requestFocus();
+//                        textViewNew.postDelayed(new Runnable() {
+//                            public void run() {
+//                                textViewNew.setVisibility(View.GONE);
+//                            }
+//                        }, 3000);
+//                    }
+//                  else if (appCompatEditTextconfirm.getText().toString().equals("")){
+//                        textInputLayoutConfirm.startAnimation(animation);
+//                        textViewConfirm.setVisibility(View.VISIBLE);
+//                        appCompatEditTextconfirm.requestFocus();
+//                        textViewConfirm.postDelayed(new Runnable() {
+//                            public void run() {
+//                                textViewConfirm.setVisibility(View.GONE);
+//                            }
+//                        }, 3000);
+//                    }
+//                    else if (appCompatEditTextold.getText().toString().equals("")){
+//                        textInputLayoutOld.startAnimation(animation);
+//                        textViewOld.setVisibility(View.VISIBLE);
+//                        appCompatEditTextold.requestFocus();
+//                        textViewOld.postDelayed(new Runnable() {
+//                            public void run() {
+//                                textViewOld.setVisibility(View.GONE);
+//                            }
+//                        }, 3000);
+//                    }
+//                    else{
+//                        String password=Prefs.getString("PASSWORD", null);
+//                        if (!appCompatEditTextold.getText().toString().equals(password)){
+//                            textInputLayoutOld.startAnimation(animation);
+//                            textViewOld.setVisibility(View.VISIBLE);
+//                            textViewOld.setText(getString(R.string.passwordNotMatch));
+//                            appCompatEditTextold.requestFocus();
+//                            textViewOld.postDelayed(new Runnable() {
+//                                public void run() {
+//                                    textViewOld.setVisibility(View.GONE);
+//                                }
+//                            }, 3000);
+//                                return;
+//                        }
+//                        else{
+//                            if (!appCompatEditTextnew.getText().toString().equals(appCompatEditTextconfirm.getText().toString())){
+//                                textInputLayoutNew.startAnimation(animation);
+//                                textViewNew.setVisibility(View.VISIBLE);
+//                                textViewNew.setText(getString(R.string.passwordmustmatch));
+//                                appCompatEditTextnew.requestFocus();
+//                                textViewNew.postDelayed(new Runnable() {
+//                                    public void run() {
+//                                        textViewNew.setVisibility(View.GONE);
+//                                    }
+//                                }, 3000);
+//
+//                            }
+//                            else if (appCompatEditTextnew.getText().toString().equals(password)){
+//                                textInputLayoutNew.startAnimation(animation);
+//                                textViewNew.setVisibility(View.VISIBLE);
+//                                textViewNew.setText(getString(R.string.differentpassword));
+//                                appCompatEditTextnew.requestFocus();
+//                                textViewNew.postDelayed(new Runnable() {
+//                                    public void run() {
+//                                        textViewNew.setVisibility(View.GONE);
+//                                    }
+//                                }, 3000);
+//                            }
+//                            else{
+//                                final String finalOldPass=appCompatEditTextold.getText().toString().trim();
+//                                final String finalNewPass=appCompatEditTextnew.getText().toString().trim();
+//                                final String finalConfirmPass=appCompatEditTextconfirm.getText().toString().trim();
+//                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+//                                // Setting Dialog Message
+//                                alertDialog.setMessage(getString(R.string.passwordconfirm));
+//                                // Setting Icon to Dialog
+//                                alertDialog.setIcon(R.mipmap.ic_launcher);
+//                                // Setting Positive "Yes" Button
+//                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+//                                    @SuppressLint("MissingPermission")
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        progressDialog.setMessage(getString(R.string.pleasewait));
+//                                        progressDialog.show();
+//                                        // Write your code here to invoke YES event
+//                                       new PasswordChange(getActivity(),finalOldPass,finalNewPass,finalConfirmPass).execute();
+//                                    }
+//                                });
+//                                // Setting Negative "NO" Button
+//                                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        // Write your code here to invoke NO event
+//                                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+//                                        dialog.cancel();
+//                                    }
+//                                });
+//
+//                                // Showing Alert Message
+//                                alertDialog.show();
+//
+//                            }
+//                        }
+//                    }
+//                }
+//            });
 
 
         }
