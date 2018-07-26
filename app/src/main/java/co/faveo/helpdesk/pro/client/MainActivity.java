@@ -2,21 +2,41 @@ package co.faveo.helpdesk.pro.client;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
+import android.util.Log;
+import android.view.Display;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
+import com.getkeepsafe.taptargetview.TapTargetView;
+import com.github.javiersantos.bottomdialogs.BottomDialog;
+import com.google.firebase.crash.FirebaseCrash;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import org.greenrobot.eventbus.EventBus;
@@ -24,16 +44,27 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.ButterKnife;
+import io.fabric.sdk.android.Fabric;
+import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 public class MainActivity extends AppCompatActivity implements
         FragmentDrawer.FragmentDrawerListener,About.OnFragmentInteractionListener,MyOpenTickets.OnFragmentInteractionListener,EditCustomer.OnFragmentInteractionListener,
 MyClosedTickets.OnFragmentInteractionListener{
     Toolbar toolbar;
     Context context;
+    SharedPreference sharedPreferenceObj;
+    FabSpeedDial fabSpeedDial;
+    Fragment fragment;
+    String title;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
+        FirebaseCrash.log("Activity created");
+        sharedPreferenceObj=new SharedPreference(MainActivity.this);
         setContentView(R.layout.activity_main);
+        overridePendingTransition(R.anim.slide_in_from_right,R.anim.slide_in_from_right);
         Window window = MainActivity.this.getWindow();
 
 // clear FLAG_TRANSLUCENT_STATUS flag:
@@ -45,10 +76,12 @@ MyClosedTickets.OnFragmentInteractionListener{
 // finally change the color
         window.setStatusBarColor(ContextCompat.getColor(MainActivity.this,R.color.faveo));
         ButterKnife.bind(this);
-        Prefs.putString("ticketThread", "");
+        Prefs.putString("ticketThread","");
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbarMain);
+        mToolbar.inflateMenu(R.menu.search_menu);
+        mToolbar.setNavigationIcon(R.drawable.ic_attach_file_black_24dp);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -63,6 +96,151 @@ MyClosedTickets.OnFragmentInteractionListener{
         fragmentTransaction.replace(R.id.container_body, inboxTickets);
         fragmentTransaction.commit();
         setActionBarTitle(getResources().getString(R.string.mytickets));
+
+        // We load a drawable and create a location to show a tap target here
+        // We need the display to get the width and height at this point in time
+        final Display display = getWindowManager().getDefaultDisplay();
+        // Load our little droid guy
+        final Drawable droid = ContextCompat.getDrawable(this, R.mipmap.ic_launcher);
+        // Tell our droid buddy where we want him to appear
+        final Rect droidTarget = new Rect(0, 0, droid.getIntrinsicWidth() * 2, droid.getIntrinsicHeight() * 2);
+        // Using deprecated methods makes you look way cool
+        droidTarget.offset(display.getWidth() / 2, display.getHeight() / 2);
+
+        final SpannableString sassyDesc = new SpannableString("It allows you to go back, sometimes");
+        sassyDesc.setSpan(new StyleSpan(Typeface.ITALIC), sassyDesc.length() - "sometimes".length(), sassyDesc.length(), 0);
+
+        // We have a sequence of targets, so lets build it!
+        final TapTargetSequence sequence = new TapTargetSequence(this)
+                .targets(
+                        // This tap target will target the back button, we just need to pass its containing toolbar
+                        TapTarget.forToolbarNavigationIcon(mToolbar, "This is the hamburger icon,from here you can control the app.You will get option to create ticket,access the settings and support page and also you will get option to log out from the app.", sassyDesc).id(1)
+                                .dimColor(android.R.color.black)
+                                .outerCircleColor(R.color.faveo)
+                                .targetCircleColor(android.R.color.white)
+                                .transparentTarget(true)
+                                .textColor(android.R.color.white).cancelable(false),
+                        // Likewise, this tap target will target the search button
+                        TapTarget.forToolbarMenuItem(mToolbar, R.id.action_search, "This is a search icon", "From here you will be able to search ticket and user in your helpdesk.")
+                                .dimColor(android.R.color.black)
+                                .outerCircleColor(R.color.faveo)
+                                .targetCircleColor(android.R.color.white)
+                                .transparentTarget(true)
+                                .textColor(android.R.color.white)
+                                .id(2).cancelable(false)
+//                        TapTarget.forToolbarMenuItem(mToolbar, R.id.action_noti, "This is a notification icon", "You will get all the notification in your helpdesk from here.")
+//                                .dimColor(android.R.color.black)
+//                                .outerCircleColor(R.color.faveo)
+//                                .targetCircleColor(android.R.color.white)
+//                                .transparentTarget(true)
+//                                .textColor(android.R.color.white)
+//                                .id(3).cancelable(false)
+                )
+                .listener(new TapTargetSequence.Listener() {
+                    // This listener will tell us when interesting(tm) events happen in regards
+                    // to the sequence
+                    @Override
+                    public void onSequenceFinish() {
+                        new BottomDialog.Builder(MainActivity.this)
+                                .setContent(R.string.intro)
+                                .setPositiveText("ok")
+                                .setCancelable(false)
+                                .setPositiveBackgroundColorResource(R.color.white)
+                                //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                                .setPositiveTextColorResource(R.color.faveo)
+                                //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                                .onPositive(new BottomDialog.ButtonCallback() {
+                                    @Override
+                                    public void onClick(BottomDialog dialog) {
+                                        dialog.dismiss();
+                                    }
+                                })
+                                .show();
+
+                    }
+
+                    @Override
+                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+                        Log.d("TapTargetView", "Clicked on " + lastTarget.id());
+                    }
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+//                        final AlertDialog dialog = new AlertDialog.Builder(MainActivity.this)
+//                                .setTitle("Uh oh")
+//                                .setMessage("You canceled the sequence")
+//                                .setPositiveButton("Oops", null).show();
+//                        TapTargetView.showFor(dialog,
+//                                TapTarget.forView(dialog.getButton(DialogInterface.BUTTON_POSITIVE), "Uh oh!", "You canceled the sequence at step " + lastTarget.id())
+//                                        .cancelable(false)
+//                                        .tintTarget(false), new TapTargetView.Listener() {
+//                                    @Override
+//                                    public void onTargetClick(TapTargetView view) {
+//                                        super.onTargetClick(view);
+//                                        dialog.dismiss();
+//                                    }
+//                                });
+                    }
+                });
+
+        if(sharedPreferenceObj.getApp_runFirst().equals("FIRST"))
+        {
+            // That's mean First Time Launch
+            // After your Work , SET Status NO
+            TapTargetView.showFor(this,                 // `this` is an Activity
+                    TapTarget.forView(findViewById(R.id.fab_main), "This is a FAB", "From here you can create ticket,make some changes and request for an item")
+                            // All options below are optional
+                            .dimColor(android.R.color.black)
+                            .outerCircleColor(R.color.faveo)
+                            .targetCircleColor(android.R.color.white)
+                            .transparentTarget(true)
+                            .textColor(android.R.color.white).cancelable(false),                  // Specify the target radius (in dp)
+                    new TapTargetView.Listener() {          // The listener can listen for regular clicks, long clicks or cancels
+                        @Override
+                        public void onTargetClick(TapTargetView view) {
+                            super.onTargetClick(view);      // This call is optional
+                            sequence.start();
+                        }
+                    });
+
+            sharedPreferenceObj.setApp_runFirst("NO");
+        }
+        else
+        {
+
+            // App is not First Time Launch
+        }
+
+        fabSpeedDial = (FabSpeedDial) findViewById(R.id.fab_main);
+
+//       fabSpeedDial.setOnClickListener(this);
+        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                int id=menuItem.getItemId();
+
+                if (id==R.id.fab_createTicket){
+                    Intent intent=new Intent(MainActivity.this,CreateTicketActivity.class);
+                    startActivity(intent);
+                }
+                else if (id==R.id.fab_requestItem){
+                    title=getString(R.string.myprofile);
+                    fragment = MainActivity.this.getSupportFragmentManager().findFragmentByTag(title);
+                    if (fragment == null)
+                        fragment = new EditCustomer();
+                    if (fragment != null) {
+                        FragmentManager fragmentManager = MainActivity.this.getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.container_body, fragment);
+                        // fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
+                        ((MainActivity.this)).setActionBarTitle(title);
+                    }
+                }
+                //TODO: Start some activity
+                return false;
+            }
+        });
 
     }
     public void setActionBarTitle(final String title) {
@@ -143,34 +321,30 @@ MyClosedTickets.OnFragmentInteractionListener{
      */
     @Override
     public void onBackPressed() {
-        android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(MainActivity.this);
-        alertDialog.setMessage(getString(R.string.confirmMessage));
-
-        // Setting Icon to Dialog
-        alertDialog.setIcon(R.mipmap.ic_launcher);
-
-        // Setting Positive "Yes" Button
-        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // Write your code here to invoke YES event
-                //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
-                finishAffinity();
-                System.exit(0);
-
+        new BottomDialog.Builder(MainActivity.this)
+                .setTitle(getString(R.string.confirmLogOut))
+                .setContent(getString(R.string.confirmMessage))
+                .setPositiveText("YES")
+                .setNegativeText("NO")
+                .setPositiveBackgroundColorResource(R.color.white)
+                //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                .setPositiveTextColorResource(R.color.faveo)
+                .setNegativeTextColor(R.color.black)
+                //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                .onPositive(new BottomDialog.ButtonCallback() {
+                    @Override
+                    public void onClick(BottomDialog dialog) {
+                        finishAffinity();
+                        System.exit(0);
+                    }
+                }).onNegative(new BottomDialog.ButtonCallback() {
+            @Override
+            public void onClick(@NonNull BottomDialog bottomDialog) {
+                bottomDialog.dismiss();
             }
-        });
+        })
+                .show();
 
-        // Setting Negative "NO" Button
-        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // Write your code here to invoke NO event
-                //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-                dialog.cancel();
-            }
-        });
-
-        // Showing Alert Message
-        alertDialog.show();
 //        if (doubleBackToExitPressedOnce) {
 //            super.onBackPressed();
 //            return;

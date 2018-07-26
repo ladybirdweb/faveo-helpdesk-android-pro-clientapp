@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -28,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.elyeproj.loaderviewlibrary.LoaderTextView;
+import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import org.json.JSONArray;
@@ -56,6 +58,7 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ticket_detail);
+        overridePendingTransition(R.anim.slide_in_from_right,R.anim.slide_in_from_right);
         Window window = TicketDetailActivity.this.getWindow();
 
 // clear FLAG_TRANSLUCENT_STATUS flag:
@@ -237,36 +240,61 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
                 Toasty.warning(TicketDetailActivity.this, "Ticket is already in "+status+" state", Toast.LENGTH_SHORT).show();
             }
             else{
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(TicketDetailActivity.this);
-                // Setting Dialog Message
-                alertDialog.setMessage(getString(R.string.statusConfirmation));
-
-                // Setting Icon to Dialog
-                alertDialog.setIcon(R.mipmap.ic_launcher);
-
-                // Setting Positive "Yes" Button
-                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Write your code here to invoke YES event
-                        //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
-                        new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("openid",null))).execute();
-                        progressDialog.show();
-                        progressDialog.setMessage(getString(R.string.pleasewait));
-
+                new BottomDialog.Builder(TicketDetailActivity.this)
+                        .setContent(getString(R.string.statusConfirmation))
+                        .setPositiveText("YES")
+                        .setNegativeText("NO")
+                        .setPositiveBackgroundColorResource(R.color.white)
+                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                        .setPositiveTextColorResource(R.color.faveo)
+                        .setNegativeTextColor(R.color.black)
+                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                        .onPositive(new BottomDialog.ButtonCallback() {
+                            @Override
+                            public void onClick(BottomDialog dialog) {
+                                new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("openid",null))).execute();
+                                progressDialog.show();
+                                progressDialog.setMessage(getString(R.string.pleasewait));
+                            }
+                        }).onNegative(new BottomDialog.ButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull BottomDialog bottomDialog) {
+                        bottomDialog.dismiss();
                     }
-                });
+                })
+                        .show();
 
-                // Setting Negative "NO" Button
-                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Write your code here to invoke NO event
-                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-                        dialog.cancel();
-                    }
-                });
+
+
+
+//                AlertDialog.Builder alertDialog = new AlertDialog.Builder(TicketDetailActivity.this);
+//                // Setting Dialog Message
+//                alertDialog.setMessage(getString(R.string.statusConfirmation));
+//
+//                // Setting Icon to Dialog
+//                alertDialog.setIcon(R.mipmap.ic_launcher);
+//
+//                // Setting Positive "Yes" Button
+//                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        // Write your code here to invoke YES event
+//                        //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
+//
+//
+//                    }
+//                });
+//
+//                // Setting Negative "NO" Button
+//                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        // Write your code here to invoke NO event
+//                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+//                        dialog.cancel();
+//                    }
+//                });
 
                 // Showing Alert Message
-                alertDialog.show();
+                //alertDialog.show();
             }
         }
         else if (item.getItemId()==R.id.action_statusClosed){
@@ -274,36 +302,59 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
                 Toasty.warning(TicketDetailActivity.this, "Ticket is already in "+status+" state", Toast.LENGTH_SHORT).show();
             }
             else{
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(TicketDetailActivity.this);
-                // Setting Dialog Message
-                alertDialog.setMessage(getString(R.string.statusConfirmation));
 
-                // Setting Icon to Dialog
-                alertDialog.setIcon(R.mipmap.ic_launcher);
-
-                // Setting Positive "Yes" Button
-                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Write your code here to invoke YES event
-                        //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
-                        new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("closedid",null))).execute();
-                        progressDialog.show();
-                        progressDialog.setMessage(getString(R.string.pleasewait));
-
+                new BottomDialog.Builder(TicketDetailActivity.this)
+                        .setContent(getString(R.string.statusConfirmation))
+                        .setTitle("Changing status")
+                        .setPositiveText("YES")
+                        .setNegativeText("NO")
+                        .setPositiveBackgroundColorResource(R.color.white)
+                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                        .setPositiveTextColorResource(R.color.faveo)
+                        .setNegativeTextColor(R.color.black)
+                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                        .onPositive(new BottomDialog.ButtonCallback() {
+                            @Override
+                            public void onClick(BottomDialog dialog) {
+                                new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("closedid",null))).execute();
+                                progressDialog.show();
+                                progressDialog.setMessage(getString(R.string.pleasewait));
+                            }
+                        }).onNegative(new BottomDialog.ButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull BottomDialog bottomDialog) {
+                        bottomDialog.dismiss();
                     }
-                });
-
-                // Setting Negative "NO" Button
-                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Write your code here to invoke NO event
-                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-                        dialog.cancel();
-                    }
-                });
-
-                // Showing Alert Message
-                alertDialog.show();
+                })
+                        .show();
+//                AlertDialog.Builder alertDialog = new AlertDialog.Builder(TicketDetailActivity.this);
+//                // Setting Dialog Message
+//                alertDialog.setMessage(getString(R.string.statusConfirmation));
+//
+//                // Setting Icon to Dialog
+//                alertDialog.setIcon(R.mipmap.ic_launcher);
+//
+//                // Setting Positive "Yes" Button
+//                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        // Write your code here to invoke YES event
+//                        //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
+//
+//
+//                    }
+//                });
+//
+//                // Setting Negative "NO" Button
+//                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        // Write your code here to invoke NO event
+//                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+//                        dialog.cancel();
+//                    }
+//                });
+//
+//                // Showing Alert Message
+//                alertDialog.show();
 
             }
         }
@@ -404,6 +455,7 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
                     Prefs.putString("ticketstatus", "Deleted");
                     finish();
                     startActivity(new Intent(TicketDetailActivity.this, MainActivity.class));
+
                 }
 
 //                if (message2.contains("Status changed to Deleted")) {

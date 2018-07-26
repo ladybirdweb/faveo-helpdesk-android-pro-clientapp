@@ -510,7 +510,7 @@ public class TicketReplyActivity extends AppCompatActivity implements Permission
                             } catch (UnsupportedEncodingException e1) {
                                 e1.printStackTrace();
                             }
-                            new ReplyTicket(Integer.parseInt(ticketID),replyMessage).execute();
+                            new ReplyTicket(Prefs.getString("TICKETid",null),replyMessage).execute();
                         } else {
                             try {
                                 try {
@@ -524,7 +524,7 @@ public class TicketReplyActivity extends AppCompatActivity implements Permission
                                             .addFileToUpload(realPath, "media_attachment[]")
                                             //Adding file
                                             //.addParameter("token", token1)
-                                            .addParameter("ticket_id", ticketID)
+                                            .addParameter("ticket_id", Prefs.getString("TICKETid",null))
                                             .addParameter("reply_content", replyMessage)
                                             //Adding text parameter to the request
                                             //.setNotificationConfig(new UploadNotificationConfig())
@@ -824,11 +824,11 @@ public class TicketReplyActivity extends AppCompatActivity implements Permission
         builder.show();
     }
     private class ReplyTicket extends AsyncTask<String, Void, String> {
-        int ticketID;
+        String ticketID;
         String cc;
         String replyContent;
 
-        ReplyTicket(int ticketID, String replyContent) {
+        ReplyTicket(String ticketID, String replyContent) {
             this.ticketID = ticketID;
             this.cc = cc;
             this.replyContent = replyContent;

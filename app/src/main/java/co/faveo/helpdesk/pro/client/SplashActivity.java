@@ -32,6 +32,7 @@ import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
+import pl.tajchert.waitingdots.DotsTextView;
 
 /**
  * This splash activity is responsible for
@@ -46,14 +47,16 @@ public class SplashActivity extends AppCompatActivity {
     TextView loading;
     //WelcomeDialog welcomeDialog;
 
-    @BindView(R.id.refresh)
-    TextView textViewrefresh;
-
-    @BindView(R.id.tryagain)
-    TextView textViewtryAgain;
+//    @BindView(R.id.refresh)
+//    TextView textViewrefresh;
+//
+//    @BindView(R.id.tryagain)
+//    TextView textViewtryAgain;
     String error;
     Context context;
+    DotsTextView dotsTextView;
     Button button;
+    Button buttonTryAgain;
     public static String
             keyDepartment = "", valueDepartment = "",
             keySLA = "", valueSLA = "",
@@ -73,6 +76,7 @@ public class SplashActivity extends AppCompatActivity {
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
+        overridePendingTransition(R.anim.slide_in_from_right,R.anim.slide_in_from_right);
         Window window = SplashActivity.this.getWindow();
 
 // clear FLAG_TRANSLUCENT_STATUS flag:
@@ -83,7 +87,8 @@ public class SplashActivity extends AppCompatActivity {
         window.setStatusBarColor(ContextCompat.getColor(SplashActivity.this,R.color.faveo));
         ButterKnife.bind(this);
         button= (Button) findViewById(R.id.clear_cache);
-
+        buttonTryAgain= (Button) findViewById(R.id.refreshAgain);
+        dotsTextView= (DotsTextView) findViewById(R.id.dots);
         //httpConnection=new HTTPConnection(getApplicationContext());
         //welcomeDialog=new WelcomeDialog();
         try {
@@ -109,17 +114,19 @@ public class SplashActivity extends AppCompatActivity {
 //                startActivity(intent);
 //                return;
 //            }
-            progressDialog.setVisibility(View.VISIBLE);
+            //progressDialog.setVisibility(View.VISIBLE);
+            dotsTextView.start();
             new FetchDependency().execute();
             Prefs.putString("came from filter", "false");
 
         }else
         {
             progressDialog.setVisibility(View.INVISIBLE);
+            dotsTextView.setVisibility(View.INVISIBLE);
             loading.setText(getString(R.string.oops_no_internet));
-            textViewtryAgain.setVisibility(View.VISIBLE);
-            textViewrefresh.setVisibility(View.VISIBLE);
-            textViewrefresh.setOnClickListener(new View.OnClickListener() {
+            buttonTryAgain.setVisibility(View.VISIBLE);
+            buttonTryAgain.setVisibility(View.VISIBLE);
+            buttonTryAgain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     finish();
@@ -150,7 +157,7 @@ public class SplashActivity extends AppCompatActivity {
 
         protected void onPostExecute(String result) {
             Log.d("Depen Response : ", result + "");
-
+            dotsTextView.hideAndStop();
             if (result==null) {
 //                try {
 //                    unauthorized = Prefs.getString("unauthorized", null);
@@ -346,8 +353,10 @@ public class SplashActivity extends AppCompatActivity {
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                 startActivity(intent);
 
+
             } catch (JSONException | NullPointerException e) {
                 //Toasty.error(SplashActivity.this, "Parsing Error!", Toast.LENGTH_LONG).show();
+                dotsTextView.setVisibility(View.INVISIBLE);
                 button.setVisibility(View.VISIBLE);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -368,11 +377,12 @@ public class SplashActivity extends AppCompatActivity {
                     }
                 });
                 loading.setVisibility(View.GONE);
-                textViewtryAgain.setVisibility(View.VISIBLE);
-                textViewrefresh.setVisibility(View.VISIBLE);
+                dotsTextView.setVisibility(View.INVISIBLE);
+//                textViewtryAgain.setVisibility(View.VISIBLE);
+//                textViewrefresh.setVisibility(View.VISIBLE);
                 Prefs.putString("unauthorized", "false");
                 Prefs.putString("401","false");
-                textViewrefresh.setOnClickListener(new View.OnClickListener() {
+                buttonTryAgain.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
@@ -382,6 +392,7 @@ public class SplashActivity extends AppCompatActivity {
 
                 e.printStackTrace();
             } finally {
+                dotsTextView.setVisibility(View.INVISIBLE);
                 progressDialog.setVisibility(View.INVISIBLE);
 
             }

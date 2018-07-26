@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -243,19 +244,18 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             String cameFromSetting = Prefs.getString("cameFromSetting", null);
             if (cameFromSetting.equals("true")) {
                 option = 5;
-
                 textviewabout.setTextColor(getResources().getColor(R.color.black));
                 imageviewabout.setColorFilter(getResources().getColor(R.color.grey_500));
                 linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 textViewClientList.setTextColor(getResources().getColor(R.color.black));
                 clientImage.setColorFilter(getResources().getColor(R.color.grey_500));
-
                 textviewlogout.setTextColor(getResources().getColor(R.color.black));
                 imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
                 linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 Prefs.putString("cameFromSetting", "false");
                 drawerItemCustomAdapter.notifyDataSetChanged();
+
             }
         }catch (NullPointerException e){
             e.printStackTrace();
@@ -301,6 +301,11 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 //new FetchDependency().execute();
                 opencount=0;
                 closecount=0;
+                View view = getActivity().getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
                 new FetchFirst(getActivity()).execute();
                 drawerItemCustomAdapter.notifyDataSetChanged();
                 getActivity().invalidateOptionsMenu();
@@ -1068,16 +1073,23 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             }catch (NullPointerException e){
                 e.printStackTrace();
             }
-            if (result == null) {
-                Toasty.error(getActivity(), getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show();
-                return;
-            }
+            Activity activity = getActivity();
+            if (isAdded() && activity != null) {
+                if (result == null) {
+                    Toasty.error(getActivity(), getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show();
+                    return;
+                }
+     }
 
-            if (result.equals("all done")) {
+                try {
+                    if (result.equals("all done")) {
 
-                Toasty.info(context, getString(R.string.all_caught_up), Toast.LENGTH_SHORT).show();
-                //return;
-            }
+                        Toasty.info(context, getString(R.string.all_caught_up), Toast.LENGTH_SHORT).show();
+                        //return;
+                    }
+                }catch (NullPointerException e){
+                e.printStackTrace();
+                }
         }
     }
 

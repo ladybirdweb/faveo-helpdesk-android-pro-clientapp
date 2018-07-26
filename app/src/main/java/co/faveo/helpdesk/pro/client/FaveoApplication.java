@@ -6,8 +6,11 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.ndk.CrashlyticsNdk;
 import com.pixplicity.easyprefs.library.Prefs;
 
+import io.fabric.sdk.android.Fabric;
 import java.io.File;
 
 
@@ -35,6 +38,7 @@ public class FaveoApplication extends MultiDexApplication {
                 new IntentFilter(
                         ConnectivityManager.CONNECTIVITY_ACTION));
         super.onCreate();
+        Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
         MultiDex.install(this);
 
 //        StringBuilder stringBuilder = new StringBuilder();

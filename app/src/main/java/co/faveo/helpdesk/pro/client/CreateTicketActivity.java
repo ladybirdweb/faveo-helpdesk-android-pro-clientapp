@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -37,6 +38,7 @@ import android.widget.Toast;
 
 import com.flipboard.bottomsheet.BottomSheetLayout;
 import com.flipboard.bottomsheet.commons.MenuSheetView;
+import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.kishan.askpermission.AskPermission;
 import com.kishan.askpermission.ErrorCallback;
 import com.kishan.askpermission.PermissionCallback;
@@ -228,79 +230,65 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(CreateTicketActivity.this);
 
-                // Setting Dialog Title
-                // Setting Dialog Message
-                alertDialog.setMessage(getString(R.string.refreshPage));
-
-                // Setting Icon to Dialog
-                alertDialog.setIcon(R.mipmap.ic_launcher);
-
-                // Setting Positive "Yes" Button
-                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Write your code here to invoke YES event
-                        //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
-                        if (InternetReceiver.isConnected()){
-
-                            refresh.startAnimation(rotation);
+                new BottomDialog.Builder(CreateTicketActivity.this)
+                        .setContent(getString(R.string.refreshPage))
+                        .setTitle(R.string.refreshing)
+                        .setPositiveText("YeS")
+                        .setNegativeText("No")
+                        .setPositiveBackgroundColorResource(R.color.white)
+                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                        .setPositiveTextColorResource(R.color.faveo)
+                        .setNegativeTextColor(R.color.black)
+                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                        .onPositive(new BottomDialog.ButtonCallback() {
+                            @Override
+                            public void onClick(BottomDialog dialog) {
+                                refresh.startAnimation(rotation);
 //                            progressDialog=new ProgressDialog(CreateTicketActivity.this);
 //                            progressDialog.setMessage(getString(R.string.refreshing));
 //                            progressDialog.show();
-                            new FetchDependency().execute();
-                            setUpViews();
-                        }
+                                new FetchDependency().execute();
+                                setUpViews();
+                            }
+                        }).onNegative(new BottomDialog.ButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull BottomDialog bottomDialog) {
+                        bottomDialog.dismiss();
                     }
-                });
-
-                // Setting Negative "NO" Button
-                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Write your code here to invoke NO event
-                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-                        dialog.cancel();
-                    }
-                });
-
-                // Showing Alert Message
-                alertDialog.show();
+                })
+                        .show();
             }
         });
         imageViewBack= (ImageView) findViewById(R.id.imageViewBack);
         imageViewBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 if (!msgedittext.getText().toString().equals("")||!subedittext.getText().toString().equals("")){
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(CreateTicketActivity.this);
-
-                    // Setting Dialog Message
-                    alertDialog.setMessage(R.string.discard);
-
-                    // Setting Icon to Dialog
-                    alertDialog.setIcon(R.mipmap.ic_launcher);
-
-                    // Setting Positive "Yes" Button
-
-                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Write your code here to invoke YES event
-                            //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
-                            finish();
+                    new BottomDialog.Builder(CreateTicketActivity.this)
+                            .setContent(getString(R.string.discard))
+                            .setTitle("Are you sure")
+                            .setPositiveText("YES")
+                            .setNegativeText("NO")
+                            .setPositiveBackgroundColorResource(R.color.white)
+                            //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                            .setPositiveTextColorResource(R.color.faveo)
+                            .setNegativeTextColor(R.color.black)
+                            //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                            .onPositive(new BottomDialog.ButtonCallback() {
+                                @Override
+                                public void onClick(BottomDialog dialog) {
+                                    finish();
+                                }
+                            }).onNegative(new BottomDialog.ButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull BottomDialog bottomDialog) {
+                            bottomDialog.dismiss();
                         }
-                    });
-
-                    // Setting Negative "NO" Button
-                    alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Write your code here to invoke NO event
-                            //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-                            dialog.cancel();
-                        }
-                    });
-
-                    // Showing Alert Message
-                    alertDialog.show();
+                    })
+                            .show();
                 }
                 else{
                     finish();
@@ -365,106 +353,95 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                                 subject = URLEncoder.encode(subject.trim(), "utf-8");
                                 message = URLEncoder.encode(message.trim(), "utf-8");
                                 finalEmail = URLEncoder.encode(finalEmail.trim(), "utf-8");
-                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(CreateTicketActivity.this);
-
-                                // Setting Dialog Message
-                                alertDialog.setMessage(getString(R.string.createConfirmation));
-
-                                // Setting Icon to Dialog
-                                alertDialog.setIcon(R.mipmap.ic_launcher);
-
-                                // Setting Positive "Yes" Button
                                 final String finalSubject = subject;
                                 final String finalMessage = message;
                                 final String finalName1 = finalName;
                                 final String finalEmail1 = finalEmail;
-                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // Write your code here to invoke YES event
-                                        //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
-                                        if (InternetReceiver.isConnected()) {
-                                            progressDialog = new ProgressDialog(CreateTicketActivity.this);
-                                            progressDialog.setMessage("Please wait");
-                                            progressDialog.show();
-                                            new CreateNewTicket(finalSubject, finalMessage, helpTopic.ID, priority.ID, finalName1, finalEmail1).execute();
-                                        }
+                                new BottomDialog.Builder(CreateTicketActivity.this)
+                                        .setContent(getString(R.string.createConfirmation))
+                                        .setPositiveText("Yes")
+                                        .setNegativeText("No")
+                                        .setPositiveBackgroundColorResource(R.color.white)
+                                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                                        .setPositiveTextColorResource(R.color.faveo)
+                                        .setNegativeTextColor(R.color.black)
+                                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                                        .onPositive(new BottomDialog.ButtonCallback() {
+                                            @Override
+                                            public void onClick(BottomDialog dialog) {
+                                                progressDialog = new ProgressDialog(CreateTicketActivity.this);
+                                                progressDialog.setMessage("Please wait");
+                                                progressDialog.show();
+                                                new CreateNewTicket(finalSubject, finalMessage, helpTopic.ID, priority.ID, finalName1, finalEmail1).execute();
+                                            }
+                                        }).onNegative(new BottomDialog.ButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull BottomDialog bottomDialog) {
+                                        bottomDialog.dismiss();
                                     }
-                                });
-
-                                // Setting Negative "NO" Button
-                                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // Write your code here to invoke NO event
-                                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-                                        dialog.cancel();
-                                    }
-                                });
-
-                                // Showing Alert Message
-                                alertDialog.show();
+                                })
+                                        .show();
 
                             } catch (UnsupportedEncodingException e) {
                                 e.printStackTrace();
                             }
                         }else{
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(CreateTicketActivity.this);
-
-                            // Setting Dialog Message
-                            alertDialog.setMessage(getString(R.string.createConfirmation));
-
-
-                            // Setting Icon to Dialog
-                            alertDialog.setIcon(R.mipmap.ic_launcher);
-
-                            // Setting Positive "Yes" Button
                             final String finalSubject1 = subject;
                             final String finalMessage1 = message;
                             final String finalName2 = finalName;
                             final String finalEmail2 = finalEmail;
-                            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // Write your code here to invoke YES event
-                                    //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
-                                    if (InternetReceiver.isConnected()) {
-                                        progressDialog = new ProgressDialog(CreateTicketActivity.this);
-                                        progressDialog.setMessage(getString(R.string.creating_ticket));
-                                        progressDialog.show();
-                                        try {
-                                            token = Prefs.getString("TOKEN", null);
-                                            String uploadId = UUID.randomUUID().toString();
-                                            new MultipartUploadRequest(CreateTicketActivity.this, uploadId, Constants.URL + "helpdesk/create/satellite/ticket?token=" + token)
-                                                    .addFileToUpload(path, "media_attachment[]")
-                                                    //Adding file
-                                                    .addParameter("subject", finalSubject1)
-                                                    .addParameter("body", finalMessage1)
-                                                    .addParameter("help_topic", "" + helpTopic.ID)
-                                                    .addParameter("priority", "" + priority.ID)
-                                                    .addParameter("first_name", finalName2)
-                                                    .addParameter("email", finalEmail2)
-                                                    //.addParameter("cc[]", String.valueOf(Arrays.asList("sayar@gmail.com","demoadmin@gmail.com")))
-                                                    //Adding text parameter to the request
-                                                    //.setNotificationConfig(new UploadNotificationConfig())
-                                                    .setMaxRetries(1)
-                                                    .setMethod("POST").setDelegate(new UploadStatusDelegate() {
-                                                @Override
-                                                public void onProgress(UploadInfo uploadInfo) {
+                            new BottomDialog.Builder(CreateTicketActivity.this)
+                                    .setContent(getString(R.string.createConfirmation))
+                                    .setPositiveText("Yes")
+                                    .setNegativeText("No")
+                                    .setPositiveBackgroundColorResource(R.color.white)
+                                    //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                                    .setPositiveTextColorResource(R.color.faveo)
+                                    .setNegativeTextColor(R.color.black)
+                                    //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                                    .onPositive(new BottomDialog.ButtonCallback() {
+                                        @Override
+                                        public void onClick(BottomDialog dialog) {
+                                            if (InternetReceiver.isConnected()) {
+                                                progressDialog = new ProgressDialog(CreateTicketActivity.this);
+                                                progressDialog.setMessage(getString(R.string.creating_ticket));
+                                                progressDialog.show();
+                                                try {
+                                                    token = Prefs.getString("TOKEN", null);
+                                                    String uploadId = UUID.randomUUID().toString();
+                                                    new MultipartUploadRequest(CreateTicketActivity.this, uploadId, Constants.URL + "helpdesk/create/satellite/ticket?token=" + token)
+                                                            .addFileToUpload(path, "media_attachment[]")
+                                                            //Adding file
+                                                            .addParameter("subject", finalSubject1)
+                                                            .addParameter("body", finalMessage1)
+                                                            .addParameter("help_topic", "" + helpTopic.ID)
+                                                            .addParameter("priority", "" + priority.ID)
+                                                            .addParameter("first_name", finalName2)
+                                                            .addParameter("email", finalEmail2)
+                                                            //.addParameter("cc[]", String.valueOf(Arrays.asList("sayar@gmail.com","demoadmin@gmail.com")))
+                                                            //Adding text parameter to the request
+                                                            //.setNotificationConfig(new UploadNotificationConfig())
+                                                            .setMaxRetries(1)
+                                                            .setMethod("POST").setDelegate(new UploadStatusDelegate() {
+                                                        @Override
+                                                        public void onProgress(UploadInfo uploadInfo) {
 
-                                                }
+                                                        }
 
-                                                @Override
-                                                public void onError(UploadInfo uploadInfo, Exception exception) {
+                                                        @Override
+                                                        public void onError(UploadInfo uploadInfo, Exception exception) {
 
-                                                }
+                                                        }
 
-                                                @Override
-                                                public void onCompleted(UploadInfo uploadInfo, ServerResponse serverResponse) {
-                                                    progressDialog.dismiss();
-                                                    Log.d("newStyle", serverResponse.getBodyAsString());
-                                                    Log.i("newStyle", String.format(Locale.getDefault(),
-                                                            "ID %1$s: completed in %2$ds at %3$.2f Kbit/s. Response code: %4$d, body:[%5$s]",
-                                                            uploadInfo.getUploadId(), uploadInfo.getElapsedTime() / 1000,
-                                                            uploadInfo.getUploadRate(), serverResponse.getHttpCode(),
-                                                            serverResponse.getBodyAsString()));
+                                                        @Override
+                                                        public void onCompleted(UploadInfo uploadInfo, ServerResponse serverResponse) {
+                                                            progressDialog.dismiss();
+                                                            Log.d("newStyle", serverResponse.getBodyAsString());
+                                                            Log.i("newStyle", String.format(Locale.getDefault(),
+                                                                    "ID %1$s: completed in %2$ds at %3$.2f Kbit/s. Response code: %4$d, body:[%5$s]",
+                                                                    uploadInfo.getUploadId(), uploadInfo.getElapsedTime() / 1000,
+                                                                    uploadInfo.getUploadRate(), serverResponse.getHttpCode(),
+                                                                    serverResponse.getBodyAsString()));
 //                                    if (serverResponse.getBodyAsString().contains("Ticket created successfully!")) {
 //                                        Toasty.success(CreateTicketActivity.this, getString(R.string.ticket_created_success), Toast.LENGTH_LONG).show();
 //                                        finish();
@@ -475,64 +452,93 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
 //
 //                                    }
 
-                                                    if (serverResponse.getBodyAsString().contains("Permission denied")){
-                                                        Toasty.warning(CreateTicketActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
-                                                        return;
-                                                    }
+                                                            if (serverResponse.getBodyAsString().contains("Permission denied")){
+                                                                Toasty.warning(CreateTicketActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
+                                                                return;
+                                                            }
 
-                                                    try {
-                                                        JSONObject jsonObject = new JSONObject(serverResponse.getBodyAsString());
-                                                        //JSONObject jsonObject1 = jsonObject.getJSONObject("response");
-                                                        String message = jsonObject.getString("message");
-                                                        if (message.equals("Ticket created successfully!")) {
-                                                            Intent intent = new Intent(CreateTicketActivity.this, MainActivity.class);
-                                                            startActivity(intent);
-                                                        }
-                                                    } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                    }
+                                                            try {
+                                                                JSONObject jsonObject = new JSONObject(serverResponse.getBodyAsString());
+                                                                //JSONObject jsonObject1 = jsonObject.getJSONObject("response");
+                                                                String message = jsonObject.getString("message");
+                                                                if (message.equals("Ticket created successfully!")) {
+                                                                    Intent intent = new Intent(CreateTicketActivity.this, MainActivity.class);
+                                                                    startActivity(intent);
+                                                                }
+                                                            } catch (JSONException e) {
+                                                                e.printStackTrace();
+                                                            }
 
-                                                    String state = Prefs.getString("403", null);
-                                                    try {
-                                                        if (state.equals("403") && !state.equals("null")) {
-                                                            Toasty.warning(CreateTicketActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
-                                                            Prefs.putString("403", "null");
-                                                            return;
-                                                        }
-                                                    } catch (NullPointerException e) {
-                                                        e.printStackTrace();
-                                                    }
+                                                            String state = Prefs.getString("403", null);
+                                                            try {
+                                                                if (state.equals("403") && !state.equals("null")) {
+                                                                    Toasty.warning(CreateTicketActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
+                                                                    Prefs.putString("403", "null");
+                                                                    return;
+                                                                }
+                                                            } catch (NullPointerException e) {
+                                                                e.printStackTrace();
+                                                            }
 
 
 //                            Intent intent=new Intent(CreateTicketActivity.this,MainActivity.class);
 //                            startActivity(intent);
 
-                                                }
+                                                        }
 
-                                                @Override
-                                                public void onCancelled(UploadInfo uploadInfo) {
+                                                        @Override
+                                                        public void onCancelled(UploadInfo uploadInfo) {
 
+                                                        }
+                                                    })
+                                                            .startUpload(); //Starting the upload
+                                                } catch (MalformedURLException | NullPointerException | IllegalArgumentException | FileNotFoundException e) {
+                                                    e.printStackTrace();
                                                 }
-                                            })
-                                                    .startUpload(); //Starting the upload
-                                        } catch (MalformedURLException | NullPointerException | IllegalArgumentException | FileNotFoundException e) {
-                                            e.printStackTrace();
+                                            }
+
                                         }
-                                    }
+                                    }).onNegative(new BottomDialog.ButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull BottomDialog bottomDialog) {
+                                    bottomDialog.dismiss();
                                 }
-                            });
+                            })
+                                    .show();
 
-                            // Setting Negative "NO" Button
-                            alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // Write your code here to invoke NO event
-                                    //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-                                    dialog.cancel();
-                                }
-                            });
-
-                            // Showing Alert Message
-                            alertDialog.show();
+//                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(CreateTicketActivity.this);
+//
+//                            // Setting Dialog Message
+//                            alertDialog.setMessage(getString(R.string.createConfirmation));
+//
+//
+//                            // Setting Icon to Dialog
+//                            alertDialog.setIcon(R.mipmap.ic_launcher);
+//
+//                            // Setting Positive "Yes" Button
+//                            final String finalSubject1 = subject;
+//                            final String finalMessage1 = message;
+//                            final String finalName2 = finalName;
+//                            final String finalEmail2 = finalEmail;
+//                            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    // Write your code here to invoke YES event
+//                                    //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
+//
+//                                }
+//                            });
+//
+//                            // Setting Negative "NO" Button
+//                            alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    // Write your code here to invoke NO event
+//                                    //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+//                                    dialog.cancel();
+//                                }
+//                            });
+//
+//                            // Showing Alert Message
+//                            alertDialog.show();
                         }
                     }
                 }
@@ -631,9 +637,8 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                 startActivity(new Intent(CreateTicketActivity.this, MainActivity.class));
 
             }
-
-
         }
+
 
 
     }
@@ -1272,35 +1277,28 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
     @Override
     public void onBackPressed() {
         if (!msgedittext.getText().toString().equals("")||!subedittext.getText().toString().equals("")){
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(CreateTicketActivity.this);
-
-            // Setting Dialog Message
-            alertDialog.setMessage(R.string.discard);
-
-            // Setting Icon to Dialog
-            alertDialog.setIcon(R.mipmap.ic_launcher);
-
-            // Setting Positive "Yes" Button
-
-            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // Write your code here to invoke YES event
-                    //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
-                    finish();
+            new BottomDialog.Builder(CreateTicketActivity.this)
+                    .setContent(getString(R.string.discard))
+                    .setTitle("Are you sure")
+                    .setPositiveText("YES")
+                    .setNegativeText("NO")
+                    .setPositiveBackgroundColorResource(R.color.white)
+                    //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                    .setPositiveTextColorResource(R.color.faveo)
+                    .setNegativeTextColor(R.color.black)
+                    //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                    .onPositive(new BottomDialog.ButtonCallback() {
+                        @Override
+                        public void onClick(BottomDialog dialog) {
+                            finish();
+                        }
+                    }).onNegative(new BottomDialog.ButtonCallback() {
+                @Override
+                public void onClick(@NonNull BottomDialog bottomDialog) {
+                    bottomDialog.dismiss();
                 }
-            });
-
-            // Setting Negative "NO" Button
-            alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    // Write your code here to invoke NO event
-                    //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-                    dialog.cancel();
-                }
-            });
-
-            // Showing Alert Message
-            alertDialog.show();
+            })
+                    .show();
         }
         else{
             finish();

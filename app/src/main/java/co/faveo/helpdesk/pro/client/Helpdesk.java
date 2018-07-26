@@ -153,7 +153,7 @@ public class Helpdesk {
         return result;
     }
 
-    public String postReplyTicket(int ticketID, String replyContent) {
+    public String postReplyTicket(String ticketID, String replyContent) {
         Log.d("ReplyTicketAPI", Constants.URL + "helpdesk/reply/withdetails?" +
                 "api_key=" + apiKey +
                 "&ip=" + IP +
@@ -442,6 +442,15 @@ public class Helpdesk {
         String result=new HTTPConnection().HTTPResponseGet(Constants.URL + "helpdesk/user/ticket/list?token=" + token);
         if (result!=null&&result.equals("tokenRefreshed"))
             return new HTTPConnection().HTTPResponseGet(Constants.URL + "helpdesk/user/ticket/list?token=" + token);
+//        Log.d("URL",result);
+        return result;
+    }
+
+    public String getTicketsByAgentWithStatus(String status) {
+        Log.d("MYticketAPI",Constants.URL + "helpdesk/user/ticket/list?token=" + token+"&status="+status);
+        String result=new HTTPConnection().HTTPResponseGet(Constants.URL + "helpdesk/user/ticket/list?token=" + token+"&status="+status);
+        if (result!=null&&result.equals("tokenRefreshed"))
+            return new HTTPConnection().HTTPResponseGet(Constants.URL + "helpdesk/user/ticket/list?token=" + token+"&status="+status);
 //        Log.d("URL",result);
         return result;
     }

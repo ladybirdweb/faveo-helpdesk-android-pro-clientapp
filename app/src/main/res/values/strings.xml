@@ -12,7 +12,7 @@
     <string name="drawer_close" translatable="false">Close</string>
     <string name="sry_not_connected_to_internet">Sorry! Not connected to internet.</string>
     <string name="connected_to_internet">Connected to Internet</string>
-    <string name="confirmLogOut">Confirm log out?</string>
+    <string name="confirmLogOut">Logging out</string>
     <string name="aaaa_0001_0000001" translatable="false">#AAAA–0001–0000001</string>
     <string name="dummy_name" translatable="false">Client Name</string>
     <string name="dummy_date" translatable="false">6th Dec 2016</string>
@@ -145,4 +145,7 @@
     <string name="cancel">cancel</string>
     <string name="discard">discard changes?</string>
     <string name="action_search">Search</string>
+    <string name="refreshing">Refreshing the page</string>
+    <string name="change_password_text">Are you sure you want to change your password?</string>
+    <string name="intro">Enough intro,let\'s explore the app...</string>
 </resources>

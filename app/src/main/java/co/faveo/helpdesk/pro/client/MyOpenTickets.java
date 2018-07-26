@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -30,15 +31,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
+import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import org.json.JSONArray;
@@ -50,6 +52,7 @@ import java.util.Collections;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
+import io.github.yavski.fabspeeddial.FabSpeedDial;
 
 
 /**
@@ -75,6 +78,8 @@ public class MyOpenTickets extends Fragment {
     private SearchView searchView;
     TicketOverviewAdapter ticketOverviewAdapter;
     private android.support.v7.view.ActionMode mActionMode;
+    FabSpeedDial fabSpeedDial;
+    // This string will hold the results
     List<TicketOverview> ticketOverviewList = new ArrayList<>();
     public MyOpenTickets() {
         // Required empty public constructor
@@ -131,13 +136,15 @@ public class MyOpenTickets extends Fragment {
             recyclerView= (ShimmerRecyclerView) rootView.findViewById(R.id.cardList);
             empty_view= (TextView) rootView.findViewById(R.id.empty_view);
             textView= (TextView) rootView.findViewById(R.id.totalcount);
+            fabSpeedDial= (FabSpeedDial) getActivity().findViewById(R.id.fab_main);
+            fabSpeedDial.setVisibility(View.VISIBLE);
             Prefs.putString("cameFromSetting", "true");
             swipeRefreshLayout.setColorSchemeResources(R.color.faveo_blue);
             if (InternetReceiver.isConnected()) {
                 noInternet_view.setVisibility(View.GONE);
                 // swipeRefresh.setRefreshing(true);
                 swipeRefreshLayout.setRefreshing(true);
-                new FetchFirst(getActivity()).execute();
+                new FetchFirst(getActivity(),"open").execute();
             } else {
                 noInternet_view.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.INVISIBLE);
@@ -158,7 +165,12 @@ public class MyOpenTickets extends Fragment {
 //                        } catch (NullPointerException e) {
 //                            e.printStackTrace();
 //                        }
-                        new FetchFirst(getActivity()).execute();
+                        View view = getActivity().getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
+                        new FetchFirst(getActivity(),"open").execute();
                     } else {
                         recyclerView.setVisibility(View.INVISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
@@ -168,8 +180,34 @@ public class MyOpenTickets extends Fragment {
                 }
             });
 
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
+            {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+                {
+                    if (dy > 0 ||dy<0 && fabSpeedDial.isShown())
+                    {
+                        fabSpeedDial.hide();
+                    }
+                }
+
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState)
+                {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                    {
+                        fabSpeedDial.show();
+                    }
+
+                    super.onScrollStateChanged(recyclerView, newState);
+                }
+            });
+
+
+
 
         }
+
         ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.mytickets));
         return rootView;
     }
@@ -211,9 +249,6 @@ public class MyOpenTickets extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-
     public void setNullToActionMode() {
         Log.d("Inbox Ticket", "Came from toolbar action mode");
         if (mActionMode != null)
@@ -225,16 +260,18 @@ public class MyOpenTickets extends Fragment {
      */
     private class FetchFirst extends AsyncTask<String, Void, String> {
         Context context;
-
-        FetchFirst(Context context) {
+        String status;
+        FetchFirst(Context context,String status) {
             this.context = context;
+            this.status=status;
         }
 
         protected String doInBackground(String... urls) {
 //            if (nextPageURL.equals("null")) {
 //                return "all done";
 //            }
-            String result = new Helpdesk().getTicketsByAgent();
+            String result = new Helpdesk().getTicketsByAgentWithStatus("open");
+
             if (result == null)
                 return null;
             String data;
@@ -242,22 +279,18 @@ public class MyOpenTickets extends Fragment {
             try {
                 JSONObject jsonObject = new JSONObject(result);
                 JSONObject jsonObject1=jsonObject.getJSONObject("data");
-                //total = jsonObject1.getInt("total");
-//                try {
-//                    data = jsonObject1.getString("data");
-//                } catch (JSONException e) {
-//                    data = jsonObject.getString("result");
-//                }
                 JSONArray jsonArray = jsonObject1.getJSONArray("ticket");
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject2=jsonArray.getJSONObject(i);
-                    String status=jsonObject2.getString("status_name");
-                    if (status.equals("Open")){
-                        count++;
-                        TicketOverview ticketOverview = Helper.parseTicketOverview(jsonArray, i);
-                        if (ticketOverview != null)
-                            ticketOverviewList.add(ticketOverview);
-                    }
+                    count++;
+                    TicketOverview ticketOverview = Helper.parseTicketOverview(jsonArray, i);
+                    if (ticketOverview != null)
+                        ticketOverviewList.add(ticketOverview);
+//                    JSONObject jsonObject2=jsonArray.getJSONObject(i);
+//                    String status=jsonObject2.getString("status_name");
+//                    if (status.equals("Open")){
+//                        count++;
+//
+//                    }
 
                 }
             } catch (JSONException e) {
@@ -295,6 +328,7 @@ public class MyOpenTickets extends Fragment {
             //recyclerView = (ShimmerRecyclerView) rootView.findViewById(R.id.cardList);
             //Collections.reverse(ticketOverviewList);
             recyclerView.setHasFixedSize(false);
+            Collections.reverse(ticketOverviewList);
             final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(linearLayoutManager);
@@ -322,7 +356,7 @@ public class MyOpenTickets extends Fragment {
     private void runLayoutAnimation(final RecyclerView recyclerView) {
         final Context context = recyclerView.getContext();
         final LayoutAnimationController controller =
-                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_from_right);
+                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_from_bottom);
 
         recyclerView.setLayoutAnimation(controller);
         ticketOverviewAdapter.notifyDataSetChanged();
@@ -514,6 +548,7 @@ public class MyOpenTickets extends Fragment {
                         Intent intent = new Intent(v.getContext(), TicketDetailActivity.class);
                         intent.putExtra("ticket_id", ticketOverview.ticketID + "");
                         Prefs.putString("TICKETid", ticketOverview.ticketID + "");
+                        Log.d("ticketId",ticketOverview.ticketID+"");
                         Prefs.putString("ticketstatus", ticketOverview.getTicketStatus());
                         intent.putExtra("ticket_number", ticketOverview.ticketNumber);
                         intent.putExtra("ticket_opened_by", ticketOverview.clientName);
@@ -800,39 +835,68 @@ public class MyOpenTickets extends Fragment {
                             int pos2 = stringBuffer.toString().lastIndexOf(",");
                             ticket = stringBuffer.toString().substring(0, pos2);
                             Log.d("tickets", ticket);
-                            try {
-                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-                                // Setting Dialog Message
-                                alertDialog.setMessage(getString(R.string.statusConfirmation));
+                            try
+                            {
 
-                                // Setting Icon to Dialog
-                                alertDialog.setIcon(R.mipmap.ic_launcher);
-
-                                // Setting Positive "Yes" Button
-                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // Write your code here to invoke YES event
-                                        //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
-                                        progressDialog.show();
-                                        progressDialog.setMessage(getString(R.string.pleasewait));
-                                        new StatusChange(ticket, Integer.parseInt(Prefs.getString("closedid", null))).execute();
-                                        Prefs.putString("tickets", null);
-
-
+                                new BottomDialog.Builder(getActivity())
+                                        .setContent(getString(R.string.statusConfirmation))
+                                        .setTitle("Changing status")
+                                        .setPositiveText("YES")
+                                        .setNegativeText("NO")
+                                        .setPositiveBackgroundColorResource(R.color.white)
+                                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                                        .setPositiveTextColorResource(R.color.faveo)
+                                        .setNegativeTextColor(R.color.black)
+                                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                                        .onPositive(new BottomDialog.ButtonCallback() {
+                                            @Override
+                                            public void onClick(BottomDialog dialog) {
+                                                progressDialog.show();
+                                                progressDialog.setMessage(getString(R.string.pleasewait));
+                                                new StatusChange(ticket, Integer.parseInt(Prefs.getString("closedid", null))).execute();
+                                                Prefs.putString("tickets", null);
+                                            }
+                                        }).onNegative(new BottomDialog.ButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull BottomDialog bottomDialog) {
+                                        bottomDialog.dismiss();
                                     }
-                                });
+                                })
+                                        .show();
 
-                                // Setting Negative "NO" Button
-                                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // Write your code here to invoke NO event
-                                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-                                        dialog.cancel();
-                                    }
-                                });
 
-                                // Showing Alert Message
-                                alertDialog.show();
+//                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+//                                // Setting Dialog Message
+//                                alertDialog.setMessage(getString(R.string.statusConfirmation));
+//
+//                                // Setting Icon to Dialog
+//                                alertDialog.setIcon(R.mipmap.ic_launcher);
+//
+//                                // Setting Positive "Yes" Button
+//                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        // Write your code here to invoke YES event
+//                                        //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
+//                                        progressDialog.show();
+//                                        progressDialog.setMessage(getString(R.string.pleasewait));
+//                                        new StatusChange(ticket, Integer.parseInt(Prefs.getString("closedid", null))).execute();
+//                                        Prefs.putString("tickets", null);
+//
+//
+//                                    }
+//                                });
+//
+//                                // Setting Negative "NO" Button
+//                                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog, int which) {
+//                                        // Write your code here to invoke NO event
+//                                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+//                                        dialog.cancel();
+//                                    }
+//                                });
+//
+//                                // Showing Alert Message
+//                                alertDialog.show();
 
                             } catch (NumberFormatException e) {
                                 e.printStackTrace();

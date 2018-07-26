@@ -65,7 +65,20 @@
 
 
         <include layout="@layout/content_main" />
-
+        <io.github.yavski.fabspeeddial.FabSpeedDial
+            android:id="@+id/fab_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            app:fabGravity="bottom_end"
+            app:fabMenu="@menu/main_fab"
+            app:touchGuardDrawable="#7FFFFFFF"
+            app:miniFabBackgroundTint="@color/faveo"
+            app:miniFabDrawableTint="@color/white"
+            app:itemTextAppearance="@style/MenuItems"
+            app:miniFabTitleBackgroundTint="@color/faveo"
+            app:miniFabTitleTextColor="@color/white"
+            />
 
     </android.support.design.widget.CoordinatorLayout>
 

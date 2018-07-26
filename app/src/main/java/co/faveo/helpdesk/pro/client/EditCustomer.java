@@ -37,6 +37,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.pixplicity.easyprefs.library.Prefs;
 import com.viethoa.DialogUtils;
 
@@ -44,6 +45,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import es.dmoral.toasty.Toasty;
+import io.github.yavski.fabspeeddial.FabSpeedDial;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
@@ -62,6 +64,7 @@ public class EditCustomer extends Fragment {
     String userName="",firstName="",lastName="";
     Button buttonPassword;
     Animation animation;
+    FabSpeedDial fabSpeedDial;
     private OnFragmentInteractionListener mListener;
     public EditCustomer() {
         // Required empty public constructor
@@ -105,6 +108,8 @@ public class EditCustomer extends Fragment {
             editTextfirstname= (EditText) rootView.findViewById(R.id.firstname);
             editTextlastname= (EditText) rootView.findViewById(R.id.lastname);
             editTextemail= (EditText) rootView.findViewById(R.id.email);
+            fabSpeedDial= (FabSpeedDial) getActivity().findViewById(R.id.fab_main);
+            fabSpeedDial.setVisibility(View.GONE);
             editTextemail.setEnabled(false);
             progressDialog=new ProgressDialog(getActivity());
             if (InternetReceiver.isConnected()){
@@ -151,36 +156,65 @@ DialogCustomView();
                 return true;
             }
             else {
+
+
                 if (InternetReceiver.isConnected()) {
+
                     final String finalFirstName=editTextfirstname.getText().toString();
                     final String finalLastName=editTextlastname.getText().toString();
                     final String finalUserName=editTextusername.getText().toString();
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-                    // Setting Dialog Message
-                    alertDialog.setMessage(getString(R.string.confirmEdit));
-                    // Setting Icon to Dialog
-                    alertDialog.setIcon(R.mipmap.ic_launcher);
-                    // Setting Positive "Yes" Button
-                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                        @SuppressLint("MissingPermission")
-                        public void onClick(DialogInterface dialog, int which) {
-                            progressDialog.setMessage(getString(R.string.pleasewait));
-                            progressDialog.show();
-                            // Write your code here to invoke YES event
-                            new EditClient(getActivity(),finalFirstName,finalLastName,finalUserName).execute();
-                        }
-                    });
-                    // Setting Negative "NO" Button
-                    alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Write your code here to invoke NO event
-                            //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-                            dialog.cancel();
-                        }
-                    });
 
-                    // Showing Alert Message
-                    alertDialog.show();
+                    new BottomDialog.Builder(getActivity())
+                            .setContent(getString(R.string.confirmEdit))
+                            .setTitle("Editing profile")
+                            .setPositiveText("YES")
+                            .setNegativeText("NO")
+                            .setPositiveBackgroundColorResource(R.color.white)
+                            //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                            .setPositiveTextColorResource(R.color.faveo)
+                            .setNegativeTextColor(R.color.black)
+                            //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                            .onPositive(new BottomDialog.ButtonCallback() {
+                                @Override
+                                public void onClick(BottomDialog dialog) {
+                                    progressDialog.setMessage(getString(R.string.pleasewait));
+                                    progressDialog.show();
+                                    // Write your code here to invoke YES event
+                                    new EditClient(getActivity(),finalFirstName,finalLastName,finalUserName).execute();
+                                }
+                            }).onNegative(new BottomDialog.ButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull BottomDialog bottomDialog) {
+                            bottomDialog.dismiss();
+                        }
+                    })
+                            .show();
+//                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+//                    // Setting Dialog Message
+//                    alertDialog.setMessage(getString(R.string.confirmEdit));
+//                    // Setting Icon to Dialog
+//                    alertDialog.setIcon(R.mipmap.ic_launcher);
+//                    // Setting Positive "Yes" Button
+//                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+//                        @SuppressLint("MissingPermission")
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            progressDialog.setMessage(getString(R.string.pleasewait));
+//                            progressDialog.show();
+//                            // Write your code here to invoke YES event
+//                            new EditClient(getActivity(),finalFirstName,finalLastName,finalUserName).execute();
+//                        }
+//                    });
+//                    // Setting Negative "NO" Button
+//                    alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            // Write your code here to invoke NO event
+//                            //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
+//                            dialog.cancel();
+//                        }
+//                    });
+//
+//                    // Showing Alert Message
+//                    alertDialog.show();
 
 
                 }
@@ -298,10 +332,32 @@ DialogCustomView();
                                     final String finalOldPass = appCompatEditTextold.getText().toString().trim();
                                     final String finalNewPass = appCompatEditTextnew.getText().toString().trim();
                                     final String finalConfirmPass = appCompatEditTextconfirm.getText().toString().trim();
-                                    progressDialog.setMessage(getString(R.string.pleasewait));
-                                        progressDialog.show();
-                                        // Write your code here to invoke YES event
-                                       new PasswordChange(getActivity(),finalOldPass,finalNewPass,finalConfirmPass).execute();
+                                    new BottomDialog.Builder(getActivity())
+                                            .setContent(R.string.change_password_text)
+                                            .setTitle("Changing password")
+                                            .setPositiveText("YES")
+                                            .setNegativeText("NO")
+                                            .setPositiveBackgroundColorResource(R.color.white)
+                                            //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                                            .setPositiveTextColorResource(R.color.faveo)
+                                            .setNegativeTextColor(R.color.black)
+                                            //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                                            .onPositive(new BottomDialog.ButtonCallback() {
+                                                @Override
+                                                public void onClick(BottomDialog dialog) {
+                                                    progressDialog.setMessage(getString(R.string.pleasewait));
+                                                    progressDialog.show();
+                                                    // Write your code here to invoke YES event
+                                                    new PasswordChange(getActivity(),finalOldPass,finalNewPass,finalConfirmPass).execute();
+                                                }
+                                            }).onNegative(new BottomDialog.ButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull BottomDialog bottomDialog) {
+                                            bottomDialog.dismiss();
+                                        }
+                                    })
+                                            .show();
+
                                 }
                             }
                         }
@@ -316,42 +372,6 @@ DialogCustomView();
             }
         });
         dialog.show();
-//        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-//        View promptView = layoutInflater.inflate(R.layout.bottom_sheet_layout, null);
-//
-//        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(new ContextThemeWrapper(getActivity(), R.style.MyMaterialTheme));
-//        alertDialogBuilder.setView(promptView);
-//         AppCompatEditText appCompatEditTextold,appCompatEditTextnew,appCompatEditTextconfirm;
-//         TextView textViewOld,textViewNew,textViewConfirm;
-//         TextInputLayout textInputLayoutOld,textInputLayoutNew,textInputLayoutConfirm;
-//        appCompatEditTextold= (AppCompatEditText) promptView.findViewById(R.id.inputoldpassword);
-//        appCompatEditTextnew= (AppCompatEditText) promptView.findViewById(R.id.inputnewpassword);
-//        appCompatEditTextconfirm= (AppCompatEditText) promptView.findViewById(R.id.input_password);
-//        textViewOld= (TextView) promptView.findViewById(R.id.passwordoldError);
-//        textViewNew= (TextView) promptView.findViewById(R.id.passwordErrornew);
-//        textViewConfirm= (TextView) promptView.findViewById(R.id.passwordError);
-//        textInputLayoutOld= (TextInputLayout) promptView.findViewById(R.id.input_layoutoldpassword);
-//        textInputLayoutNew= (TextInputLayout) promptView.findViewById(R.id.input_layoutnewpassword);
-//        textInputLayoutConfirm= (TextInputLayout) promptView.findViewById(R.id.input_layout_password);
-//
-//
-//        alertDialogBuilder.setCancelable(false)
-//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//
-//
-//                    }
-//                })
-//                .setNegativeButton("Cancel",
-//                        new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int id) {
-//                                dialog.cancel();
-//                            }
-//                        });
-//
-//        // create an alert dialog
-//        AlertDialog alert = alertDialogBuilder.create();
-//        alert.show();
     }
 
     private class EditClient extends AsyncTask<String, Void, String> {
