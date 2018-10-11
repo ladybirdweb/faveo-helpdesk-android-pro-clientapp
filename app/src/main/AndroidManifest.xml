@@ -23,7 +23,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
-        android:name=".FaveoApplication"
+        android:name=".application.FaveoApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
@@ -31,29 +31,32 @@
         android:supportsRtl="true"
         android:theme="@style/MyMaterialTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             >
         <intent-filter>
             <action android:name="android.intent.action.SEARCH" />
         </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
-            android:label="@string/app_name">
+            android:name=".activity.LoginActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HelpingActivity" />
-        <activity android:name=".SplashActivity" />
-        <activity android:name=".CreateTicketActivity" />
-        <activity android:name=".TicketDetailActivity"></activity>
-        <activity android:name=".ShowingAttachment"></activity>
+        <activity android:name=".activity.HelpingActivity" />
+        <activity android:name=".activity.SplashActivity" />
+        <activity android:name=".activity.CreateTicketActivity" />
+        <activity android:name=".activity.TicketDetailActivity"></activity>
+        <activity android:name=".activity.ShowingAttachment"></activity>
 
-        <activity android:name=".TicketReplyActivity"
+        <activity android:name=".activity.TicketReplyActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"></activity>

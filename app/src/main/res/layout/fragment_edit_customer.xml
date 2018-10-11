@@ -2,12 +2,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container_add"
     android:layout_width="match_parent"
     android:background="@color/colorAccent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".EditCustomer"
+    tools:context=".fragments.EditCustomer"
     >
 
     <ScrollView
@@ -20,8 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/windowBackground"
-            android:orientation="vertical"
-            android:id="@+id/scrollLinearLayout">
+            android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -40,17 +38,6 @@
                     android:text="@string/user_name"
                     android:textSize="16sp"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:text="@string/required"
-                    android:textSize="12sp" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -70,6 +57,7 @@
                     android:cursorVisible="true"
                     android:imeOptions="actionNext"
                     android:inputType="textPersonName"
+                    android:textColor="@color/black"
                     android:nextFocusForward="@+id/editText_firstname"
                     android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="16sp" />

@@ -12,10 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context=".MainActivity">
+        tools:context=".activity.MainActivity">
 
         <android.support.design.widget.AppBarLayout
-            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="4dp"
@@ -85,7 +84,7 @@
 
     <fragment
         android:id="@+id/fragment_navigation_drawer"
-        android:name="co.faveo.helpdesk.pro.client.FragmentDrawer"
+        android:name="co.faveo.helpdesk.pro.client.fragments.FragmentDrawer"
         android:layout_width="@dimen/nav_drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"

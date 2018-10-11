@@ -7,7 +7,7 @@
     android:overScrollMode="never"
     android:scrollbars="none"
     android:background="@color/colorAccent"
-    tools:context="LoginActivity">
+    tools:context=".activity.LoginActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,13 +35,13 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="LOGIN"
+                android:text="Faveo Support"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:id="@+id/view"
-                android:layout_width="wrap_content"
+                android:layout_width="142dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
@@ -50,13 +50,13 @@
                 android:orientation="horizontal">
 
                 <View
-                    android:layout_width="30dp"
+                    android:layout_width="71dp"
                     android:layout_height="2dp"
                     android:background="@color/faveo" />
 
                 <View
                     android:id="@+id/flipcolor"
-                    android:layout_width="30dp"
+                    android:layout_width="71dp"
                     android:layout_height="2dp"
                     android:layout_marginLeft="4dp"
                     android:background="@color/grey_200" />
@@ -100,7 +100,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:paddingTop="8dp"
-                tools:context=".LoginActivity"
+                tools:context=".activity.LoginActivity"
                 android:id="@+id/animationLayout">
 
                 <TextView

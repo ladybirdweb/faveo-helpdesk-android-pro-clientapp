@@ -20,26 +20,10 @@
         <item name="actionBarTheme">@style/AppThemeOverlay.ActionBar</item>
 
     </style>
-    <style name="AppThemes" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#f2f2f2</item>
-        <item name="colorPrimaryDark">#f2f2f2</item>
-        <item name="colorAccent">#f2f2f2</item>
-    </style>
+
     <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
         <item name="color">@color/theme</item>
     </style>
-
-    <style name="SwitchStyle">
-        <item name="colorControlNormal">@color/blue</item>
-        <item name="colorControlActivated">@color/blue</item>
-        <item name="colorControlHighlight">@color/blue</item>
-        <item name="colorButtonNormal">@color/blue</item>
-        <item name="colorSwitchThumbNormal">@color/blue</item>
-    </style>
-
-    <style name="MyMaterialTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="MyMaterialTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="AppThemeOverlay.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="colorControlNormal">@color/faveo</item>
@@ -53,17 +37,6 @@
     </style>
 
 
-
-    <style name="AppThemeOverlay.ActionBar.Client" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="android:colorControlNormal">@color/white</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColorSecondary">@color/white</item>
-        <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="actionModeCloseDrawable">@color/white</item>
-        <item name="actionModeCloseButtonStyle">@style/Widget.AppCompat.ActionMode</item>
-    </style>
     <style name="MenuItems" parent="AppTheme">
         <item name="android:textSize">30sp</item>
         <item name="android:fontFamily">sans-serif-light</item>
@@ -74,31 +47,6 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-    </style>
-
-    <style name="Theme.MyCompatTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:windowBackground">@color/winBackground</item>
-        <item name="android:actionBarStyle">@style/ActionBar</item>
-        <item name="actionBarStyle">@style/ActionBar</item>
-    </style>
-
-    <style name="ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@color/background</item>
-        <item name="background">@color/background</item>
-    </style>
-
-    <color name="winBackground">#98cb4a</color>
-    <color name="background">#f76d3c</color>
-
-    <style name="TextAppearance.MaterialSheetFab.Sheet.Item" parent="">
-        <item name="android:layout_width">@dimen/sheet_width</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/sheet_item_spacing</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-        <item name="android:clickable">true</item>
-        <item name="android:textSize">@dimen/sheet_item_textsize</item>
-        <item name="android:textColor">@color/text_black_87</item>
-        <item name="android:drawablePadding">@dimen/sheet_item_image_spacing</item>
     </style>
 
     <!--<style name="StyledToast">-->

@@ -4,6 +4,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import co.faveo.helpdesk.pro.client.fragments.FragmentDrawer;
+
 //import co.helpdesk.faveo.pro.frontend.adapters.DrawerItemCustomAdapter;
 
 /**

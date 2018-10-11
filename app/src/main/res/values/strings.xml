@@ -3,11 +3,9 @@
     <string name="create_ticket">Create Ticket</string>
     <string name="ticket_list">Ticket List</string>
     <string name="client_list">My Profile</string>
-    <string name="support">Support</string>
     <string name="about">About</string>
     <string name="logout">Logout</string>
     <string name="inbox">My Tickets</string>
-    <string name="closed_tickets">Closed Tickets</string>
     <string name="drawer_open" translatable="false">Open</string>
     <string name="drawer_close" translatable="false">Close</string>
     <string name="sry_not_connected_to_internet">Sorry! Not connected to internet.</string>
@@ -16,25 +14,12 @@
     <string name="aaaa_0001_0000001" translatable="false">#AAAA–0001–0000001</string>
     <string name="dummy_name" translatable="false">Client Name</string>
     <string name="dummy_date" translatable="false">6th Dec 2016</string>
-    <string name="blue_name" translatable="false">blue</string>
     <string name="confirmMessage">Are you sure you want to exit?</string>
-    <string name="title_activity_login">Sign in</string>
     <string name="website">Website</string>
     <string name="faveo_url" translatable="false">www.faveohelpdesk.com</string>
+    <string name="urlchange">Please check your helpdesk url,username and password!Some credentials may have changed.try to log in again with the new credentials.</string>
     <string name="faveo_content">Headquartered in Bangalore, Faveo Helpdesk provides Businesses with an automated Helpdesk system to manage customer support.  The word Faveo comes from Latin which means to be favourable. Which truly highlights vision and the scope as well as the functionality of the product that Faveo is. It is specifically designed to cater the needs of startups and SME’s empowering them with state of art, ticket based support system. In today’s competitive startup scenario customer retention is one of the major challenges. Handling client query diligently is all the difference between retaining or losing a long lasting relationship. The company is driven with passion of providing tools for managing consumer queries for strategic insights and helping companies take those decisive decisions.</string>
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
-    <string name="search_hint">Search hint</string>
     <string name="helpdesk_url">Helpdesk URL</string>
     <string name="need_help_with_your_servicedesk_url">Need help with your help desk URL?</string>
     <string name="pleasewait">Please wait</string>
@@ -54,10 +39,8 @@
     <string name="this_is_the_url">This is the URL where your help desk is installed.You can reach out to your IT admin to know more.</string>
     <string name="for_more_information_please_drop_a_mail_to_support_ladybirdweb_com">For more information please drop a mail to support@ladybirdweb.com</string>
     <string name="loading">loading</string>
-    <string name="retry">try again</string>
     <string name="oops_no_internet">Oops no Internet</string>
     <string name="done_loading">done loading</string>
-    <string name="forgot_password">Forgot Password</string>
     <string name="userLogIn">Sorry! agent or admin can\'t log in to the app</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="error_checking_pro">Error while checking pro edition</string>
@@ -65,7 +48,6 @@
     <string name="invalid_url">This URL is invalid</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="faveo_helpdesk">Faveo Helpdesk</string>
     <string name="version_2_0">version : 2.0</string>
     <string name="email">Email</string>
@@ -113,14 +95,10 @@
     <string name="newpassword">New password</string>
     <string name="confirmpassword">Confirm password</string>
     <string name="change_password">Change password</string>
-    <string name="update">Update</string>
-    <string name="show">show</string>
     <string name="this_field_is_required">this field is required</string>
     <string name="passwordNotMatch">password did not match</string>
     <string name="passwordmustmatch">password must be same</string>
     <string name="differentpassword">please select different password</string>
-    <string name="passwordchange">password changed successfully</string>
-    <string name="passwordconfirm">are you sure you want to change the password?</string>
     <string name="passwordchangesuccess">password has been changed successfully.To use the app you have to log in again.Select ok to continue.</string>
     <string name="subject">Subject</string>
     <string name="not_available">Not available</string>
@@ -142,10 +120,12 @@
     <string name="statusConfirmation">are you sure you want to change the status?</string>
     <string name="noticket">please selct some ticket</string>
     <string name="myclosed">My Closed Tickets</string>
-    <string name="cancel">cancel</string>
     <string name="discard">discard changes?</string>
     <string name="action_search">Search</string>
     <string name="refreshing">Refreshing the page</string>
     <string name="change_password_text">Are you sure you want to change your password?</string>
     <string name="intro">Enough intro,let\'s explore the app...</string>
+    <string name="confirmation">Confirm log out....</string>
+    <string name="sure">Are you sure?</string>
+    <string name="loggedout">Logged out successfully!</string>
 </resources>
