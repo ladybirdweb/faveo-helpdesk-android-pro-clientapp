@@ -16,4 +16,11 @@
                 android:title="Closed"
                 app:showAsAction="never"
                 android:icon="@drawable/ic_close_black_24dp"/>
+    <item
+        android:id="@+id/action_statusDeleted"
+        android:orderInCategory="100"
+        android:title="Deleted"
+        app:showAsAction="never"
+        android:icon="@drawable/ic_close_black_24dp"/>
+
     </menu>

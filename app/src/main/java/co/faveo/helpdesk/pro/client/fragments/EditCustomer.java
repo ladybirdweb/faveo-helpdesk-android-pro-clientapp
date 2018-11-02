@@ -37,6 +37,9 @@ import com.pixplicity.easyprefs.library.Prefs;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import co.faveo.helpdesk.pro.client.application.Helpdesk;
 import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
 import co.faveo.helpdesk.pro.client.R;
@@ -157,10 +160,21 @@ DialogCustomView();
 
                 if (InternetReceiver.isConnected()) {
 
-                    final String finalFirstName=editTextfirstname.getText().toString();
-                    final String finalLastName=editTextlastname.getText().toString();
-                    final String finalUserName=editTextusername.getText().toString();
+                    String finalFirstName=editTextfirstname.getText().toString();
+                    String finalLastName=editTextlastname.getText().toString();
+                    String finalUserName=editTextusername.getText().toString();
 
+                    try {
+                        finalFirstName = URLEncoder.encode(finalFirstName.trim(), "utf-8");
+                        finalLastName=URLEncoder.encode(finalLastName.trim(), "utf-8");
+                        finalUserName=URLEncoder.encode(finalUserName.trim(), "utf-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+
+                    final String finalFirstName1 = finalFirstName;
+                    final String finalLastName1 = finalLastName;
+                    final String finalUserName1 = finalUserName;
                     new BottomDialog.Builder(getActivity())
                             .setContent(getString(R.string.confirmEdit))
                             .setTitle("Editing profile")
@@ -177,7 +191,7 @@ DialogCustomView();
                                     progressDialog.setMessage(getString(R.string.pleasewait));
                                     progressDialog.show();
                                     // Write your code here to invoke YES event
-                                    new EditClient(getActivity(),finalFirstName,finalLastName,finalUserName).execute();
+                                    new EditClient(getActivity(), finalFirstName1, finalLastName1, finalUserName1).execute();
                                 }
                             }).onNegative(new BottomDialog.ButtonCallback() {
                         @Override
@@ -693,6 +707,7 @@ DialogCustomView();
                 JSONObject jsonObject = new JSONObject(result);
                 String message=jsonObject.getString("message");
                 if (message.equals("Password updated successfully")){
+                    Toasty.success(getActivity(),"password changed successfully",Toast.LENGTH_SHORT).show();
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                     // Setting Dialog Message
                     alertDialog.setCancelable(false);

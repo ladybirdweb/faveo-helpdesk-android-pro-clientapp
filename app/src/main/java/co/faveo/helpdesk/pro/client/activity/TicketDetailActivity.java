@@ -102,6 +102,9 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
                     case "Closed":
                         Prefs.putString("closedid", jsonArrayStaffs.getJSONObject(i).getString("id"));
                         break;
+                    case "Deleted":
+                        Prefs.putString("deletedId",jsonArrayStaffs.getJSONObject(i).getString("id"));
+                        break;
                 }
 
             }
@@ -261,7 +264,7 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
             if (status.equals("Open")){
                 Toasty.warning(TicketDetailActivity.this, "Ticket is already in "+status+" state", Toast.LENGTH_SHORT).show();
             }
-            else{
+            else if (item.getItemId()==R.id.action_statusClosed){
                 new BottomDialog.Builder(TicketDetailActivity.this)
                         .setContent(getString(R.string.statusConfirmation))
                         .setPositiveText("YES")
@@ -286,12 +289,39 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
                 })
                         .show();
             }
+            else{
+                //deletedId
+                new BottomDialog.Builder(TicketDetailActivity.this)
+                        .setContent(getString(R.string.statusConfirmation))
+                        .setPositiveText("YES")
+                        .setNegativeText("NO")
+                        .setPositiveBackgroundColorResource(R.color.white)
+                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                        .setPositiveTextColorResource(R.color.faveo)
+                        .setNegativeTextColor(R.color.black)
+                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                        .onPositive(new BottomDialog.ButtonCallback() {
+                            @Override
+                            public void onClick(BottomDialog dialog) {
+                                new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("deletedId",null))).execute();
+                                progressDialog.show();
+                                progressDialog.setMessage(getString(R.string.pleasewait));
+                            }
+                        }).onNegative(new BottomDialog.ButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull BottomDialog bottomDialog) {
+                        bottomDialog.dismiss();
+                    }
+                })
+                        .show();
+
+            }
         }
         else if (item.getItemId()==R.id.action_statusClosed){
             if (status.equals("Closed")){
                 Toasty.warning(TicketDetailActivity.this, "Ticket is already in "+status+" state", Toast.LENGTH_SHORT).show();
             }
-            else{
+            else if (item.getItemId()==R.id.action_statusOpen){
 
                 new BottomDialog.Builder(TicketDetailActivity.this)
                         .setContent(getString(R.string.statusConfirmation))
@@ -319,6 +349,37 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
                         .show();
 
             }
+            else{
+                //deletedId
+
+
+            }
+        }
+        else if (item.getItemId()==R.id.action_statusDeleted){
+            new BottomDialog.Builder(TicketDetailActivity.this)
+                    .setContent(getString(R.string.statusConfirmation))
+                    .setTitle("Changing status")
+                    .setPositiveText("YES")
+                    .setNegativeText("NO")
+                    .setPositiveBackgroundColorResource(R.color.white)
+                    //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                    .setPositiveTextColorResource(R.color.faveo)
+                    .setNegativeTextColor(R.color.black)
+                    //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                    .onPositive(new BottomDialog.ButtonCallback() {
+                        @Override
+                        public void onClick(BottomDialog dialog) {
+                            new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("deletedId",null))).execute();
+                            progressDialog.show();
+                            progressDialog.setMessage(getString(R.string.pleasewait));
+                        }
+                    }).onNegative(new BottomDialog.ButtonCallback() {
+                @Override
+                public void onClick(@NonNull BottomDialog bottomDialog) {
+                    bottomDialog.dismiss();
+                }
+            })
+                    .show();
         }
         return super.onOptionsItemSelected(item);
     }

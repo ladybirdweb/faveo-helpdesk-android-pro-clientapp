@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Faveo Client</string>
+    <string name="app_name">Faveo Support</string>
     <string name="create_ticket">Create Ticket</string>
     <string name="ticket_list">Ticket List</string>
     <string name="client_list">My Profile</string>
@@ -117,7 +117,7 @@
     <string name="wrong_user_id">user id is not valid</string>
     <string name="posted_reply">posted your reply</string>
     <string name="successfullyChanged">status successfully changed</string>
-    <string name="statusConfirmation">are you sure you want to change the status?</string>
+    <string name="statusConfirmation">Are you sure you want to change the status?</string>
     <string name="noticket">please selct some ticket</string>
     <string name="myclosed">My Closed Tickets</string>
     <string name="discard">discard changes?</string>

@@ -129,6 +129,9 @@ public class MyOpenTickets extends Fragment {
                         case "Closed":
                             Prefs.putString("closedid", jsonArrayStaffs.getJSONObject(i).getString("id"));
                             break;
+                        case "Deleted":
+                            Prefs.putString("deletedId",jsonArrayStaffs.getJSONObject(i).getString("id"));
+                            break;
                     }
 
                 }
@@ -865,40 +868,6 @@ public class MyOpenTickets extends Fragment {
                                 })
                                         .show();
 
-
-//                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
-//                                // Setting Dialog Message
-//                                alertDialog.setMessage(getString(R.string.statusConfirmation));
-//
-//                                // Setting Icon to Dialog
-//                                alertDialog.setIcon(R.mipmap.ic_launcher);
-//
-//                                // Setting Positive "Yes" Button
-//                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-//                                    public void onClick(DialogInterface dialog, int which) {
-//                                        // Write your code here to invoke YES event
-//                                        //Toast.makeText(getApplicationContext(), "You clicked on YES", Toast.LENGTH_SHORT).show();
-//                                        progressDialog.show();
-//                                        progressDialog.setMessage(getString(R.string.pleasewait));
-//                                        new StatusChange(ticket, Integer.parseInt(Prefs.getString("closedid", null))).execute();
-//                                        Prefs.putString("tickets", null);
-//
-//
-//                                    }
-//                                });
-//
-//                                // Setting Negative "NO" Button
-//                                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-//                                    public void onClick(DialogInterface dialog, int which) {
-//                                        // Write your code here to invoke NO event
-//                                        //Toast.makeText(getApplicationContext(), "You clicked on NO", Toast.LENGTH_SHORT).show();
-//                                        dialog.cancel();
-//                                    }
-//                                });
-//
-//                                // Showing Alert Message
-//                                alertDialog.show();
-
                             } catch (NumberFormatException e) {
                                 e.printStackTrace();
 
@@ -913,6 +882,63 @@ public class MyOpenTickets extends Fragment {
                         e.printStackTrace();
                     }
                     break;
+
+                case R.id.action_statusDeleted:
+                    try {
+                        if (!Prefs.getString("tickets", null).isEmpty()) {
+                            String tickets = Prefs.getString("tickets", null);
+                            int pos = tickets.indexOf("[");
+                            int pos1 = tickets.lastIndexOf("]");
+                            String text1 = tickets.substring(pos + 1, pos1);
+                            String[] namesList = text1.split(",");
+                            for (String name : namesList) {
+                                stringBuffer.append(name + ",");
+                            }
+                            int pos2 = stringBuffer.toString().lastIndexOf(",");
+                            ticket = stringBuffer.toString().substring(0, pos2);
+                            Log.d("tickets", ticket);
+                            try
+                            {
+
+                                new BottomDialog.Builder(getActivity())
+                                        .setContent(getString(R.string.statusConfirmation))
+                                        .setTitle("Changing status")
+                                        .setPositiveText("YES")
+                                        .setNegativeText("NO")
+                                        .setPositiveBackgroundColorResource(R.color.white)
+                                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                                        .setPositiveTextColorResource(R.color.faveo)
+                                        .setNegativeTextColor(R.color.black)
+                                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                                        .onPositive(new BottomDialog.ButtonCallback() {
+                                            @Override
+                                            public void onClick(BottomDialog dialog) {
+                                                progressDialog.show();
+                                                progressDialog.setMessage(getString(R.string.pleasewait));
+                                                new StatusChange(ticket, Integer.parseInt(Prefs.getString("deletedId", null))).execute();
+                                                Prefs.putString("tickets", null);
+                                            }
+                                        }).onNegative(new BottomDialog.ButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull BottomDialog bottomDialog) {
+                                        bottomDialog.dismiss();
+                                    }
+                                })
+                                        .show();
+
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+
+                            }
+                            return true;
+                        } else {
+                            Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
+                            return false;
+                        }
+                    } catch (NullPointerException e) {
+                        Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
+                        e.printStackTrace();
+                    }
 //                case R.id.action_statusResolved:
 //                    try {
 //                        if (!Prefs.getString("tickets", null).isEmpty()) {

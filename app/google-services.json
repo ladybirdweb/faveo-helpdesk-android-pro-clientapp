@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "13463222619-pc76vtig8u7bkpo9o69crokp9p1m0mhb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.faveo.helpdesk.pro.client",
+            "certificate_hash": "25aa3621691a3af80f7b6b150d46ee5046540d38"
+          }
+        },
+        {
           "client_id": "13463222619-27t30e5gt7t3r6b12682q2ctos78c726.apps.googleusercontent.com",
           "client_type": 3
         }

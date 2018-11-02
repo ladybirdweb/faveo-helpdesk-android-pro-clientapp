@@ -514,7 +514,7 @@ public class LoginActivity extends AppCompatActivity {
 //                Set<String> set = new HashSet<>(urlSuggestions);
 //                Prefs.putStringSet("URL_SUG", set);
 
-                Prefs.putString("BASE_URL", baseURL);
+                Prefs.putString("BASE_URL", Constants.URL);
                 //progressBar.setVisibility(View.VISIBLE);
                 textViewProgress.setText(getString(R.string.access_checking));
                 textViewProgress.setVisibility(View.VISIBLE);
@@ -763,6 +763,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 JSONObject jsonObject = new JSONObject(result);
                 Log.d("camehere","true");
+                Prefs.putString("BASE_URL", Constants.URL);
                 JSONObject jsonObject1=jsonObject.getJSONObject("data");
                 String token = jsonObject1.getString("token");
                 JSONObject jsonObject2 = jsonObject1.getJSONObject("user");
@@ -772,16 +773,16 @@ public class LoginActivity extends AppCompatActivity {
                 Prefs.putString("profilePicture",profile_pic);
                 String role = jsonObject2.getString("role");
                 Log.d("ROLE",role);
-                if (role.equals("agent")||role.equals("admin")){
-                    textInputLayoutUsername.setEnabled(true);
-                    textInputLayoutPass.setEnabled(true);
-                    buttonSignIn.revertAnimation();
-                    //buttonSignIn.setText(getString(R.string.sign_in));
-                    Toasty.warning(getApplicationContext(), getString(R.string.userLogIn), Toast.LENGTH_SHORT).show();
-                    return;
+//                if (role.equals("agent")||role.equals("admin")){
+//                    textInputLayoutUsername.setEnabled(true);
+//                    textInputLayoutPass.setEnabled(true);
+//                    buttonSignIn.revertAnimation();
+//                    //buttonSignIn.setText(getString(R.string.sign_in));
+//                    Toasty.warning(getApplicationContext(), getString(R.string.userLogIn), Toast.LENGTH_SHORT).show();
+//                    return;
+//
+//                }
 
-                }
-                else{
                     String firstName = jsonObject2.getString("first_name");
                     String lastName = jsonObject2.getString("last_name");
                     String userName = jsonObject2.getString("user_name");
@@ -811,7 +812,7 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
-                }
+
             } catch (JSONException e) {
                 textInputLayoutUsername.setEnabled(true);
                 textInputLayoutPass.setEnabled(true);

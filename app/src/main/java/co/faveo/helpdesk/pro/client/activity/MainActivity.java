@@ -67,7 +67,9 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
-        Fabric.with(this, new Crashlytics.Builder().core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()).build());
+        //FirebaseCrash.setCrashCollectionEnabled(true);
+
+        //Fabric.with(this, new Crashlytics.Builder().core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build()).build());
         sharedPreferenceObj=new SharedPreference(MainActivity.this);
         setContentView(R.layout.activity_main);
         overridePendingTransition(R.anim.slide_in_from_right,R.anim.slide_in_from_right);

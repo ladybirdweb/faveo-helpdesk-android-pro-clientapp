@@ -324,6 +324,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 super.onDrawerClosed(drawerView);
                 //new SendPostRequest().execute();
                 getActivity().invalidateOptionsMenu();
+
             }
 
             @Override
