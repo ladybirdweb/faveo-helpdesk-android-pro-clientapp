@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <menu xmlns:android="http://schemas.android.com/apk/res/android">
+        <item
+            android:id="@+id/fab_createTicket"
+            android:icon="@drawable/create_ticket"
+            android:title="Create Ticket"
+            />
+        <item
+            android:id="@+id/fab_requestItem"
+            android:icon="@drawable/ic_edit_black_24dp"
+            android:title="Edit Profile"
+            />
+
+    </menu>
+

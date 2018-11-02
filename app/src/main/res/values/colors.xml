@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="faveo">#3da6d7</color>
+
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="windowBackground">#FFFFFF</color>
+    <color name="colorAccent">#FFFFFF</color>
+    <color name="error_red">#b71c1c</color>
+    <color name="disabled_color">#000000</color>
+
+    <!--<color name="faveo_blu">#00B3EB</color>-->
+    <color name="faveo_blue">#3da6d7</color>
+    <!--<color name="theme">#3AA7D9</color>-->
+    <color name="blue">#3da6d7</color>
+    <!--<color name="blue_300">#64B5F6</color>-->
+
+    <color name="theme">#3da6d7</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="dark_grey">#333333</color>
+    <color name="grey_200">#eeeeee</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="dark_translucent">#55000000</color>
+
+    <color name="grey_500">#9E9E9E</color>
+
+</resources>

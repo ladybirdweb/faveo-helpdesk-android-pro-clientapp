@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "13463222619",
+    "firebase_url": "https://faveo-helpdesk-support.firebaseio.com",
+    "project_id": "faveo-helpdesk-support",
+    "storage_bucket": "faveo-helpdesk-support.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:13463222619:android:bc489c6b720381a2",
+        "android_client_info": {
+          "package_name": "co.faveo.helpdesk.pro.client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "13463222619-ra3fej5p4eb8bac17e8p5h3uc3m4panp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.faveo.helpdesk.pro.client",
+            "certificate_hash": "80d30d20e6e7625a0df6109b0b84f0d00a4a3bae"
+          }
+        },
+        {
+          "client_id": "13463222619-pc76vtig8u7bkpo9o69crokp9p1m0mhb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "co.faveo.helpdesk.pro.client",
+            "certificate_hash": "25aa3621691a3af80f7b6b150d46ee5046540d38"
+          }
+        },
+        {
+          "client_id": "13463222619-27t30e5gt7t3r6b12682q2ctos78c726.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADRYmDDh3f5nWONjIVDIeYIAHy3ywBXEQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "13463222619-27t30e5gt7t3r6b12682q2ctos78c726.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
