@@ -26,6 +26,9 @@ public class About extends Fragment {
     private OnFragmentInteractionListener mListener;
     private FabSpeedDial fabSpeedDial;
 
+    public About() {
+    }
+
     public static About newInstance(String param1, String param2) {
         About fragment = new About();
         Bundle args = new Bundle();
@@ -35,12 +38,9 @@ public class About extends Fragment {
         return fragment;
     }
 
-    public About() {
-    }
     /**
-     *
      * @param savedInstanceState under special circumstances, to restore themselves to a previous
-     * state using the data stored in this bundle.
+     *                           state using the data stored in this bundle.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,10 +50,10 @@ public class About extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+
     /**
-     *
-     * @param inflater for loading the fragment.
-     * @param container where the fragment is going to be load.
+     * @param inflater           for loading the fragment.
+     * @param container          where the fragment is going to be load.
      * @param savedInstanceState
      * @return after initializing returning the rootview
      * which is having the fragment.
@@ -62,20 +62,19 @@ public class About extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_about, container, false);
-        fabSpeedDial= (FabSpeedDial) getActivity().findViewById(R.id.fab_main);
+        fabSpeedDial = (FabSpeedDial) getActivity().findViewById(R.id.fab_main);
         fabSpeedDial.setVisibility(View.GONE);
 
 
         PackageInfo pInfo;
         try {
             pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
-            String version = "Version "+pInfo.versionName;
+            String version = "Version " + pInfo.versionName;
             ((TextView) rootView.findViewById(R.id.textView_version)).setText(version);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
             ((TextView) rootView.findViewById(R.id.textView_version)).setText("");
         }
-
 
 
         rootView.findViewById(R.id.button_website).setOnClickListener(new View.OnClickListener() {
@@ -96,9 +95,11 @@ public class About extends Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
+
     /**
      * When the fragment is going to be attached
      * this life cycle method is going to be called.
+     *
      * @param context refers to the current fragment.
      */
     @Override
@@ -111,6 +112,7 @@ public class About extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
+
     /**
      * Once the fragment is going to be detached then
      * this method is going to be called.

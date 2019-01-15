@@ -25,6 +25,20 @@ public class InternetReceiver extends BroadcastReceiver {
         super();
     }
 
+    /**
+     * Function for checking Internet is available or not.
+     *
+     * @return
+     */
+    public static boolean isConnected() {
+        ConnectivityManager
+                cm = (ConnectivityManager) FaveoApplication.getInstance().getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null
+                && activeNetwork.isConnectedOrConnecting();
+    }
+
     @Override
     public void onReceive(Context context, Intent arg1) {
         ConnectivityManager cm = (ConnectivityManager) context
@@ -38,19 +52,6 @@ public class InternetReceiver extends BroadcastReceiver {
 //        if (internetReceiverListener != null) {
 //            internetReceiverListener.onNetworkConnectionChanged(isConnected);
 //        }
-    }
-
-    /**
-     * Function for checking Internet is available or not.
-     * @return
-     */
-    public static boolean isConnected() {
-        ConnectivityManager
-                cm = (ConnectivityManager) FaveoApplication.getInstance().getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null
-                && activeNetwork.isConnectedOrConnecting();
     }
 
 //    public interface InternetReceiverListener {

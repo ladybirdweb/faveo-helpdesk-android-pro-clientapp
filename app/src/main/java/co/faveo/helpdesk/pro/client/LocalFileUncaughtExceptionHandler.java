@@ -26,7 +26,7 @@ public class LocalFileUncaughtExceptionHandler implements Thread.UncaughtExcepti
     private Context mContext;
     private Thread.UncaughtExceptionHandler mDefaultHandler;
 
-    public LocalFileUncaughtExceptionHandler(Context context, Thread.UncaughtExceptionHandler defaultHandler){
+    public LocalFileUncaughtExceptionHandler(Context context, Thread.UncaughtExceptionHandler defaultHandler) {
         this.mDefaultHandler = defaultHandler;
         this.mContext = context;
     }
@@ -39,7 +39,7 @@ public class LocalFileUncaughtExceptionHandler implements Thread.UncaughtExcepti
         mDefaultHandler.uncaughtException(thread, ex);
     }
 
-    private void writeFile(final Thread thread, final Throwable ex){
+    private void writeFile(final Thread thread, final Throwable ex) {
         try {
             OutputStream os = getLogStream();
             os.write(getExceptionInformation(thread, ex).getBytes("utf-8"));
@@ -47,8 +47,7 @@ public class LocalFileUncaughtExceptionHandler implements Thread.UncaughtExcepti
             os.close();
 
             android.os.Process.killProcess(android.os.Process.myPid());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -57,16 +56,16 @@ public class LocalFileUncaughtExceptionHandler implements Thread.UncaughtExcepti
         //crash_log_pkgname.log
 //        String fileName = String.format("crash_%s.log", mContext.getPackageName());
         String fileName = "crash_multi_type_file_picker.log";
-        File file  = new File(Environment.getExternalStorageDirectory(), fileName);
+        File file = new File(Environment.getExternalStorageDirectory(), fileName);
 
-        if(!file.exists()){
+        if (!file.exists()) {
             file.createNewFile();
         }
 
         return new FileOutputStream(file, true);
     }
 
-    private String getExceptionInformation(Thread thread, Throwable ex){
+    private String getExceptionInformation(Thread thread, Throwable ex) {
         long current = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder().append('\n');
         sb.append("THREAD: ").append(thread).append('\n');
@@ -103,12 +102,12 @@ public class LocalFileUncaughtExceptionHandler implements Thread.UncaughtExcepti
         return sb.toString();
     }
 
-    private String getVersionName(){
+    private String getVersionName() {
         PackageManager packageManager = mContext.getPackageManager();
         PackageInfo packInfo = null;
         String version = null;
         try {
-            packInfo = packageManager.getPackageInfo(mContext.getPackageName(),0);
+            packInfo = packageManager.getPackageInfo(mContext.getPackageName(), 0);
             version = packInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -117,12 +116,12 @@ public class LocalFileUncaughtExceptionHandler implements Thread.UncaughtExcepti
         return version;
     }
 
-    private int getVersionCode(){
+    private int getVersionCode() {
         PackageManager packageManager = mContext.getPackageManager();
         PackageInfo packInfo = null;
         int version = 0;
         try {
-            packInfo = packageManager.getPackageInfo(mContext.getPackageName(),0);
+            packInfo = packageManager.getPackageInfo(mContext.getPackageName(), 0);
             version = packInfo.versionCode;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -131,7 +130,7 @@ public class LocalFileUncaughtExceptionHandler implements Thread.UncaughtExcepti
         return version;
     }
 
-    private String getErrorInformation(Throwable t){
+    private String getErrorInformation(Throwable t) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintWriter writer = new PrintWriter(baos);
         t.printStackTrace(writer);
@@ -142,7 +141,7 @@ public class LocalFileUncaughtExceptionHandler implements Thread.UncaughtExcepti
         return result;
     }
 
-    private String toDateString(long timeMilli){
+    private String toDateString(long timeMilli) {
         Calendar calc = Calendar.getInstance();
         calc.setTimeInMillis(timeMilli);
         return String.format(Locale.CHINESE, "%04d.%02d.%02d %02d:%02d:%02d:%03d",

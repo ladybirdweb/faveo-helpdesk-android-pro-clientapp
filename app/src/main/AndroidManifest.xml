@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="co.faveo.helpdesk.pro.client">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -28,15 +29,16 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/MyMaterialTheme">
+        android:theme="@style/MyMaterialTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             >
-        <intent-filter>
-            <action android:name="android.intent.action.SEARCH" />
-        </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".activity.LoginActivity"
@@ -52,13 +54,15 @@
         <activity android:name=".activity.HelpingActivity" />
         <activity android:name=".activity.SplashActivity" />
         <activity android:name=".activity.CreateTicketActivity" />
-        <activity android:name=".activity.TicketDetailActivity"></activity>
-        <activity android:name=".activity.ShowingAttachment"></activity>
+        <activity android:name=".activity.TicketDetailActivity" />
+        <activity android:name=".activity.ShowingAttachment" />
 
-        <activity android:name=".activity.TicketReplyActivity"
+        <activity
+            android:name=".activity.TicketReplyActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="3d31c3fca25cb228d17bfa05856d933d97e90db1" />

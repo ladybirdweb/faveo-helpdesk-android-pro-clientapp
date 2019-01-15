@@ -57,8 +57,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import co.faveo.helpdesk.pro.client.dialog.CircleTransform;
-import co.faveo.helpdesk.pro.client.dialog.ConfirmationDialog;
 import co.faveo.helpdesk.pro.client.R;
 import co.faveo.helpdesk.pro.client.UIUtils;
 import co.faveo.helpdesk.pro.client.activity.CreateTicketActivity;
@@ -66,6 +64,8 @@ import co.faveo.helpdesk.pro.client.activity.LoginActivity;
 import co.faveo.helpdesk.pro.client.activity.MainActivity;
 import co.faveo.helpdesk.pro.client.application.Constants;
 import co.faveo.helpdesk.pro.client.application.Helpdesk;
+import co.faveo.helpdesk.pro.client.dialog.CircleTransform;
+import co.faveo.helpdesk.pro.client.dialog.ConfirmationDialog;
 import co.faveo.helpdesk.pro.client.model.DataModel;
 import co.faveo.helpdesk.pro.client.model.NavDrawerItem;
 import es.dmoral.toasty.Toasty;
@@ -78,11 +78,9 @@ import es.dmoral.toasty.Toasty;
 public class FragmentDrawer extends Fragment implements View.OnClickListener {
 
 
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
-    View containerView;
+    static String token;
     private static String[] titles = null;
-    private FragmentDrawerListener drawerListener;
+    View containerView;
     View layout;
     Context context;
     DataModel[] drawerItem;
@@ -91,19 +89,8 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
     //int count=0;
     ProgressDialog progressDialog;
     String title;
-    static String token;
     int responseCodeForShow;
-    int opencount=0,closecount=0;
-    //    @BindView(R.id.inbox_count)
-//    TextView inbox_count;
-//    @BindView(R.id.my_tickets_count)
-//    TextView my_tickets_count;
-//    @BindView(R.id.trash_tickets_count)
-//    TextView trash_tickets_count;
-//    @BindView(R.id.unassigned_tickets_count)
-//    TextView unassigned_tickets_count;
-//    @BindView(R.id.closed_tickets_count)
-//    TextView closed_tickets_count;
+    int opencount = 0, closecount = 0;
     @BindView(R.id.usernametv)
     TextView userNameText;
     @BindView(R.id.domaintv)
@@ -136,15 +123,14 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
     ImageView imageViewlogout;
     @BindView(R.id.logouttext)
     TextView textviewlogout;
-
-
-    int option=5;
+    int option = 5;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private FragmentDrawerListener drawerListener;
+    Fragment fragment = null;
+    String titleFragment;
     public FragmentDrawer() {
 
-    }
-
-    public void setDrawerListener(FragmentDrawerListener listener) {
-        this.drawerListener = listener;
     }
 
     public static List<NavDrawerItem> getData() {
@@ -158,6 +144,10 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
         return data;
     }
 
+    public void setDrawerListener(FragmentDrawerListener listener) {
+        this.drawerListener = listener;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -168,61 +158,61 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         context = getActivity().getApplicationContext();
+        titleFragment=getActivity().getString(R.string.app_name);
         layout = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
-        listView= (ListView) layout.findViewById(R.id.listviewNavigation);
+        listView = (ListView) layout.findViewById(R.id.listviewNavigation);
         layout.findViewById(R.id.create_ticket).setOnClickListener(this);
         layout.findViewById(R.id.client_list).setOnClickListener(this);
         layout.findViewById(R.id.about).setOnClickListener(this);
         layout.findViewById(R.id.logout).setOnClickListener(this);
         drawerItem = new DataModel[2];
         ButterKnife.bind(this, layout);
-        confirmationDialog=new ConfirmationDialog();
-        drawerItem[0] = new DataModel(R.drawable.inbox_tickets,getString(R.string.mytickets),Prefs.getString("openCount", null));
-        drawerItem[1]=new DataModel(R.drawable.closed_ticket,getString(R.string.myclosed),Prefs.getString("closeCount",null));
+        confirmationDialog = new ConfirmationDialog();
+        drawerItem[0] = new DataModel(R.drawable.inbox_tickets, getString(R.string.mytickets), Prefs.getString("openCount", null));
+        drawerItem[1] = new DataModel(R.drawable.closed_ticket, getString(R.string.myclosed), Prefs.getString("closeCount", null));
         //drawerItem[1] = new DataModel(R.drawable.closed_ticket,getString(R.string.closed_tickets),Prefs.getString("closedTickets", null));
-        drawerItemCustomAdapter=new DrawerItemCustomAdapter(getActivity(),R.layout.list_view_item_row,drawerItem);
+        drawerItemCustomAdapter = new DrawerItemCustomAdapter(getActivity(), R.layout.list_view_item_row, drawerItem);
         listView.setAdapter(drawerItemCustomAdapter);
-        progressDialog=new ProgressDialog(getActivity());
+        progressDialog = new ProgressDialog(getActivity());
         drawerItemCustomAdapter.notifyDataSetChanged();
         UIUtils.setListViewHeightBasedOnItems(listView);
         UIUtils.setListViewHeightBasedOnItems(listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (position==0){
-                Fragment fragment=null;
-                option=0;
-                title = getString(R.string.mytickets);
-                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
-                if (fragment == null)
-                    fragment = new MyOpenTickets();
-                if (fragment != null) {
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.container_body, fragment);
-                    // fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                    ((MainActivity) getActivity()).setActionBarTitle(title);
-                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                if (position == 0) {
+                    Fragment fragment = null;
+                    option = 0;
+                    titleFragment = getString(R.string.mytickets);
+                    fragment = getActivity().getSupportFragmentManager().findFragmentByTag(titleFragment);
+                    if (fragment == null)
+                        fragment = new MyOpenTickets();
+                    if (fragment != null) {
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.container_body, fragment);
+                        // fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
+                        ((MainActivity) getActivity()).setActionBarTitle(titleFragment);
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                    }
+                } else if (position == 1) {
+                    Fragment fragment = null;
+                    option = 1;
+                    titleFragment = getString(R.string.myclosed);
+                    fragment = getActivity().getSupportFragmentManager().findFragmentByTag(titleFragment);
+                    if (fragment == null)
+                        fragment = new MyClosedTickets();
+                    if (fragment != null) {
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.container_body, fragment);
+                        // fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
+                        ((MainActivity) getActivity()).setActionBarTitle(titleFragment);
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                    }
                 }
-            }
-            else if (position==1){
-                Fragment fragment=null;
-                option=1;
-                title = getString(R.string.myclosed);
-                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
-                if (fragment == null)
-                    fragment = new MyClosedTickets();
-                if (fragment != null) {
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.container_body, fragment);
-                    // fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                    ((MainActivity) getActivity()).setActionBarTitle(title);
-                    mDrawerLayout.closeDrawer(GravityCompat.START);
-                }
-            }
             }
 
         });
@@ -231,18 +221,17 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             Log.d("profilePicture", letter);
             if (letter.contains("jpg") || letter.contains("png") || letter.contains("jpeg")) {
                 Picasso.with(context).load(letter).transform(new CircleTransform()).into(profilePic);
-            }
-            else {
-                int color= Color.parseColor("#ffffff");
+            } else {
+                int color = Color.parseColor("#ffffff");
                 String letter1 = String.valueOf(Prefs.getString("PROFILE_NAME", "").charAt(0));
                 ColorGenerator generator = ColorGenerator.MATERIAL;
                 TextDrawable drawable = TextDrawable.builder()
-                        .buildRound(letter1,color);
+                        .buildRound(letter1, color);
                 //profilePic.setAlpha(0.2f);
                 profilePic.setColorFilter(context.getResources().getColor(R.color.faveo), PorterDuff.Mode.SRC_IN);
                 profilePic.setImageDrawable(drawable);
             }
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
         userRole.setText(Prefs.getString("ROLE", ""));
@@ -265,15 +254,87 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 drawerItemCustomAdapter.notifyDataSetChanged();
 
             }
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
+
+        profilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                option = 6;
+                linearClientList.setBackgroundColor(getResources().getColor(R.color.grey_200));
+                Prefs.putString("normalclientlist", "true");
+                Prefs.putString("filtercustomer", "true");
+                title = getString(R.string.client_list);
+                textViewClientList.setTextColor(getResources().getColor(R.color.faveo));
+                clientImage.setColorFilter(getResources().getColor(R.color.faveo));
+                textviewabout.setTextColor(getResources().getColor(R.color.black));
+                imageviewabout.setColorFilter(getResources().getColor(R.color.grey_500));
+                linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                titleFragment = getString(R.string.myprofile);
+                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
+
+                textviewlogout.setTextColor(getResources().getColor(R.color.black));
+                imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
+                linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                if (fragment == null)
+                    fragment = new EditCustomer();
+                if (fragment != null) {
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.container_body, fragment);
+                    // fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                    ((MainActivity) getActivity()).setActionBarTitle(title);
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                }
+
+            }
+        });
+
+        userNameText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                option = 6;
+                linearClientList.setBackgroundColor(getResources().getColor(R.color.grey_200));
+                Prefs.putString("normalclientlist", "true");
+                Prefs.putString("filtercustomer", "true");
+                title = getString(R.string.client_list);
+                textViewClientList.setTextColor(getResources().getColor(R.color.faveo));
+                clientImage.setColorFilter(getResources().getColor(R.color.faveo));
+                textviewabout.setTextColor(getResources().getColor(R.color.black));
+                imageviewabout.setColorFilter(getResources().getColor(R.color.grey_500));
+                linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                titleFragment = getString(R.string.myprofile);
+                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
+
+                textviewlogout.setTextColor(getResources().getColor(R.color.black));
+                imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
+                linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                if (fragment == null)
+                    fragment = new EditCustomer();
+                if (fragment != null) {
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.container_body, fragment);
+                    // fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                    ((MainActivity) getActivity()).setActionBarTitle(title);
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                }
+            }
+        });
+
 
         ticketList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //count++;
-                listView.setVisibility(View.VISIBLE);
+                if (listView.getVisibility() == View.VISIBLE) {
+                    listView.setVisibility(View.GONE);
+                } else {
+                    listView.setVisibility(View.VISIBLE);
+                }
             }
         });
         return layout;
@@ -307,11 +368,11 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 super.onDrawerOpened(drawerView);
                 new SendPostRequest().execute();
                 //new FetchDependency().execute();
-                opencount=0;
-                closecount=0;
+                opencount = 0;
+                closecount = 0;
                 View view = getActivity().getCurrentFocus();
                 if (view != null) {
-                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
                 new FetchFirst(getActivity()).execute();
@@ -343,9 +404,161 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
         });
 
     }
+
+    public String getPostDataString(JSONObject params) throws Exception {
+
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+
+        Iterator<String> itr = params.keys();
+
+        while (itr.hasNext()) {
+
+            String key = itr.next();
+            Object value = params.get(key);
+
+            if (first)
+                first = false;
+            else
+                result.append("&");
+
+            result.append(URLEncoder.encode(key, "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(value.toString(), "UTF-8"));
+
+        }
+        return result.toString();
+    }
+
+    @Override
+    public void onClick(View v) {
+        Fragment fragment=null;
+        titleFragment=getString(R.string.app_name);
+        switch (v.getId()) {
+
+            case R.id.create_ticket:
+                option = 6;
+                linearLayoutCreate.setBackgroundColor(getResources().getColor(R.color.grey_200));
+                Prefs.putString("firstusername", "null");
+                Prefs.putString("lastusername", "null");
+                Prefs.putString("firstuseremail", "null");
+                Prefs.putString("firstusermobile", "null");
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                Intent inte = new Intent(getContext(), CreateTicketActivity.class);
+                startActivity(inte);
+                break;
+            case R.id.client_list:
+                option = 6;
+                linearClientList.setBackgroundColor(getResources().getColor(R.color.grey_200));
+                Prefs.putString("normalclientlist", "true");
+                Prefs.putString("filtercustomer", "true");
+                textViewClientList.setTextColor(getResources().getColor(R.color.faveo));
+                clientImage.setColorFilter(getResources().getColor(R.color.faveo));
+                textviewabout.setTextColor(getResources().getColor(R.color.black));
+                imageviewabout.setColorFilter(getResources().getColor(R.color.grey_500));
+                linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                titleFragment = getString(R.string.myprofile);
+                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
+
+                textviewlogout.setTextColor(getResources().getColor(R.color.black));
+                imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
+                linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                if (fragment == null)
+                    fragment = new EditCustomer();
+                break;
+            case R.id.about:
+                option = 6;
+                textviewabout.setTextColor(getResources().getColor(R.color.faveo));
+                imageviewabout.setColorFilter(getResources().getColor(R.color.faveo));
+                linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.grey_200));
+
+                linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                textViewClientList.setTextColor(getResources().getColor(R.color.black));
+                clientImage.setColorFilter(getResources().getColor(R.color.grey_500));
+
+                textviewlogout.setTextColor(getResources().getColor(R.color.black));
+                imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
+                linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                titleFragment = getString(R.string.about);
+                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
+                if (fragment == null)
+                    fragment = new About();
+                break;
+            case R.id.logout:
+                option = 6;
+                textviewlogout.setTextColor(getResources().getColor(R.color.faveo));
+                imageViewlogout.setColorFilter(getResources().getColor(R.color.faveo));
+                linearLog.setBackgroundColor(getResources().getColor(R.color.grey_200));
+
+                textviewlogout.setTextColor(getResources().getColor(R.color.black));
+                imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
+                linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+
+                linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                textViewClientList.setTextColor(getResources().getColor(R.color.black));
+                clientImage.setColorFilter(getResources().getColor(R.color.grey_500));
+                mDrawerLayout.closeDrawers();
+                drawerItemCustomAdapter.notifyDataSetChanged();
+                new BottomDialog.Builder(getActivity())
+                        .setTitle(getString(R.string.confirmLogOut))
+                        .setContent(getString(R.string.confirmMessage))
+                        .setPositiveText("YES")
+                        .setNegativeText("NO")
+                        .setPositiveBackgroundColorResource(R.color.white)
+                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                        .setPositiveTextColorResource(R.color.faveo)
+                        .setNegativeTextColor(R.color.black)
+                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                        .onPositive(new BottomDialog.ButtonCallback() {
+                            @Override
+                            public void onClick(BottomDialog dialog) {
+                                String url = Prefs.getString("URLneedtoshow", null);
+                                Prefs.clear();
+                                Prefs.putString("URLneedtoshow", url);
+                                //getActivity().getSharedPreferences(Constants.PREFERENCE, Context.MODE_PRIVATE).edit().clear().apply();
+
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                Toasty.success(getActivity(), "Logged out successfully!", Toast.LENGTH_SHORT).show();
+                            }
+                        }).onNegative(new BottomDialog.ButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull BottomDialog bottomDialog) {
+                        bottomDialog.dismiss();
+                    }
+                })
+                        .show();
+
+                break;
+        }
+        if (fragment != null) {
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.container_body, fragment);
+            // fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+            ((MainActivity) getActivity()).setActionBarTitle(titleFragment);
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    public interface FragmentDrawerListener {
+        void onDrawerItemSelected(View view, int position);
+    }
+
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        new FetchDependency().execute();
+//        drawerItemCustomAdapter.notifyDataSetChanged();
+//    }
+
     public class SendPostRequest extends AsyncTask<String, Void, String> {
 
-        protected void onPreExecute(){}
+        protected void onPreExecute() {
+        }
 
         protected String doInBackground(String... arg0) {
             try {
@@ -355,7 +568,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 JSONObject postDataParams = new JSONObject();
                 postDataParams.put("username", Prefs.getString("USERNAME", null));
                 postDataParams.put("password", Prefs.getString("PASSWORD", null));
-                Log.e("params",postDataParams.toString());
+                Log.e("params", postDataParams.toString());
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(15000 /* milliseconds */);
                 conn.setConnectTimeout(15000 /* milliseconds */);
@@ -372,40 +585,36 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 writer.close();
                 os.close();
 
-                int responseCode=conn.getResponseCode();
+                int responseCode = conn.getResponseCode();
 
                 if (responseCode == HttpsURLConnection.HTTP_OK) {
-                    Log.d("ifresponseCode",""+responseCode);
-                    BufferedReader in=new BufferedReader(new
+                    Log.d("ifresponseCode", "" + responseCode);
+                    BufferedReader in = new BufferedReader(new
                             InputStreamReader(
                             conn.getInputStream()));
 
                     StringBuffer sb = new StringBuffer("");
-                    String line="";
+                    String line = "";
 
-                    while((line = in.readLine()) != null) {
+                    while ((line = in.readLine()) != null) {
                         sb.append(line);
                         break;
                     }
                     in.close();
                     return sb.toString();
+                } else {
+                    if (responseCode == 400) {
+                        Log.d("cameInThisBlock", "true");
+                        responseCodeForShow = 400;
+                    } else if (responseCode == 405) {
+                        responseCodeForShow = 405;
+                    } else if (responseCode == 302) {
+                        responseCodeForShow = 302;
+                    }
+                    Log.d("elseresponseCode", "" + responseCode);
+                    return new String("false : " + responseCode);
                 }
-                else {
-                    if (responseCode==400){
-                        Log.d("cameInThisBlock","true");
-                        responseCodeForShow=400;
-                    }
-                    else if (responseCode==405){
-                        responseCodeForShow=405;
-                    }
-                    else if (responseCode==302){
-                        responseCodeForShow=302;
-                    }
-                    Log.d("elseresponseCode",""+responseCode);
-                    return new String("false : "+responseCode);
-                }
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 return new String("Exception: " + e.getMessage());
             }
 
@@ -414,7 +623,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
 
         @Override
         protected void onPostExecute(String result) {
-            Log.d("resultFromNewCall",result);
+            Log.d("resultFromNewCall", result);
             if (isAdded()) {
                 if (responseCodeForShow == 400) {
                     final Toast toast = Toasty.info(getActivity(), getString(R.string.urlchange), Toast.LENGTH_SHORT);
@@ -475,25 +684,25 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
 
 
             try {
-                JSONObject jsonObject=new JSONObject(result);
-                JSONObject jsonObject1=jsonObject.getJSONObject("data");
+                JSONObject jsonObject = new JSONObject(result);
+                JSONObject jsonObject1 = jsonObject.getJSONObject("data");
                 token = jsonObject1.getString("token");
-                JSONObject jsonObject2=jsonObject1.getJSONObject("user");
-                String role=jsonObject2.getString("role");
+                JSONObject jsonObject2 = jsonObject1.getJSONObject("user");
+                String role = jsonObject2.getString("role");
                 String firstName = jsonObject2.getString("first_name");
                 String lastName = jsonObject2.getString("last_name");
                 String userName = jsonObject2.getString("user_name");
-                String email=jsonObject2.getString("email");
+                String email = jsonObject2.getString("email");
                 String clientname;
                 if (firstName == null || firstName.equals(""))
                     clientname = userName;
                 else
                     clientname = firstName + " " + lastName;
-                Prefs.putString("clientNameForFeedback",clientname);
-                Prefs.putString("emailForFeedback",email);
-                Prefs.putString("PROFILE_NAME",clientname);
+                Prefs.putString("clientNameForFeedback", clientname);
+                Prefs.putString("emailForFeedback", email);
+                Prefs.putString("PROFILE_NAME", clientname);
                 Prefs.putString("TOKEN", token);
-                Log.d("TOKEN",token);
+                Log.d("TOKEN", token);
                 try {
                     String letter = Prefs.getString("profilePicture", null);
                     Log.d("profilePicture", letter);
@@ -501,18 +710,17 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                         //profilePic.setColorFilter(getContext().getResources().getColor(R.color.white));
                         //profilePic.setColorFilter(context.getResources().getColor(R.color.faveo), PorterDuff.Mode.SRC_IN);
                         Picasso.with(context).load(letter).transform(new CircleTransform()).into(profilePic);
-                    }
-                    else {
-                        int color= Color.parseColor("#ffffff");
+                    } else {
+                        int color = Color.parseColor("#ffffff");
                         String letter1 = String.valueOf(Prefs.getString("PROFILE_NAME", "").charAt(0));
                         ColorGenerator generator = ColorGenerator.MATERIAL;
                         TextDrawable drawable = TextDrawable.builder()
-                                .buildRound(letter1,color);
+                                .buildRound(letter1, color);
                         //profilePic.setAlpha(0.2f);
                         profilePic.setColorFilter(context.getResources().getColor(R.color.faveo), PorterDuff.Mode.SRC_IN);
                         profilePic.setImageDrawable(drawable);
                     }
-                }catch (NullPointerException e){
+                } catch (NullPointerException e) {
                     e.printStackTrace();
                 }
                 userRole.setText(Prefs.getString("ROLE", ""));
@@ -523,30 +731,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             }
         }
     }
-    public String getPostDataString(JSONObject params) throws Exception {
 
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-
-        Iterator<String> itr = params.keys();
-
-        while(itr.hasNext()){
-
-            String key= itr.next();
-            Object value = params.get(key);
-
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            result.append(URLEncoder.encode(key, "UTF-8"));
-            result.append("=");
-            result.append(URLEncoder.encode(value.toString(), "UTF-8"));
-
-        }
-        return result.toString();
-    }
     private class FetchDependency extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
@@ -568,17 +753,17 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
 
                 return;
             }
-            String state=Prefs.getString("403",null);
+            String state = Prefs.getString("403", null);
             try {
                 if (state.equals("403") && !state.equals(null)) {
                     //Toasty.warning(getActivity(), getString(R.string.permission), Toast.LENGTH_LONG).show();
                     Prefs.clear();
-                    Intent intent=new Intent(getActivity(),LoginActivity.class);
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
                     Prefs.putString("403", "null");
                     startActivity(intent);
                     return;
                 }
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
 
@@ -641,8 +826,8 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                 else
                     Prefs.putString("unassignedTickets", unasigned + "");
                 if (isAdded()) {
-                    drawerItem[0] = new DataModel(R.drawable.inbox_tickets,getString(R.string.mytickets),Prefs.getString("openCount", null));
-                    drawerItem[1] = new DataModel(R.drawable.closed_ticket,getString(R.string.myclosed),Prefs.getString("closeCount", null));
+                    drawerItem[0] = new DataModel(R.drawable.inbox_tickets, getString(R.string.mytickets), Prefs.getString("openCount", null));
+                    drawerItem[1] = new DataModel(R.drawable.closed_ticket, getString(R.string.myclosed), Prefs.getString("closeCount", null));
                     drawerItemCustomAdapter = new DrawerItemCustomAdapter(getActivity(), R.layout.list_view_item_row, drawerItem);
                     listView.setAdapter(drawerItemCustomAdapter);
                     drawerItemCustomAdapter.notifyDataSetChanged();
@@ -654,20 +839,17 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
 //                else{
 //                    Toasty.warning(getActivity(),"Something went wrong",Toast.LENGTH_LONG).show();
 //                }
-            }
-
-            catch (JSONException e) {
-                String state1=Prefs.getString("400",null);
+            } catch (JSONException e) {
+                String state1 = Prefs.getString("400", null);
 
                 try {
                     if (state1.equals("badRequest")) {
                         Toasty.info(getActivity(), getString(R.string.apiDisabled), Toast.LENGTH_LONG).show();
-                    }
-                    else{
+                    } else {
                         Toasty.error(getActivity(), "Parsing Error!", Toast.LENGTH_LONG).show();
                         e.printStackTrace();
                     }
-                }catch (NullPointerException e1){
+                } catch (NullPointerException e1) {
                     e1.printStackTrace();
                 }
 
@@ -676,210 +858,11 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
         }
     }
 
-
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        new FetchDependency().execute();
-//        drawerItemCustomAdapter.notifyDataSetChanged();
-//    }
-
-    @Override
-    public void onClick(View v) {
-        Fragment fragment = null;
-        title = getString(R.string.app_name);
-        switch (v.getId()) {
-
-            case R.id.create_ticket:
-                option=6;
-                linearLayoutCreate.setBackgroundColor(getResources().getColor(R.color.grey_200));
-                Prefs.putString("firstusername","null");
-                Prefs.putString("lastusername","null");
-                Prefs.putString("firstuseremail","null");
-                Prefs.putString("firstusermobile","null");
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-                Intent inte = new Intent(getContext(), CreateTicketActivity.class);
-                startActivity(inte);
-                break;
-//            case R.id.settings:
-//
-////                Intent intent=new Intent(getContext(),SettingsActivity.class);
-////                startActivity(intent);
-//                break;
-//            case R.id.inbox_tickets:
-//
-//                title = getString(R.string.inbox);
-//                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
-//                if (fragment == null)
-//                    fragment = new InboxTickets();
-//                break;
-//            case R.id.my_tickets:
-//                title = getString(R.string.my_tickets);
-//                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
-//                if (fragment == null)
-//                    fragment = new MyOpenTickets();
-//                break;
-//            case R.id.unassigned_tickets:
-//                title = getString(R.string.unassigned_tickets);
-//                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
-//                if (fragment == null)
-//                    fragment = new UnassignedTickets();
-//                break;
-//            case R.id.closed_tickets:
-//                title = getString(R.string.closed_tickets);
-//                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
-//                if (fragment == null)
-//                    fragment = new ClosedTickets();
-//                break;
-//            case R.id.trash_tickets:
-//                title = getString(R.string.trash);
-//                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
-//                if (fragment == null)
-//                    fragment = new TrashTickets();
-//                break;
-            case R.id.client_list:
-                option=6;
-                linearClientList.setBackgroundColor(getResources().getColor(R.color.grey_200));
-                Prefs.putString("normalclientlist","true");
-                Prefs.putString("filtercustomer","true");
-                title = getString(R.string.client_list);
-                textViewClientList.setTextColor(getResources().getColor(R.color.faveo));
-                clientImage.setColorFilter(getResources().getColor(R.color.faveo));
-                textviewabout.setTextColor(getResources().getColor(R.color.black));
-                imageviewabout.setColorFilter(getResources().getColor(R.color.grey_500));
-                linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                title=getString(R.string.myprofile);
-                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
-
-                textviewlogout.setTextColor(getResources().getColor(R.color.black));
-                imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
-                linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                if (fragment == null)
-                    fragment = new EditCustomer();
-                break;
-//            case R.id.helpSection:
-//                option=6;
-//                textviewhelp.setTextColor(getResources().getColor(R.color.faveo));
-//                imageviewhelp.setColorFilter(getResources().getColor(R.color.faveo));
-//                linearHelp.setBackgroundColor(getResources().getColor(R.color.grey_200));
-//
-//                textviewabout.setTextColor(getResources().getColor(R.color.black));
-//                imageviewabout.setColorFilter(getResources().getColor(R.color.grey_500));
-//                linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-//                linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-//                textViewClientList.setTextColor(getResources().getColor(R.color.black));
-//                clientImage.setColorFilter(getResources().getColor(R.color.grey_500));
-//
-//                textviewlogout.setTextColor(getResources().getColor(R.color.black));
-//                imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
-//                linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-////                Intent intent=new Intent(getActivity(),SettingsActivity.class);
-////                startActivity(intent);
-////                title = getString(R.string.helpSection);
-////                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
-////                if (fragment == null)
-////                    fragment = new HelpSection();
-//                break;
-            case R.id.about:
-                option=6;
-                textviewabout.setTextColor(getResources().getColor(R.color.faveo));
-                imageviewabout.setColorFilter(getResources().getColor(R.color.faveo));
-                linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.grey_200));
-
-                linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                textViewClientList.setTextColor(getResources().getColor(R.color.black));
-                clientImage.setColorFilter(getResources().getColor(R.color.grey_500));
-
-                textviewlogout.setTextColor(getResources().getColor(R.color.black));
-                imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
-                linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                title = getString(R.string.about);
-                fragment = getActivity().getSupportFragmentManager().findFragmentByTag(title);
-                if (fragment == null)
-                    fragment = new About();
-                break;
-            case R.id.logout:
-                option=6;
-                textviewlogout.setTextColor(getResources().getColor(R.color.faveo));
-                imageViewlogout.setColorFilter(getResources().getColor(R.color.faveo));
-                linearLog.setBackgroundColor(getResources().getColor(R.color.grey_200));
-
-                textviewlogout.setTextColor(getResources().getColor(R.color.black));
-                imageViewlogout.setColorFilter(getResources().getColor(R.color.grey_500));
-                linearLog.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-
-                linearClientList.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-                textViewClientList.setTextColor(getResources().getColor(R.color.black));
-                clientImage.setColorFilter(getResources().getColor(R.color.grey_500));
-//                try {
-//                    MyFirebaseInstanceIDService.sendRegistrationToServer("0");
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-                mDrawerLayout.closeDrawers();
-                drawerItemCustomAdapter.notifyDataSetChanged();
-                new BottomDialog.Builder(getActivity())
-                        .setTitle(getString(R.string.confirmLogOut))
-                        .setContent(getString(R.string.confirmMessage))
-                        .setPositiveText("YES")
-                        .setNegativeText("NO")
-                        .setPositiveBackgroundColorResource(R.color.white)
-                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
-                        .setPositiveTextColorResource(R.color.faveo)
-                        .setNegativeTextColor(R.color.black)
-                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
-                        .onPositive(new BottomDialog.ButtonCallback() {
-                            @Override
-                            public void onClick(BottomDialog dialog) {
-                                String url=Prefs.getString("URLneedtoshow",null);
-                                Prefs.clear();
-                                Prefs.putString("URLneedtoshow",url);
-                                //getActivity().getSharedPreferences(Constants.PREFERENCE, Context.MODE_PRIVATE).edit().clear().apply();
-
-                                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                Toasty.success(getActivity(), "Logged out successfully!", Toast.LENGTH_SHORT).show();
-                            }
-                        }).onNegative(new BottomDialog.ButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull BottomDialog bottomDialog) {
-                        bottomDialog.dismiss();
-                    }
-                })
-                        .show();
-                //confirmationDialog.show(getFragmentManager(),null);
-//                if (RealmController.with(this).hasTickets()) {
-//                    RealmController.with(this).clearAll();
-//                }
-//                NotificationManager notificationManager =
-//                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-//                notificationManager.cancelAll();
-//                FaveoApplication.getInstance().clearApplicationData();
-//                Prefs.clear();
-//                getActivity().getSharedPreferences(Constants.PREFERENCE, Context.MODE_PRIVATE).edit().clear().apply();
-//                Intent intent = new Intent(getActivity(), LoginActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                startActivity(intent);
-//                Toasty.success(getActivity(), "Logged out successfully!", Toast.LENGTH_SHORT).show();
-
-                break;
-        }
-        if (fragment != null) {
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.container_body, fragment);
-            // fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
-            ((MainActivity) getActivity()).setActionBarTitle(title);
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-        }
-    }
-
     public class DrawerItemCustomAdapter extends ArrayAdapter<DataModel> {
         Context mContext;
         int layoutResourceId;
         DataModel data[] = null;
+
         public DrawerItemCustomAdapter(Context mContext, int layoutResourceId, DataModel[] data) {
 
             super(mContext, layoutResourceId, data);
@@ -897,11 +880,11 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             listItem = inflater.inflate(layoutResourceId, parent, false);
             ImageView imageViewIcon = (ImageView) listItem.findViewById(R.id.imageView2);
             final TextView textViewName = (TextView) listItem.findViewById(R.id.inboxtv);
-            TextView countNumber= (TextView) listItem.findViewById(R.id.inbox_count);
+            TextView countNumber = (TextView) listItem.findViewById(R.id.inbox_count);
 
             DataModel folder = data[position];
-            if (option==0){
-                if (position==0){
+            if (option == 0) {
+                if (position == 0) {
                     listItem.setBackgroundColor(getResources().getColor(R.color.grey_200));
                     textViewName.setTextColor(getResources().getColor(R.color.faveo));
                     imageViewIcon.setColorFilter(getResources().getColor(R.color.faveo));
@@ -924,9 +907,8 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 }
 
-            }
-            else if (option==1){
-                if (position==1){
+            } else if (option == 1) {
+                if (position == 1) {
                     listItem.setBackgroundColor(getResources().getColor(R.color.grey_200));
                     textViewName.setTextColor(getResources().getColor(R.color.faveo));
                     imageViewIcon.setColorFilter(getResources().getColor(R.color.faveo));
@@ -950,9 +932,8 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 }
 
-            }
-            else if (option==2){
-                if (position==2){
+            } else if (option == 2) {
+                if (position == 2) {
                     listItem.setBackgroundColor(getResources().getColor(R.color.grey_200));
                     textViewName.setTextColor(getResources().getColor(R.color.faveo));
                     imageViewIcon.setColorFilter(getResources().getColor(R.color.faveo));
@@ -972,9 +953,8 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 }
 
-            }
-            else if (option==3){
-                if (position==3){
+            } else if (option == 3) {
+                if (position == 3) {
                     listItem.setBackgroundColor(getResources().getColor(R.color.grey_200));
                     textViewName.setTextColor(getResources().getColor(R.color.faveo));
                     imageViewIcon.setColorFilter(getResources().getColor(R.color.faveo));
@@ -993,9 +973,8 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 }
 
-            }
-            else if (option==4){
-                if (position==4){
+            } else if (option == 4) {
+                if (position == 4) {
                     listItem.setBackgroundColor(getResources().getColor(R.color.grey_200));
                     textViewName.setTextColor(getResources().getColor(R.color.faveo));
                     imageViewIcon.setColorFilter(getResources().getColor(R.color.faveo));
@@ -1014,9 +993,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 }
 
-            }
-
-            else if (option==5) {
+            } else if (option == 5) {
                 if (position == 0) {
                     listItem.setBackgroundColor(getResources().getColor(R.color.grey_200));
                     textViewName.setTextColor(getResources().getColor(R.color.faveo));
@@ -1035,8 +1012,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     imageviewabout.setColorFilter(getResources().getColor(R.color.grey_500));
                     linearLayoutAbout.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 }
-            }
-            else{
+            } else {
                 listItem.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                 textViewName.setTextColor(getResources().getColor(R.color.black));
                 imageViewIcon.setColorFilter(getResources().getColor(R.color.grey_500));
@@ -1045,7 +1021,6 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             textViewName.setText(folder.getName());
             countNumber.setText(folder.getCount());
             drawerItemCustomAdapter.notifyDataSetChanged();
-
 
 
             return listItem;
@@ -1070,7 +1045,7 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             String data;
             try {
                 JSONObject jsonObject = new JSONObject(result);
-                JSONObject jsonObject1=jsonObject.getJSONObject("data");
+                JSONObject jsonObject1 = jsonObject.getJSONObject("data");
                 //total = jsonObject1.getInt("total");
 //                try {
 //                    data = jsonObject1.getString("data");
@@ -1079,13 +1054,12 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
 //                }
                 JSONArray jsonArray = jsonObject1.getJSONArray("ticket");
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject2=jsonArray.getJSONObject(i);
-                    String status=jsonObject2.getString("status_name");
-                    if (status.equals("Open")){
+                    JSONObject jsonObject2 = jsonArray.getJSONObject(i);
+                    String status = jsonObject2.getString("status_name");
+                    if (status.equals("Open")) {
                         opencount++;
 
-                    }
-                    else if (status.equals("Closed")){
+                    } else if (status.equals("Closed")) {
 
                         closecount++;
 
@@ -1105,12 +1079,12 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
             try {
                 String methodNotAllowed = Prefs.getString("MethodNotAllowed", null);
 
-                if (methodNotAllowed.equalsIgnoreCase("true")){
+                if (methodNotAllowed.equalsIgnoreCase("true")) {
                     Prefs.clear();
-                    Intent intent=new Intent(getActivity(), LoginActivity.class);
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
                     startActivity(intent);
                 }
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
             Activity activity = getActivity();
@@ -1119,24 +1093,18 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     Toasty.error(getActivity(), getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show();
                     return;
                 }
-     }
+            }
 
-                try {
-                    if (result.equals("all done")) {
+            try {
+                if (result.equals("all done")) {
 
-                        Toasty.info(context, getString(R.string.all_caught_up), Toast.LENGTH_SHORT).show();
-                        //return;
-                    }
-                }catch (NullPointerException e){
-                e.printStackTrace();
+                    Toasty.info(context, getString(R.string.all_caught_up), Toast.LENGTH_SHORT).show();
+                    //return;
                 }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
-    }
-
-
-
-    public interface FragmentDrawerListener {
-        void onDrawerItemSelected(View view, int position);
     }
 }
 

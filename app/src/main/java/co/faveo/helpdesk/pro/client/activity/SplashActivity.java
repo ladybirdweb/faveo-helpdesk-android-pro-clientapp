@@ -32,12 +32,12 @@ import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.faveo.helpdesk.pro.client.BuildConfig;
-import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
 import co.faveo.helpdesk.pro.client.R;
 import co.faveo.helpdesk.pro.client.application.Constants;
 import co.faveo.helpdesk.pro.client.application.FaveoApplication;
 import co.faveo.helpdesk.pro.client.application.Helpdesk;
 import co.faveo.helpdesk.pro.client.application.MessageEvent;
+import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
 import es.dmoral.toasty.Toasty;
 import pl.tajchert.waitingdots.DotsTextView;
 
@@ -47,14 +47,22 @@ import pl.tajchert.waitingdots.DotsTextView;
  */
 public class SplashActivity extends AppCompatActivity {
 
+    public static String
+            keyDepartment = "", valueDepartment = "",
+            keySLA = "", valueSLA = "",
+            keyStatus = "", valueStatus = "",
+            keyStaff = "", valueStaff = "",
+            keyName = "",
+            keyPriority = "", valuePriority = "",
+            keyTopic = "", valueTopic = "",
+            keySource = "", valueSource = "",
+            keyType = "", valueType = "";
     @BindView(R.id.progressBar1)
     ProgressBar progressDialog;
-
+    //WelcomeDialog welcomeDialog;
     @BindView(R.id.loading)
     TextView loading;
-    //WelcomeDialog welcomeDialog;
-
-//    @BindView(R.id.refresh)
+    //    @BindView(R.id.refresh)
 //    TextView textViewrefresh;
 //
 //    @BindView(R.id.tryagain)
@@ -64,17 +72,6 @@ public class SplashActivity extends AppCompatActivity {
     DotsTextView dotsTextView;
     Button button;
     Button buttonTryAgain;
-    public static String
-            keyDepartment = "", valueDepartment = "",
-            keySLA = "", valueSLA = "",
-            keyStatus = "", valueStatus = "",
-            keyStaff = "", valueStaff = "",
-            keyName="",
-            keyPriority = "", valuePriority = "",
-            keyTopic = "", valueTopic = "",
-            keySource = "", valueSource = "",
-            keyType = "", valueType = "";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +80,7 @@ public class SplashActivity extends AppCompatActivity {
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
-        overridePendingTransition(R.anim.slide_in_from_right,R.anim.slide_in_from_right);
+        overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_in_from_right);
         Window window = SplashActivity.this.getWindow();
 
 // clear FLAG_TRANSLUCENT_STATUS flag:
@@ -91,28 +88,27 @@ public class SplashActivity extends AppCompatActivity {
 
 // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(ContextCompat.getColor(SplashActivity.this,R.color.faveo));
+        window.setStatusBarColor(ContextCompat.getColor(SplashActivity.this, R.color.mainActivityTopBar));
         ButterKnife.bind(this);
-        button= (Button) findViewById(R.id.clear_cache);
-        buttonTryAgain= (Button) findViewById(R.id.refreshAgain);
-        dotsTextView= (DotsTextView) findViewById(R.id.dots);
+        button = (Button) findViewById(R.id.clear_cache);
+        buttonTryAgain = (Button) findViewById(R.id.refreshAgain);
+        dotsTextView = (DotsTextView) findViewById(R.id.dots);
         //httpConnection=new HTTPConnection(getApplicationContext());
         //welcomeDialog=new WelcomeDialog();
         try {
             PackageInfo pInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
             String version = pInfo.versionName;
             int verCode = pInfo.versionCode;
-            Log.d("versionNo",""+verCode);
+            Log.d("versionNo", "" + verCode);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
         int versionCode = BuildConfig.VERSION_CODE;
         String versionName = BuildConfig.VERSION_NAME;
-        Log.d("versionNo",""+versionCode);
-        Log.d("versionName",versionName);
-        Prefs.putString("cameFromSearch","false");
-        Prefs.putString("cameFromNotification","false");
-
+        Log.d("versionNo", "" + versionCode);
+        Log.d("versionName", versionName);
+        Prefs.putString("cameFromSearch", "false");
+        Prefs.putString("cameFromNotification", "false");
 
 
         if (InternetReceiver.isConnected()) {
@@ -126,8 +122,7 @@ public class SplashActivity extends AppCompatActivity {
             new FetchDependency().execute();
             Prefs.putString("came from filter", "false");
 
-        }else
-        {
+        } else {
             progressDialog.setVisibility(View.INVISIBLE);
             dotsTextView.setVisibility(View.INVISIBLE);
             loading.setText(getString(R.string.oops_no_internet));
@@ -137,15 +132,93 @@ public class SplashActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     finish();
-                    Intent intent=new Intent(SplashActivity.this,SplashActivity.class);
+                    Intent intent = new Intent(SplashActivity.this, SplashActivity.class);
                     startActivity(intent);
                 }
             });
             //Toast.makeText(this, "Oops! No internet", Toast.LENGTH_LONG).show();
-            Prefs.putString("querry","null");
+            Prefs.putString("querry", "null");
 
         }
         Prefs.putString("tickets", "null");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkConnection();
+    }
+
+    private void checkConnection() {
+        boolean isConnected = InternetReceiver.isConnected();
+        showSnackIfNoInternet(isConnected);
+    }
+
+    /**
+     * Display the snackbar if network connection is not there.
+     *
+     * @param isConnected is a boolean value of network connection.
+     */
+    private void showSnackIfNoInternet(boolean isConnected) {
+        if (!isConnected) {
+            final Snackbar snackbar = Snackbar
+                    .make(findViewById(android.R.id.content), R.string.sry_not_connected_to_internet, Snackbar.LENGTH_INDEFINITE);
+
+            View sbView = snackbar.getView();
+            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+            textView.setTextColor(Color.RED);
+            snackbar.setAction("X", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    snackbar.dismiss();
+                }
+            });
+            snackbar.show();
+        }
+
+    }
+
+    /**
+     * Display the snackbar if network connection is there.
+     *
+     * @param isConnected is a boolean value of network connection.
+     */
+
+    private void showSnack(boolean isConnected) {
+
+        if (isConnected) {
+
+            Snackbar snackbar = Snackbar
+                    .make(findViewById(android.R.id.content), R.string.connected_to_internet, Snackbar.LENGTH_LONG);
+
+            View sbView = snackbar.getView();
+            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+            textView.setTextColor(Color.WHITE);
+            snackbar.show();
+        } else {
+            showSnackIfNoInternet(false);
+        }
+
+    }
+
+    /**
+     * This method will be called when a MessageEvent is posted (in the UI thread for Toast).
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+        showSnack(event.message);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     /**
@@ -165,43 +238,49 @@ public class SplashActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             Log.d("Depen Response : ", result + "");
             dotsTextView.hideAndStop();
-            if (result==null) {
-//                try {
-//                    unauthorized = Prefs.getString("unauthorized", null);
-//                    if (unauthorized.equals("true")) {
-//                        loading.setText("Oops! Something went wrong.");
-//                        progressDialog.setVisibility(View.INVISIBLE);
-//                        textViewtryAgain.setVisibility(View.VISIBLE);
-//                        textViewrefresh.setVisibility(View.VISIBLE);
-//                        Prefs.putString("unauthorized", "false");
-//                        textViewrefresh.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View view) {
-//                                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-//                                startActivity(intent);
-//                            }
-//                        });
-//
-//                    }
-//
-//                } catch (NullPointerException e) {
-//                    e.printStackTrace();
-//                }
+            if (result == null) {
             }
-//            String state=Prefs.getString("403",null);
-//
-//            try {
-//                if (state.equals("403") && !state.equals(null)) {
-//                    Toasty.info(SplashActivity.this, getString(R.string.roleChanged), Toast.LENGTH_LONG).show();
-//                    Prefs.clear();
-//                    Intent intent=new Intent(SplashActivity.this,LoginActivity.class);
-//                    Prefs.putString("403", "null");
-//                    startActivity(intent);
-//                    return;
-//                }
-//            }catch (NullPointerException e){
-//                e.printStackTrace();
-//            }
+            String state=Prefs.getString("unauthorized",null);
+
+            try {
+                if (state.equals("true")) {
+                    dotsTextView.setVisibility(View.INVISIBLE);
+                    button.setVisibility(View.VISIBLE);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //new FaveoApplication().clearApplicationData();
+                            NotificationManager notificationManager =
+                                    (NotificationManager) SplashActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+                            notificationManager.cancelAll();
+                            FaveoApplication.getInstance().clearApplicationData();
+                            String url = Prefs.getString("URLneedtoshow", null);
+                            Prefs.clear();
+                            Prefs.putString("URLneedtoshow", url);
+                            SplashActivity.this.getSharedPreferences(Constants.PREFERENCE, Context.MODE_PRIVATE).edit().clear().apply();
+                            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            Toasty.success(SplashActivity.this, "Logged out successfully!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    loading.setVisibility(View.GONE);
+                    dotsTextView.setVisibility(View.INVISIBLE);
+//                textViewtryAgain.setVisibility(View.VISIBLE);
+//                textViewrefresh.setVisibility(View.VISIBLE);
+                    Prefs.putString("unauthorized", "false");
+                    Prefs.putString("401", "false");
+                    buttonTryAgain.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+                }
+            }catch (NullPointerException e){
+                e.printStackTrace();
+            }
 
 
             try {
@@ -228,11 +307,11 @@ public class SplashActivity extends AppCompatActivity {
 
                 JSONArray jsonArrayStaffs = jsonObject1.getJSONArray("staffs");
                 for (int i = 0; i < jsonArrayStaffs.length(); i++) {
-                    keyName +=jsonArrayStaffs.getJSONObject(i).getString("first_name") + jsonArrayStaffs.getJSONObject(i).getString("last_name") +",";
+                    keyName += jsonArrayStaffs.getJSONObject(i).getString("first_name") + jsonArrayStaffs.getJSONObject(i).getString("last_name") + ",";
                     keyStaff += jsonArrayStaffs.getJSONObject(i).getString("id") + ",";
                     valueStaff += jsonArrayStaffs.getJSONObject(i).getString("email") + ",";
                 }
-                Prefs.putString("keyName",keyName);
+                Prefs.putString("keyName", keyName);
                 Prefs.putString("keyStaff", keyStaff);
                 Prefs.putString("valueStaff", valueStaff);
 
@@ -243,22 +322,6 @@ public class SplashActivity extends AppCompatActivity {
                 }
                 Prefs.putString("keyType", keyType);
                 Prefs.putString("valueType", valueType);
-
-//                JSONArray jsonArrayStaffs = jsonObject1.getJSONArray("staffs");
-//                for (int i = 0; i < jsonArrayStaffs.length(); i++) {
-//                    keyStaff += jsonArrayStaffs.getJSONObject(i).getString("id") + ",";
-//                    valueStaff += jsonArrayStaffs.getJSONObject(i).getString("email") + ",";
-//                }
-
-
-//                JSONArray jsonArrayTeams = jsonObject1.getJSONArray("teams");
-//                for (int i = 0; i < jsonArrayTeams.length(); i++) {
-//                    keyTeam += jsonArrayTeams.getJSONObject(i).getString("id") + ",";
-//                    valueTeam += jsonArrayTeams.getJSONObject(i).getString("name") + ",";
-//                }
-
-                //Set<String> keyPri = new LinkedHashSet<>();
-                // Set<String> valuePri = new LinkedHashSet<>();
                 JSONArray jsonArrayPriorities = jsonObject1.getJSONArray("priorities");
                 for (int i = 0; i < jsonArrayPriorities.length(); i++) {
                     // keyPri.add(jsonArrayPriorities.getJSONObject(i).getString("priority_id"));
@@ -373,9 +436,9 @@ public class SplashActivity extends AppCompatActivity {
                                 (NotificationManager) SplashActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
                         notificationManager.cancelAll();
                         FaveoApplication.getInstance().clearApplicationData();
-                        String url= Prefs.getString("URLneedtoshow",null);
+                        String url = Prefs.getString("URLneedtoshow", null);
                         Prefs.clear();
-                        Prefs.putString("URLneedtoshow",url);
+                        Prefs.putString("URLneedtoshow", url);
                         SplashActivity.this.getSharedPreferences(Constants.PREFERENCE, Context.MODE_PRIVATE).edit().clear().apply();
                         Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -388,7 +451,7 @@ public class SplashActivity extends AppCompatActivity {
 //                textViewtryAgain.setVisibility(View.VISIBLE);
 //                textViewrefresh.setVisibility(View.VISIBLE);
                 Prefs.putString("unauthorized", "false");
-                Prefs.putString("401","false");
+                Prefs.putString("401", "false");
                 buttonTryAgain.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -421,85 +484,6 @@ public class SplashActivity extends AppCompatActivity {
 //                }
 //            }, 3000);
         }
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        checkConnection();
-    }
-
-    private void checkConnection() {
-        boolean isConnected = InternetReceiver.isConnected();
-        showSnackIfNoInternet(isConnected);
-    }
-
-    /**
-     * Display the snackbar if network connection is not there.
-     *
-     * @param isConnected is a boolean value of network connection.
-     */
-    private void showSnackIfNoInternet(boolean isConnected) {
-        if (!isConnected) {
-            final Snackbar snackbar = Snackbar
-                    .make(findViewById(android.R.id.content), R.string.sry_not_connected_to_internet, Snackbar.LENGTH_INDEFINITE);
-
-            View sbView = snackbar.getView();
-            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-            textView.setTextColor(Color.RED);
-            snackbar.setAction("X", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    snackbar.dismiss();
-                }
-            });
-            snackbar.show();
-        }
-
-    }
-
-    /**
-     * Display the snackbar if network connection is there.
-     *
-     * @param isConnected is a boolean value of network connection.
-     */
-
-    private void showSnack(boolean isConnected) {
-
-        if (isConnected) {
-
-            Snackbar snackbar = Snackbar
-                    .make(findViewById(android.R.id.content), R.string.connected_to_internet, Snackbar.LENGTH_LONG);
-
-            View sbView = snackbar.getView();
-            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-            textView.setTextColor(Color.WHITE);
-            snackbar.show();
-        } else {
-            showSnackIfNoInternet(false);
-        }
-
-    }
-
-    /**
-     * This method will be called when a MessageEvent is posted (in the UI thread for Toast).
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvent event) {
-        showSnack(event.message);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        EventBus.getDefault().unregister(this);
-        super.onStop();
     }
 
 }

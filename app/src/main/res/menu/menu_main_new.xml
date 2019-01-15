@@ -3,24 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.narendra.myapplic ation12.MainActivity">
 
-            <item
-                android:id="@+id/action_statusOpen"
-                android:orderInCategory="100"
-                android:title="Open"
-                app:showAsAction="never|collapseActionView"
-                android:icon="@drawable/ic_open_in_new_black_24dp"
-                />
-            <item
-                android:id="@+id/action_statusClosed"
-                android:orderInCategory="100"
-                android:title="Closed"
-                app:showAsAction="never"
-                android:icon="@drawable/ic_close_black_24dp"/>
+    <item
+        android:id="@+id/action_statusOpen"
+        android:icon="@drawable/ic_open_in_new_black_24dp"
+        android:orderInCategory="100"
+        android:title="Open"
+        app:showAsAction="never|collapseActionView" />
+    <item
+        android:id="@+id/action_statusClosed"
+        android:icon="@drawable/ic_close_black_24dp"
+        android:orderInCategory="100"
+        android:title="Closed"
+        app:showAsAction="never" />
     <item
         android:id="@+id/action_statusDeleted"
+        android:icon="@drawable/ic_close_black_24dp"
         android:orderInCategory="100"
         android:title="Deleted"
-        app:showAsAction="never"
-        android:icon="@drawable/ic_close_black_24dp"/>
+        app:showAsAction="never" />
 
-    </menu>
+</menu>

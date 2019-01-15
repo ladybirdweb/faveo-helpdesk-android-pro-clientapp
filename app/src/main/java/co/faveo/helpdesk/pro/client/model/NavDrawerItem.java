@@ -7,15 +7,7 @@ package co.faveo.helpdesk.pro.client.model;
 public class NavDrawerItem {
     private boolean showNotify;
     private String title;
-    private String count="";
-
-    public String getCount() {
-        return count;
-    }
-
-    public void setCount(String count) {
-        this.count = count;
-    }
+    private String count = "";
 
     public NavDrawerItem() {
 
@@ -24,6 +16,14 @@ public class NavDrawerItem {
     public NavDrawerItem(boolean showNotify, String title) {
         this.showNotify = showNotify;
         this.title = title;
+    }
+
+    public String getCount() {
+        return count;
+    }
+
+    public void setCount(String count) {
+        this.count = count;
     }
 
     public boolean isShowNotify() {

@@ -2,7 +2,6 @@ package co.faveo.helpdesk.pro.client.fragments;
 
 
 import android.app.ProgressDialog;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -24,17 +23,20 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.github.curioustechizen.ago.RelativeTimeTextView;
 import com.github.javiersantos.bottomdialogs.BottomDialog;
@@ -47,14 +49,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.faveo.helpdesk.pro.client.application.Helpdesk;
-import co.faveo.helpdesk.pro.client.application.Helper;
-import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
 import co.faveo.helpdesk.pro.client.R;
-import co.faveo.helpdesk.pro.client.model.TicketOverview;
 import co.faveo.helpdesk.pro.client.activity.LoginActivity;
 import co.faveo.helpdesk.pro.client.activity.MainActivity;
 import co.faveo.helpdesk.pro.client.activity.TicketDetailActivity;
+import co.faveo.helpdesk.pro.client.application.Helpdesk;
+import co.faveo.helpdesk.pro.client.application.Helper;
+import co.faveo.helpdesk.pro.client.model.Data;
+import co.faveo.helpdesk.pro.client.model.TicketOverview;
+import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
 import es.dmoral.toasty.Toasty;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 
@@ -67,27 +70,31 @@ public class MyOpenTickets extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     public String mParam1;
     public String mParam2;
-    private OnFragmentInteractionListener mListener;
     View rootView;
     ShimmerRecyclerView recyclerView;
     ProgressDialog progressDialog;
     TextView empty_view;
     TextView noInternet_view;
     SwipeRefreshLayout swipeRefreshLayout;
-    int count=0;
+    int count = 0;
     TextView textView;
     String ticket;
-    private boolean loading = true;
     String status;
-    private SearchView searchView;
+    ArrayList<Data> statusItems;
     TicketOverviewAdapter ticketOverviewAdapter;
-    private android.support.v7.view.ActionMode mActionMode;
     FabSpeedDial fabSpeedDial;
     // This string will hold the results
     List<TicketOverview> ticketOverviewList = new ArrayList<>();
+    private OnFragmentInteractionListener mListener;
+    private boolean loading = true;
+    private SearchView searchView;
+    private android.support.v7.view.ActionMode mActionMode;
+    private int id = 0;
+
     public MyOpenTickets() {
         // Required empty public constructor
     }
+
     public static MyOpenTickets newInstance(String param1, String param2) {
         MyOpenTickets fragment = new MyOpenTickets();
         Bundle args = new Bundle();
@@ -111,47 +118,37 @@ public class MyOpenTickets extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        if (rootView==null){
+        if (rootView == null) {
             rootView = inflater.inflate(R.layout.fragment_recycler, container, false);
-            swipeRefreshLayout= (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
-            progressDialog=new ProgressDialog(getActivity());
-            JSONObject jsonObject;
+            statusItems = new ArrayList<>();
+            swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeRefresh);
+            progressDialog = new ProgressDialog(getActivity());
+            JSONObject jsonObject1;
             String json = Prefs.getString("DEPENDENCY", "");
             try {
-                jsonObject = new JSONObject(json);
-                JSONArray jsonArrayStaffs = jsonObject.getJSONArray("status");
-
-                for (int i = 0; i < jsonArrayStaffs.length(); i++) {
-                    switch (jsonArrayStaffs.getJSONObject(i).getString("name")) {
-                        case "Open":
-                            Prefs.putString("openid", jsonArrayStaffs.getJSONObject(i).getString("id"));
-                            break;
-                        case "Closed":
-                            Prefs.putString("closedid", jsonArrayStaffs.getJSONObject(i).getString("id"));
-                            break;
-                        case "Deleted":
-                            Prefs.putString("deletedId",jsonArrayStaffs.getJSONObject(i).getString("id"));
-                            break;
-                    }
-
+                jsonObject1 = new JSONObject(json);
+                JSONArray jsonArrayHelpTopics = jsonObject1.getJSONArray("status");
+                for (int i = 0; i < jsonArrayHelpTopics.length(); i++) {
+                    Data data1 = new Data(Integer.parseInt(jsonArrayHelpTopics.getJSONObject(i).getString("id")), jsonArrayHelpTopics.getJSONObject(i).getString("name"));
+                    statusItems.add(data1);
+                    //menu.add("First Menu");
                 }
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            noInternet_view= (TextView) rootView.findViewById(R.id.noiternet_view);
-            recyclerView= (ShimmerRecyclerView) rootView.findViewById(R.id.cardList);
-            empty_view= (TextView) rootView.findViewById(R.id.empty_view);
-            textView= (TextView) rootView.findViewById(R.id.totalcount);
-            fabSpeedDial= (FabSpeedDial) getActivity().findViewById(R.id.fab_main);
-            fabSpeedDial.setVisibility(View.VISIBLE);
+            noInternet_view = (TextView) rootView.findViewById(R.id.noiternet_view);
+            recyclerView = (ShimmerRecyclerView) rootView.findViewById(R.id.cardList);
+            empty_view = (TextView) rootView.findViewById(R.id.empty_view);
+            textView = (TextView) rootView.findViewById(R.id.totalcount);
+            fabSpeedDial = (FabSpeedDial) getActivity().findViewById(R.id.fab_main);
+            //fabSpeedDial.setVisibility(View.VISIBLE);
             Prefs.putString("cameFromSetting", "true");
             swipeRefreshLayout.setColorSchemeResources(R.color.faveo_blue);
             if (InternetReceiver.isConnected()) {
                 noInternet_view.setVisibility(View.GONE);
                 // swipeRefresh.setRefreshing(true);
                 swipeRefreshLayout.setRefreshing(true);
-                new FetchFirst(getActivity(),"open").execute();
+                new FetchFirst(getActivity(), "open").execute();
             } else {
                 noInternet_view.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.INVISIBLE);
@@ -163,7 +160,7 @@ public class MyOpenTickets extends Fragment {
                 public void onRefresh() {
                     if (InternetReceiver.isConnected()) {
                         loading = true;
-                        count=0;
+                        count = 0;
                         swipeRefreshLayout.setRefreshing(true);
                         recyclerView.setVisibility(View.VISIBLE);
                         noInternet_view.setVisibility(View.GONE);
@@ -174,10 +171,10 @@ public class MyOpenTickets extends Fragment {
 //                        }
                         View view = getActivity().getCurrentFocus();
                         if (view != null) {
-                            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                         }
-                        new FetchFirst(getActivity(),"open").execute();
+                        new FetchFirst(getActivity(), "open").execute();
                     } else {
                         recyclerView.setVisibility(View.INVISIBLE);
                         swipeRefreshLayout.setRefreshing(false);
@@ -186,31 +183,6 @@ public class MyOpenTickets extends Fragment {
                     }
                 }
             });
-
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
-            {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy)
-                {
-                    if (dy > 0 ||dy<0 && fabSpeedDial.isShown())
-                    {
-                        fabSpeedDial.hide();
-                    }
-                }
-
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState)
-                {
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE)
-                    {
-                        fabSpeedDial.show();
-                    }
-
-                    super.onScrollStateChanged(recyclerView, newState);
-                }
-            });
-
-
 
 
         }
@@ -222,12 +194,14 @@ public class MyOpenTickets extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.search_menu, menu);
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setSearchableInfo(searchManager
-                .getSearchableInfo(getActivity().getComponentName()));
-        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
 
+        EditText txtSearch = ((EditText)searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
+        ImageView searchClose = (ImageView) searchView.findViewById(android.support.v7.appcompat.R.id.search_close_btn);
+        searchClose.setImageResource(R.drawable.ic_close_black_24dp);
+        txtSearch.setHintTextColor(getResources().getColor(R.color.colorAccent));
+        txtSearch.setTextColor(getResources().getColor(R.color.colorAccent));
+        txtSearch.setTextSize(16);
 
         // listening to search query text change
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -256,10 +230,44 @@ public class MyOpenTickets extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
     public void setNullToActionMode() {
         Log.d("Inbox Ticket", "Came from toolbar action mode");
         if (mActionMode != null)
             mActionMode = null;
+    }
+
+    private void runLayoutAnimation(final RecyclerView recyclerView) {
+        final Context context = recyclerView.getContext();
+        final LayoutAnimationController controller =
+                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
+
+        recyclerView.setLayoutAnimation(controller);
+        ticketOverviewAdapter.notifyDataSetChanged();
+        recyclerView.scheduleLayoutAnimation();
+    }
+
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        progressDialog.setMessage(getString(R.string.pleasewait));
+//        progressDialog.show();
+//        new FetchFirst(getActivity(), page).execute();
+        try {
+            mActionMode.finish();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
     }
 
     /**
@@ -268,9 +276,10 @@ public class MyOpenTickets extends Fragment {
     private class FetchFirst extends AsyncTask<String, Void, String> {
         Context context;
         String status;
-        FetchFirst(Context context,String status) {
+
+        FetchFirst(Context context, String status) {
             this.context = context;
-            this.status=status;
+            this.status = status;
         }
 
         protected String doInBackground(String... urls) {
@@ -285,7 +294,7 @@ public class MyOpenTickets extends Fragment {
             ticketOverviewList.clear();
             try {
                 JSONObject jsonObject = new JSONObject(result);
-                JSONObject jsonObject1=jsonObject.getJSONObject("data");
+                JSONObject jsonObject1 = jsonObject.getJSONObject("data");
                 JSONArray jsonArray = jsonObject1.getJSONArray("ticket");
                 for (int i = 0; i < jsonArray.length(); i++) {
                     count++;
@@ -314,12 +323,12 @@ public class MyOpenTickets extends Fragment {
             try {
                 String methodNotAllowed = Prefs.getString("MethodNotAllowed", null);
 
-                if (methodNotAllowed.equalsIgnoreCase("true")){
+                if (methodNotAllowed.equalsIgnoreCase("true")) {
                     Prefs.clear();
-                    Intent intent=new Intent(getActivity(), LoginActivity.class);
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
                     startActivity(intent);
                 }
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
             if (result == null) {
@@ -358,34 +367,15 @@ public class MyOpenTickets extends Fragment {
 //            } else empty_view.setVisibility(View.GONE);
         }
     }
-    private void runLayoutAnimation(final RecyclerView recyclerView) {
-        final Context context = recyclerView.getContext();
-        final LayoutAnimationController controller =
-                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
-
-        recyclerView.setLayoutAnimation(controller);
-        ticketOverviewAdapter.notifyDataSetChanged();
-        recyclerView.scheduleLayoutAnimation();
-    }
-
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
 
     public class TicketOverviewAdapter extends RecyclerView.Adapter<TicketOverviewAdapter.TicketViewHolder> implements Filterable {
-        private List<TicketOverview> ticketOverviewList;
-        private List<TicketOverview> filterList;
         String subject;
         int length = 0;
-        private Context context;
         ArrayList<Integer> checked_items = new ArrayList<>();
         ArrayList<String> ticketSubject = new ArrayList<>();
+        private List<TicketOverview> ticketOverviewList;
+        private List<TicketOverview> filterList;
+        private Context context;
         private SparseBooleanArray mSelectedItemsIds;
         private List<Integer> selectedIds = new ArrayList<>();
 
@@ -394,7 +384,7 @@ public class MyOpenTickets extends Fragment {
             this.ticketOverviewList = ticketOverviewList;
             this.context = context;
             mSelectedItemsIds = new SparseBooleanArray();
-            this.filterList=ticketOverviewList;
+            this.filterList = ticketOverviewList;
         }
 
 
@@ -416,18 +406,17 @@ public class MyOpenTickets extends Fragment {
                 //else remove selected item color.
                 //holder.rootView.setForeground(new ColorDrawable(ContextCompat.getColor(context,android.R.color.transparent)));
             }
-            String clientFinalName="";
-            if (!ticketOverview.getClientName().equals("")){
+            String clientFinalName = "";
+            if (!ticketOverview.getClientName().equals("")) {
                 letter = String.valueOf(ticketOverview.clientName.charAt(0)).toUpperCase();
-            }
-            else{
-                letter="N";
+            } else {
+                letter = "N";
             }
             subject = ticketOverview.ticketSubject;
             if (subject.startsWith("=?UTF-8?Q?") && subject.endsWith("?=")) {
                 String first = subject.replace("=?UTF-8?Q?", "");
                 String second = first.replace("_", " ");
-                String second1=second.replace("=C3=BA","");
+                String second1 = second.replace("=C3=BA", "");
                 String third = second1.replace("=C2=A0", "");
                 String fourth = third.replace("?=", "");
                 String fifth = fourth.replace("=E2=80=99", "'");
@@ -436,15 +425,16 @@ public class MyOpenTickets extends Fragment {
                 ticketViewHolder.textViewSubject.setText(ticketOverview.ticketSubject);
             }
 
-            if (ticketOverview.getTicketStatus().equals("Closed")){
-//                ticketViewHolder.ticketStatus.setTextColor(getResources().getColor(R.color.colorAccent));
-                ticketViewHolder.ticketStatus.setText(getResources().getString(R.string.closed));
-            }
-            else{
-//                ticketViewHolder.ticketStatus.setBackgroundColor(getResources().getColor(R.color.openColor));
-//                ticketViewHolder.ticketStatus.setTextColor(getResources().getColor(R.color.colorAccent));
-                ticketViewHolder.ticketStatus.setText(getResources().getString(R.string.open));
-            }
+//            if (!ticketOverview.getTicketStatus().equals("")){
+////                ticketViewHolder.ticketStatus.setTextColor(getResources().getColor(R.color.colorAccent));
+//                ticketViewHolder.ticketStatus.setText(ticketOverview.ticketStatus);
+//            }
+
+//            else{
+////                ticketViewHolder.ticketStatus.setBackgroundColor(getResources().getColor(R.color.openColor));
+////                ticketViewHolder.ticketStatus.setTextColor(getResources().getColor(R.color.colorAccent));
+//                ticketViewHolder.ticketStatus.setText(getResources().getString(R.string.open));
+//            }
 
 //            ticketViewHolder.ticket
 //                    .setBackgroundColor(mSelectedItemsIds.get(i) ? 0x9934B5E4
@@ -501,62 +491,117 @@ public class MyOpenTickets extends Fragment {
                 String name = finalName.replace("?=", "");
                 String newName = name.replace("_", " ");
                 Log.d("new name", newName);
-                if (!Character.isUpperCase(newName.charAt(0))){
-                    clientFinalName=newName.replace(newName.charAt(0),newName.toUpperCase().charAt(0));
+                if (!Character.isUpperCase(newName.charAt(0))) {
+                    clientFinalName = newName.replace(newName.charAt(0), newName.toUpperCase().charAt(0));
                     ticketViewHolder.textViewClientName.setText(clientFinalName);
-                }
-                else{
+                } else {
                     ticketViewHolder.textViewClientName.setText(newName);
                 }
 
             } else {
-                if (!Character.isUpperCase(ticketOverview.clientName.charAt(0))){
-                    clientFinalName=ticketOverview.clientName.replace(ticketOverview.clientName.charAt(0),ticketOverview.clientName.toUpperCase().charAt(0));
+                if (!Character.isUpperCase(ticketOverview.clientName.charAt(0))) {
+                    clientFinalName = ticketOverview.clientName.replace(ticketOverview.clientName.charAt(0), ticketOverview.clientName.toUpperCase().charAt(0));
                     ticketViewHolder.textViewClientName.setText(clientFinalName);
-                }
-                else{
+                } else {
                     ticketViewHolder.textViewClientName.setText(ticketOverview.clientName);
                 }
                 //ticketViewHolder.textViewClientName.setText(ticketOverview.clientName);
 
             }
-            if (ticketOverview.priorityColor.equals("null")) {
-                ticketViewHolder.ticketPriority.setBackgroundColor(Color.parseColor("#3da6d7"));
-            } else if (ticketOverview.priorityColor != null) {
-                ticketViewHolder.ticketPriority.setBackgroundColor(Color.parseColor(ticketOverview.priorityColor));
-            }
-
-
-        else if (ticketOverview.priorityColor.equals("null")){
-            ticketViewHolder.ticketPriority.setBackgroundColor(Color.parseColor("#3da6d7"));
-        }
+//            if (ticketOverview.priorityColor.equals("null")) {
+//                ticketViewHolder.ticketPriority.setBackgroundColor(Color.parseColor("#3da6d7"));
+//                ticketViewHolder.ticketPriority.setColorFilter(Color.parseColor("#3da6d7"));
+//            } else if (ticketOverview.priorityColor != null) {
+//                //ticketViewHolder.ticketPriority.setBackgroundColor(Color.parseColor(ticketOverview.ticketPriorityColor));
+//                ticketViewHolder.ticketPriority.setColorFilter(Color.parseColor(ticketOverview.priorityColor));
+//            }
             ticketViewHolder.textViewTime.setReferenceTime(Helper.relativeTime(ticketOverview.ticketTime));
 
-            if (!ticketOverview.agentName.equals("Unassigned")) {
-                //ticketViewHolder.agentAssignedImage.setVisibility(View.VISIBLE);
-                ticketViewHolder.agentAssigned.setText(ticketOverview.getAgentName());
-            } else {
-                ticketViewHolder.agentAssigned.setText("Unassigned");
-                //ticketViewHolder.agentAssignedImage.setVisibility(View.GONE);
+//            if (!ticketOverview.agentName.equals("Unassigned")) {
+//                //ticketViewHolder.agentAssignedImage.setVisibility(View.VISIBLE);
+//                ticketViewHolder.agentAssigned.setText(ticketOverview.getAgentName());
+//            } else {
+//                ticketViewHolder.agentAssigned.setText("Unassigned");
+//                //ticketViewHolder.agentAssignedImage.setVisibility(View.GONE);
+//            }
+
+            Log.d("sourcename", ticketOverview.sourcename);
+            switch (ticketOverview.sourcename) {
+                case "Chat": {
+                    int color = Color.parseColor(ticketOverview.priorityColor);
+                    ticketViewHolder.source.setImageResource(R.drawable.ic_chat_bubble_outline_black_24dp);
+                    ticketViewHolder.source.setColorFilter(color);
+                    break;
+                }
+                case "Web": {
+                    int color = Color.parseColor(ticketOverview.priorityColor);
+                    ticketViewHolder.source.setImageResource(R.drawable.web_design);
+                    ticketViewHolder.source.setColorFilter(color);
+                    break;
+                }
+                case "Agent": {
+                    int color = Color.parseColor(ticketOverview.priorityColor);
+                    ticketViewHolder.source.setImageResource(R.drawable.mail);
+                    ticketViewHolder.source.setColorFilter(color);
+                    break;
+                }
+                case "Email": {
+                    int color = Color.parseColor(ticketOverview.priorityColor);
+                    ticketViewHolder.source.setImageResource(R.drawable.mail);
+                    ticketViewHolder.source.setColorFilter(color);
+                    break;
+                }
+                case "Facebook": {
+                    int color = Color.parseColor(ticketOverview.priorityColor);
+                    ticketViewHolder.source.setImageResource(R.drawable.facebook);
+                    ticketViewHolder.source.setColorFilter(color);
+                    break;
+                }
+                case "Twitter": {
+                    int color = Color.parseColor(ticketOverview.priorityColor);
+                    ticketViewHolder.source.setImageResource(R.drawable.twitter);
+                    ticketViewHolder.source.setColorFilter(color);
+                    break;
+                }
+                case "Call": {
+                    int color = Color.parseColor(ticketOverview.priorityColor);
+                    ticketViewHolder.source.setImageResource(R.drawable.phone);
+                    ticketViewHolder.source.setColorFilter(color);
+                    break;
+                }
+//                default:
+//                    ticketViewHolder.source.setVisibility(View.GONE);
+//                    break;
             }
+//            if (!ticketOverview.priorityName.equals("")){
+//                ticketViewHolder.priorityname.setText(ticketOverview.priorityName);
+//            }
+//            else{
+//                ticketViewHolder.priorityname.setText(R.string.not_available);
+//            }
+//
+//            if (!ticketOverview.departmentName.equals("")){
+//                ticketViewHolder.textViewdepartment.setText(ticketOverview.departmentName);
+//            }
             ticketViewHolder.ticket.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mActionMode != null) {
                         onListItemSelect(i);
-                    }
-                    else {
+                    } else {
                         Intent intent = new Intent(v.getContext(), TicketDetailActivity.class);
                         intent.putExtra("ticket_id", ticketOverview.ticketID + "");
                         Prefs.putString("TICKETid", ticketOverview.ticketID + "");
-                        Log.d("ticketId",ticketOverview.ticketID+"");
+                        Log.d("ticketId", ticketOverview.ticketID + "");
+                        Log.d("status", ticketOverview.ticketStatus);
                         Prefs.putString("ticketstatus", ticketOverview.getTicketStatus());
-
+                        intent.putExtra("department", ticketOverview.departmentName);
+                        intent.putExtra("source", ticketOverview.sourcename);
                         intent.putExtra("ticket_number", ticketOverview.ticketNumber);
                         intent.putExtra("ticket_opened_by", ticketOverview.agentName);
                         intent.putExtra("ticket_subject", ticketOverview.ticketSubject);
-                        intent.putExtra("ticket_status",ticketOverview.ticketStatus);
-                        intent.putExtra("ticket_priority",ticketOverview.priorityColor);
+                        intent.putExtra("ticket_status", ticketOverview.ticketStatus);
+                        intent.putExtra("ticket_priority", ticketOverview.priorityColor);
                         Log.d("clicked", "onRecyclerView");
                         v.getContext().startActivity(intent);
                     }
@@ -590,8 +635,8 @@ public class MyOpenTickets extends Fragment {
             });
 
 
-
         }
+
         @Override
         public Filter getFilter() {
             return new Filter() {
@@ -607,7 +652,7 @@ public class MyOpenTickets extends Fragment {
                             // name match condition. this might differ depending on your requirement
                             // here we are looking for name or phone number match
                             if (row.getTicketSubject().toLowerCase().contains(charString.toLowerCase()) ||
-                                    row.getAgentName().contains(charSequence)||row.ticketNumber.toLowerCase().contains(charString.toLowerCase())||
+                                    row.getAgentName().contains(charSequence) || row.ticketNumber.toLowerCase().contains(charString.toLowerCase()) ||
                                     row.getTicketNumber().toLowerCase().contains(charString.toLowerCase())) {
                                 filteredList.add(row);
                             }
@@ -664,7 +709,7 @@ public class MyOpenTickets extends Fragment {
             if (value) {
                 ticketSubject.add(ticketOverview.ticketSubject);
                 checked_items.add(ticketOverview.getTicketID());
-                status=ticketOverview.getTicketStatus();
+                status = ticketOverview.getTicketStatus();
                 Log.d("ticketsubject", ticketSubject.toString());
                 Log.d("checkeditems", checked_items.toString().replace(" ", ""));
                 Prefs.putString("tickets", checked_items.toString().replace(" ", ""));
@@ -719,6 +764,7 @@ public class MyOpenTickets extends Fragment {
         public TicketOverview getItem(int position) {
             return ticketOverviewList.get(position);
         }
+
         @Override
         public int getItemViewType(int position) {
             return position;
@@ -734,7 +780,7 @@ public class MyOpenTickets extends Fragment {
 
         public class TicketViewHolder extends RecyclerView.ViewHolder {
 
-            protected View ticket;
+            protected RelativeLayout ticket;
             ImageView roundedImageViewProfilePic;
             TextView textViewTicketID;
             TextView textViewTicketNumber;
@@ -742,21 +788,17 @@ public class MyOpenTickets extends Fragment {
             TextView textViewSubject;
             RelativeTimeTextView textViewTime;
             TextView textViewOverdue;
-            View ticketPriority;
-            TextView ticketStatus;
-            ImageView attachementView;
-            CheckBox checkBox1;
-            ImageView countCollaborator;
+            //ImageView ticketPriority;
+            //TextView ticketStatus;
             ImageView source;
-            TextView countThread;
             TextView agentAssigned;
-            ImageView agentAssignedImage;
-            TextView textViewduetoday;
+            TextView priorityname;
+            TextView textViewdepartment;
 
             TicketViewHolder(View v) {
                 super(v);
                 ticket = v.findViewById(R.id.ticket);
-                ticketPriority = v.findViewById(R.id.priority_view);
+                //ticketPriority = v.findViewById(R.id.priority_view);
                 roundedImageViewProfilePic = (ImageView) v.findViewById(R.id.imageView_default_profile);
                 textViewTicketID = (TextView) v.findViewById(R.id.textView_ticket_id);
                 textViewTicketNumber = (TextView) v.findViewById(R.id.textView_ticket_number);
@@ -764,14 +806,15 @@ public class MyOpenTickets extends Fragment {
                 textViewSubject = (TextView) v.findViewById(R.id.textView_ticket_subject);
                 textViewTime = (RelativeTimeTextView) v.findViewById(R.id.textView_ticket_time);
                 agentAssigned = (TextView) v.findViewById(R.id.agentassigned);
-                ticketStatus= (TextView) v.findViewById(R.id.statusView);
+                //ticketStatus= (TextView) v.findViewById(R.id.statusView);
+                source = v.findViewById(R.id.source);
+                //priorityname=v.findViewById(R.id.priority_viewText);
+                //textViewdepartment=v.findViewById(R.id.textViewDepartmentName);
             }
 
         }
 
     }
-
-
 
     public class Toolbar_ActionMode_Callback implements android.support.v7.view.ActionMode.Callback {
 
@@ -781,7 +824,7 @@ public class MyOpenTickets extends Fragment {
         private boolean isListViewFragment;
 
 
-        public Toolbar_ActionMode_Callback(Context context, TicketOverviewAdapter ticketOverviewAdapter,TicketOverviewAdapter recyclerView_adapter, List<TicketOverview> message_models, boolean b) {
+        public Toolbar_ActionMode_Callback(Context context, TicketOverviewAdapter ticketOverviewAdapter, TicketOverviewAdapter recyclerView_adapter, List<TicketOverview> message_models, boolean b) {
             this.context = context;
             this.recyclerView_adapter = recyclerView_adapter;
             this.message_models = (ArrayList<TicketOverview>) message_models;
@@ -791,13 +834,12 @@ public class MyOpenTickets extends Fragment {
         @Override
         public boolean onCreateActionMode(android.support.v7.view.ActionMode mode, Menu menu) {
             //mode.getMenuInflater().inflate(R.menu.multiplemenuinbox, menu);//Inflate the menu over action mode
-            mode.getMenuInflater().inflate(R.menu.menu_closed, menu);
-//            SubMenu fileMenu = menu.addSubMenu("Change Status");
-//            //menu.addSubMenu("Change Status");
-//            for (int i=0;i<statusItems.size();i++){
-//                Data data=statusItems.get(i);
-//                fileMenu.add(data.getName());
-//            }
+            SubMenu fileMenu = menu.addSubMenu("Change Status").setHeaderIcon(R.drawable.threedot);
+            //menu.addSubMenu("Change Status");
+            for (int i = 0; i < statusItems.size(); i++) {
+                Data data = statusItems.get(i);
+                fileMenu.add(data.getName());
+            }
             return true;
         }
 
@@ -823,213 +865,71 @@ public class MyOpenTickets extends Fragment {
         @Override
         public boolean onActionItemClicked(android.support.v7.view.ActionMode mode, MenuItem item) {
             StringBuffer stringBuffer = new StringBuffer();
-            switch (item.getItemId()) {
+            for (int i = 0; i < statusItems.size(); i++) {
+                Data data = statusItems.get(i);
+                if (data.getName().equals(item.toString())) {
+                    id = data.getID();
 
-                case R.id.action_statusClosed:
                     try {
-                        if (!Prefs.getString("tickets", null).isEmpty()) {
-                            String tickets = Prefs.getString("tickets", null);
-                            int pos = tickets.indexOf("[");
-                            int pos1 = tickets.lastIndexOf("]");
-                            String text1 = tickets.substring(pos + 1, pos1);
-                            String[] namesList = text1.split(",");
-                            for (String name : namesList) {
-                                stringBuffer.append(name + ",");
-                            }
-                            int pos2 = stringBuffer.toString().lastIndexOf(",");
-                            ticket = stringBuffer.toString().substring(0, pos2);
-                            Log.d("tickets", ticket);
-                            try
-                            {
-
-                                new BottomDialog.Builder(getActivity())
-                                        .setContent(getString(R.string.statusConfirmation))
-                                        .setTitle("Changing status")
-                                        .setPositiveText("YES")
-                                        .setNegativeText("NO")
-                                        .setPositiveBackgroundColorResource(R.color.white)
-                                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
-                                        .setPositiveTextColorResource(R.color.faveo)
-                                        .setNegativeTextColor(R.color.black)
-                                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
-                                        .onPositive(new BottomDialog.ButtonCallback() {
-                                            @Override
-                                            public void onClick(BottomDialog dialog) {
-                                                progressDialog.show();
-                                                progressDialog.setMessage(getString(R.string.pleasewait));
-                                                new StatusChange(ticket, Integer.parseInt(Prefs.getString("closedid", null))).execute();
-                                                Prefs.putString("tickets", null);
-                                            }
-                                        }).onNegative(new BottomDialog.ButtonCallback() {
-                                    @Override
-                                    public void onClick(@NonNull BottomDialog bottomDialog) {
-                                        bottomDialog.dismiss();
-                                    }
-                                })
-                                        .show();
-
-                            } catch (NumberFormatException e) {
-                                e.printStackTrace();
-
-                            }
-                            return true;
+                        if (status.equalsIgnoreCase(item.toString())) {
+                            Toasty.warning(getActivity(), "Ticket is already in " + item.toString() + " state", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
-                            return false;
+                            if (!Prefs.getString("tickets", null).isEmpty()) {
+                                String tickets = Prefs.getString("tickets", null);
+                                int pos = tickets.indexOf("[");
+                                int pos1 = tickets.lastIndexOf("]");
+                                String text1 = tickets.substring(pos + 1, pos1);
+                                String[] namesList = text1.split(",");
+                                for (String name : namesList) {
+                                    stringBuffer.append(name + ",");
+                                }
+                                int pos2 = stringBuffer.toString().lastIndexOf(",");
+                                ticket = stringBuffer.toString().substring(0, pos2);
+                                Log.d("tickets", ticket);
+                                try {
+
+                                    new BottomDialog.Builder(getActivity())
+                                            .setContent(getString(R.string.statusConfirmation))
+                                            .setTitle("Changing status")
+                                            .setPositiveText("YES")
+                                            .setNegativeText("NO")
+                                            .setPositiveBackgroundColorResource(R.color.white)
+                                            //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                                            .setPositiveTextColorResource(R.color.faveo)
+                                            .setNegativeTextColor(R.color.black)
+                                            //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                                            .onPositive(new BottomDialog.ButtonCallback() {
+                                                @Override
+                                                public void onClick(BottomDialog dialog) {
+                                                    progressDialog.show();
+                                                    progressDialog.setMessage(getString(R.string.pleasewait));
+                                                    new StatusChange(ticket, id).execute();
+                                                    Prefs.putString("tickets", null);
+                                                }
+                                            }).onNegative(new BottomDialog.ButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull BottomDialog bottomDialog) {
+                                            bottomDialog.dismiss();
+                                        }
+                                    })
+                                            .show();
+
+                                } catch (NumberFormatException e) {
+                                    e.printStackTrace();
+
+                                }
+                                return true;
+                            } else {
+                                Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
+                                return false;
+                            }
                         }
                     } catch (NullPointerException e) {
                         Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
                         e.printStackTrace();
                     }
-                    break;
 
-                case R.id.action_statusDeleted:
-                    try {
-                        if (!Prefs.getString("tickets", null).isEmpty()) {
-                            String tickets = Prefs.getString("tickets", null);
-                            int pos = tickets.indexOf("[");
-                            int pos1 = tickets.lastIndexOf("]");
-                            String text1 = tickets.substring(pos + 1, pos1);
-                            String[] namesList = text1.split(",");
-                            for (String name : namesList) {
-                                stringBuffer.append(name + ",");
-                            }
-                            int pos2 = stringBuffer.toString().lastIndexOf(",");
-                            ticket = stringBuffer.toString().substring(0, pos2);
-                            Log.d("tickets", ticket);
-                            try
-                            {
-
-                                new BottomDialog.Builder(getActivity())
-                                        .setContent(getString(R.string.statusConfirmation))
-                                        .setTitle("Changing status")
-                                        .setPositiveText("YES")
-                                        .setNegativeText("NO")
-                                        .setPositiveBackgroundColorResource(R.color.white)
-                                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
-                                        .setPositiveTextColorResource(R.color.faveo)
-                                        .setNegativeTextColor(R.color.black)
-                                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
-                                        .onPositive(new BottomDialog.ButtonCallback() {
-                                            @Override
-                                            public void onClick(BottomDialog dialog) {
-                                                progressDialog.show();
-                                                progressDialog.setMessage(getString(R.string.pleasewait));
-                                                new StatusChange(ticket, Integer.parseInt(Prefs.getString("deletedId", null))).execute();
-                                                Prefs.putString("tickets", null);
-                                            }
-                                        }).onNegative(new BottomDialog.ButtonCallback() {
-                                    @Override
-                                    public void onClick(@NonNull BottomDialog bottomDialog) {
-                                        bottomDialog.dismiss();
-                                    }
-                                })
-                                        .show();
-
-                            } catch (NumberFormatException e) {
-                                e.printStackTrace();
-
-                            }
-                            return true;
-                        } else {
-                            Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
-                            return false;
-                        }
-                    } catch (NullPointerException e) {
-                        Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-                    }
-//                case R.id.action_statusResolved:
-//                    try {
-//                        if (!Prefs.getString("tickets", null).isEmpty()) {
-//                            String tickets = Prefs.getString("tickets", null);
-//                            int pos = tickets.indexOf("[");
-//                            int pos1 = tickets.lastIndexOf("]");
-//                            String text1 = tickets.substring(pos + 1, pos1);
-//                            String[] namesList = text1.split(",");
-//                            for (String name : namesList) {
-//                                stringBuffer.append(name + ",");
-//                            }
-//                            int pos2 = stringBuffer.toString().lastIndexOf(",");
-//                            ticket = stringBuffer.toString().substring(0, pos2);
-//
-//                            Log.d("tickets", ticket);
-//                            try {
-//                                new StatusChange(ticket, Integer.parseInt(Prefs.getString("resolvedid", null))).execute();
-//                                Prefs.putString("tickets", null);
-//                                progressDialog.show();
-//                                progressDialog.setMessage(getString(R.string.pleasewait));
-//                            } catch (NumberFormatException e) {
-//                                e.printStackTrace();
-//
-//                            }
-//                            return true;
-//                        } else {
-//                            Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
-//                            return false;
-//                        }
-//                    } catch (NullPointerException e) {
-//                        Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
-//                        e.printStackTrace();
-//                    }
-//                    break;
-//                case R.id.action_statusDeleted:
-//                    try {
-//                        if (!Prefs.getString("tickets", null).isEmpty()) {
-//                            String tickets = Prefs.getString("tickets", null);
-//                            int pos = tickets.indexOf("[");
-//                            int pos1 = tickets.lastIndexOf("]");
-//                            String text1 = tickets.substring(pos + 1, pos1);
-//                            String[] namesList = text1.split(",");
-//                            for (String name : namesList) {
-//                                stringBuffer.append(name + ",");
-//                            }
-//                            int pos2 = stringBuffer.toString().lastIndexOf(",");
-//                            ticket = stringBuffer.toString().substring(0, pos2);
-//
-//                            Log.d("tickets", ticket);
-//                            try {
-//                                new StatusChange(ticket, Integer.parseInt(Prefs.getString("deletedid", null))).execute();
-//                                Prefs.putString("tickets", null);
-//                                progressDialog.show();
-//                                progressDialog.setMessage(getString(R.string.pleasewait));
-//                            } catch (NumberFormatException e) {
-//                                e.printStackTrace();
-//
-//                            }
-//                            return true;
-//                        } else {
-//                            Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
-//                            return false;
-//                        }
-//                    } catch (NullPointerException e) {
-//                        Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
-//                        e.printStackTrace();
-//                    }
-//                case R.id.assignticket:
-//                    try {
-//                        if (Prefs.getString("tickets", null).equals("null") || Prefs.getString("tickets", null).equals("[]")) {
-//                            Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
-//                            return false;
-//                        }
-//                        String ticketId = Prefs.getString("tickets", null);
-//                        List<String> items = new ArrayList<String>(Arrays.asList(ticketId.split("\\s*,\\s*")));
-//                        int itemCount = items.size();
-//                        if (itemCount == 1) {
-//                            Toasty.info(getActivity(), getString(R.string.multiAssign), Toast.LENGTH_LONG).show();
-//                            return false;
-//                        } else {
-//                            Intent intent = new Intent(getActivity(), MultiAssigningActivity.class);
-//                            startActivity(intent);
-//                        }
-//
-////            Intent intent = new Intent(getActivity(), TicketMergeActtivity.class);
-////            startActivity(intent);
-//
-//                    } catch (NullPointerException e) {
-//                        Toasty.info(getActivity(), getString(R.string.noticket), Toast.LENGTH_LONG).show();
-//                        e.printStackTrace();
-//                    }
+                }
             }
             return false;
         }
@@ -1056,18 +956,7 @@ public class MyOpenTickets extends Fragment {
 
         }
     }
-    @Override
-    public void onResume() {
-        super.onResume();
-//        progressDialog.setMessage(getString(R.string.pleasewait));
-//        progressDialog.show();
-//        new FetchFirst(getActivity(), page).execute();
-        try {
-            mActionMode.finish();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-    }
+
     private class StatusChange extends AsyncTask<String, Void, String> {
         int statusId;
         String ticketId;
@@ -1102,12 +991,12 @@ public class MyOpenTickets extends Fragment {
                 e.printStackTrace();
             }
 
-            try{
-                JSONObject jsonObject=new JSONObject(result);
-                JSONArray jsonArray=jsonObject.getJSONArray("message");
-                for (int i=0;i<jsonArray.length();i++){
-                    String message=jsonArray.getString(i);
-                    if (message.contains("Permission denied")){
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                JSONArray jsonArray = jsonObject.getJSONArray("message");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    String message = jsonArray.getString(i);
+                    if (message.contains("Permission denied")) {
                         Toasty.warning(getActivity(), getString(R.string.permission), Toast.LENGTH_LONG).show();
                         Prefs.putString("403", "null");
                         return;
@@ -1186,13 +1075,12 @@ public class MyOpenTickets extends Fragment {
                 //JSONObject jsonObject1 = jsonObject.getJSONObject("response");
                 //String message1=jsonObject2.getString("ticket_id");
                 String message2 = jsonObject.getString("message");
-                if (!message2.equals("null")||!message2.equals("")){
-                    Toasty.success(getActivity(),getString(R.string.successfullyChanged),Toast.LENGTH_LONG).show();
+                if (!message2.equals("null") || !message2.equals("")) {
+                    Toasty.success(getActivity(), getString(R.string.successfullyChanged), Toast.LENGTH_LONG).show();
                     Prefs.putString("tickets", null);
                     getActivity().finish();
                     startActivity(new Intent(getActivity(), MainActivity.class));
-                }
-                else{
+                } else {
                     Toasty.error(getActivity(), getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show();
                     return;
                 }
