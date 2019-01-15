@@ -91,16 +91,6 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
     String title;
     int responseCodeForShow;
     int opencount = 0, closecount = 0;
-    //    @BindView(R.id.inbox_count)
-//    TextView inbox_count;
-//    @BindView(R.id.my_tickets_count)
-//    TextView my_tickets_count;
-//    @BindView(R.id.trash_tickets_count)
-//    TextView trash_tickets_count;
-//    @BindView(R.id.unassigned_tickets_count)
-//    TextView unassigned_tickets_count;
-//    @BindView(R.id.closed_tickets_count)
-//    TextView closed_tickets_count;
     @BindView(R.id.usernametv)
     TextView userNameText;
     @BindView(R.id.domaintv)
@@ -539,20 +529,6 @@ public class FragmentDrawer extends Fragment implements View.OnClickListener {
                     }
                 })
                         .show();
-                //confirmationDialog.show(getFragmentManager(),null);
-//                if (RealmController.with(this).hasTickets()) {
-//                    RealmController.with(this).clearAll();
-//                }
-//                NotificationManager notificationManager =
-//                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-//                notificationManager.cancelAll();
-//                FaveoApplication.getInstance().clearApplicationData();
-//                Prefs.clear();
-//                getActivity().getSharedPreferences(Constants.PREFERENCE, Context.MODE_PRIVATE).edit().clear().apply();
-//                Intent intent = new Intent(getActivity(), LoginActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                startActivity(intent);
-//                Toasty.success(getActivity(), "Logged out successfully!", Toast.LENGTH_SHORT).show();
 
                 break;
         }
