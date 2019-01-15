@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    >
+    android:background="@color/colorAccent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:ignore="UselessParent">
 
         <!--<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"-->
         <!--android:id="@+id/thread"-->
@@ -20,19 +21,20 @@
         <RelativeLayout
             android:id="@+id/thread"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="60dp"
+            android:alpha=".9"
             android:animateLayoutChanges="true"
-            android:background="@drawable/custom_ripple"
+            android:background="#F3FCFB"
             android:focusable="true"
-            android:paddingBottom="2dp"
             android:paddingLeft="16dp"
+            android:paddingTop="2dp"
             android:paddingRight="16dp"
-            android:paddingTop="2dp">
+            android:paddingBottom="2dp">
 
             <ImageView
                 android:id="@+id/imageView_default_profile"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_centerVertical="true"
                 android:background="@drawable/rounded_textview"
                 android:src="@drawable/default_pic" />
@@ -41,32 +43,19 @@
                 android:id="@+id/textView_client_name"
                 android:layout_width="140dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_alignTop="@+id/imageView_default_profile"
                 android:layout_marginStart="70dp"
-                android:ellipsize="end"
-                android:maxLines="1"
+                android:layout_marginTop="-6dp"
                 android:alpha=".6"
-                android:fontFamily="sans-serif-bold"
+                android:ellipsize="end"
+                android:fontFamily="@font/hintedlainesansregular"
+                android:maxLines="1"
                 android:text="@string/dummy_name"
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/showingSome"
-                android:layout_width="190dp"
-                android:layout_height="40dp"
-                android:layout_above="@+id/textView_type"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="70dp"
-                android:alpha=".7"
-                android:textSize="14sp"
-                android:visibility="visible"
-                android:maxLines="2"
-                android:fontFamily="sans-serif"
-                android:text="Hello i saw a vintage table lamp last night on your site"
-                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/reported"
@@ -74,10 +63,10 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/textView_client_name"
                 android:layout_centerVertical="true"
-                android:text="updated "
-                android:fontFamily="sans-thin"
                 android:alpha=".86"
-                android:visibility="gone"/>
+                android:fontFamily="@font/hintedlainesansregular"
+                android:text="updated "
+                android:visibility="gone" />
 
             <com.github.curioustechizen.ago.RelativeTimeTextView
                 android:id="@+id/textView_ticket_related"
@@ -95,25 +84,50 @@
                 android:id="@+id/textView_ticket_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
+                android:layout_alignStart="@+id/textView_client_name"
                 android:layout_alignTop="@+id/textView_client_name"
-                android:layout_marginEnd="12dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="20dp"
                 android:alpha=".86"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/hintedlainesansregular"
                 android:text="@string/dummy_date"
                 android:textColor="@color/black"
                 android:textSize="12sp" />
 
+            <ImageView
+                android:id="@+id/filethread"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignTop="@+id/textView_client_name"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="-6dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="42dp"
+                android:src="@drawable/ic_attach_file_black_24dp"
+                android:tint="@color/grey_500" />
+
+            <ImageView
+                android:id="@+id/imageviewreply"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignTop="@+id/textView_client_name"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_reply_black_24dp"
+                android:tint="@color/grey_500" />
 
             <TextView
                 android:id="@+id/textView_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
                 android:layout_alignStart="@+id/textView_ticket_time"
+                android:layout_alignParentBottom="true"
+                android:fontFamily="@font/hintedlainesansregular"
                 android:text="@string/internal_note"
                 android:textColor="@color/error_red"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:visibility="gone" />
 
             <!--<TextView-->
             <!--android:id="@+id/textView_client_message_title"-->
@@ -136,81 +150,52 @@
         <LinearLayout
             android:id="@+id/linearWebView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
-            <WebView
-                android:id="@+id/webView"
+            <TextView
+                android:id="@+id/showingSome"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:background="@color/grey_200"
+                android:layout_height="50dp"
+                android:layout_below="@+id/textView_client_name"
+                android:layout_centerHorizontal="true"
+                android:alpha=".5"
+                android:fontFamily="@font/hintedlainesansregular"
+                android:gravity="center_vertical"
+                android:maxLines="1"
                 android:padding="5dp"
-                android:textSize="16sp"
+                android:text="Hello i saw a vintage table lamp last night on your site"
+                android:textColor="@color/black"
+                android:textSize="15sp"
                 android:visibility="visible" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="5dp"
-                android:background="#E0E0E0" />
-
             <RelativeLayout
-                android:id="@+id/attachmentlayout"
-                android:layout_width="250dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="7dp"
-                android:visibility="visible">
+                android:id="@+id/showingWebView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorAccent"
+                android:visibility="gone">
 
-                <TextView
-                    android:id="@+id/textView7"
-                    android:layout_width="wrap_content"
+                <WebView
+                    android:id="@+id/webView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="16dp"
-                    android:layout_toEndOf="@+id/imageView5"
-                    android:background="@drawable/rectanglereachout"
-                    android:text="Attachment"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:padding="5dp"
+                    android:textSize="16sp"
+                    android:visibility="visible" />
 
-                <ImageView
-                    android:id="@+id/imageView5"
-                    android:layout_width="20dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="12dp"
-                    android:src="@drawable/ic_attach_file_black_24dp"
-                    android:tint="@color/faveo" />
-
-                <!--<TextView-->
-                <!--android:id="@+id/attachmentname"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="20dp"-->
-                <!--android:layout_alignParentBottom="true"-->
-                <!--android:layout_toEndOf="@+id/imageView5"-->
-                <!--android:background="@drawable/rectanglereachout"-->
-                <!--android:maxLines="1"-->
-                <!--android:padding="1dp"-->
-                <!--android:text="sample.jpg"-->
-                <!--android:textColor="@color/white" />-->
             </RelativeLayout>
 
-            <View
-                android:id="@+id/attachmentSeparation"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="1dp"
-                android:background="#E0E0E0" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="1dp"
-            android:background="#E0E0E0" />
+            android:layout_height="10dp"
+            android:layout_marginTop="0dp"
+            android:alpha=".2"
+            android:background="@color/grey_500" />
     </LinearLayout>
 
 </LinearLayout>

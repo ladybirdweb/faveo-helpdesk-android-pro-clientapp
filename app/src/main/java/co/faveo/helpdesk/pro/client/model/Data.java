@@ -10,6 +10,11 @@ public class Data {
     public int ID;
     public String name;
 
+    public Data(int ID, String name) {
+        this.ID = ID;
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
@@ -24,11 +29,6 @@ public class Data {
 
     public void setID(int ID) {
         this.ID = ID;
-    }
-
-    public Data(int ID, String name) {
-        this.ID = ID;
-        this.name = name;
     }
 
     @Override

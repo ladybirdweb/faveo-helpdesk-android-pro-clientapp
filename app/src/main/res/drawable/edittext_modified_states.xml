@@ -1,23 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  Copyright (c) 2014-2015 Vitesla
   ~   All rights reserved.
   ~   More information on Vitesla on web at http://vitesla.com
   ~
   -->
 
-<selector
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    >
-    <item
-        android:state_pressed="true"
-        android:drawable="@drawable/edittext_focus"
-        /> <!-- pressed -->
-    <item
-        android:state_focused="true"
-        android:drawable="@drawable/edittext_focus"
-        /> <!-- focused -->
-    <item
-        android:drawable="@drawable/edittext_default"
-        /> <!-- default -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/edittext_focus" android:state_pressed="true" /> <!-- pressed -->
+    <item android:drawable="@drawable/edittext_focus" android:state_focused="true" /> <!-- focused -->
+    <item android:drawable="@drawable/edittext_default" /> <!-- default -->
 </selector>

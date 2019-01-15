@@ -6,13 +6,15 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
+
 import com.crashlytics.android.Crashlytics;
 import com.pixplicity.easyprefs.library.Prefs;
 
-import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
-import co.faveo.helpdesk.pro.client.LocalFileUncaughtExceptionHandler;
-import io.fabric.sdk.android.Fabric;
 import java.io.File;
+
+import co.faveo.helpdesk.pro.client.LocalFileUncaughtExceptionHandler;
+import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
+import io.fabric.sdk.android.Fabric;
 
 
 /**
@@ -24,6 +26,16 @@ import java.io.File;
 public class FaveoApplication extends MultiDexApplication {
     private static FaveoApplication instance;
     InternetReceiver internetReceiver;
+
+    public static Context getContext() {
+        return instance;
+        // or return instance.getApplicationContext();
+    }
+
+    public static synchronized FaveoApplication getInstance() {
+        return instance;
+    }
+
     //    @Override
 //    protected void attachBaseContext(Context base) {
 //        super.attachBaseContext(LocaleHelper.onAttach(base, "de"));
@@ -97,15 +109,6 @@ public class FaveoApplication extends MultiDexApplication {
                 .setUseDefaultSharedPreference(true)
                 .build();
     }
-    public static Context getContext(){
-        return instance;
-        // or return instance.getApplicationContext();
-    }
-
-    public static synchronized FaveoApplication getInstance() {
-        return instance;
-    }
-
 
     /**
      * Deleting the user data while logging out from app.

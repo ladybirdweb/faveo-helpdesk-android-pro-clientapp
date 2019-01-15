@@ -14,8 +14,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.faveo.helpdesk.pro.client.model.AttachmentModel;
 import co.faveo.helpdesk.pro.client.R;
+import co.faveo.helpdesk.pro.client.model.AttachmentModel;
 
 
 /**
@@ -28,7 +28,7 @@ public class AttachmnetAdapter extends ArrayAdapter<AttachmentModel> {
     private List<AttachmentModel> moviesList = new ArrayList<>();
 
     public AttachmnetAdapter(@NonNull Context context, @SuppressLint("SupportAnnotationUsage") @LayoutRes ArrayList<AttachmentModel> list) {
-        super(context, 0 , list);
+        super(context, 0, list);
         mContext = context;
         moviesList = list;
     }
@@ -37,8 +37,8 @@ public class AttachmnetAdapter extends ArrayAdapter<AttachmentModel> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View listItem = convertView;
-        if(listItem == null)
-            listItem = LayoutInflater.from(mContext).inflate(R.layout.listview_attachment_row,parent,false);
+        if (listItem == null)
+            listItem = LayoutInflater.from(mContext).inflate(R.layout.listview_attachment_row, parent, false);
 
         AttachmentModel currentMovie = moviesList.get(position);
 
@@ -46,7 +46,7 @@ public class AttachmnetAdapter extends ArrayAdapter<AttachmentModel> {
 
         try {
             name.setText(currentMovie.getName());
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
 //        if (!currentMovie.getName().equals("")){

@@ -18,6 +18,7 @@ import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
@@ -26,7 +27,6 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -64,21 +64,21 @@ import java.util.List;
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import co.faveo.helpdesk.pro.client.R;
 import co.faveo.helpdesk.pro.client.application.Authenticate;
 import co.faveo.helpdesk.pro.client.application.Constants;
 import co.faveo.helpdesk.pro.client.application.Helpdesk;
-import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
 import co.faveo.helpdesk.pro.client.application.MessageEvent;
-import co.faveo.helpdesk.pro.client.R;
+import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
 import es.dmoral.toasty.Toasty;
 
 public class LoginActivity extends AppCompatActivity {
 
+    public ProgressDialog progressDialogSignIn;
     TextView textViewFieldError, textViewForgotPassword;
     EditText editTextUsername, editTextPassword, editTextAPIkey;
     int paddingTop, paddingBottom;
     ProgressDialog progressDialogVerifyURL;
-    public ProgressDialog progressDialogSignIn;
     ProgressDialog progressDialogBilling;
     ProgressBar progressBarlogin;
     List<String> urlSuggestions;
@@ -87,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
     StringBuilder companyURLUser1;
     String companyURL;
     String companyURL1;
-    int count=0;
+    int count = 0;
     CircularProgressButton buttonSignIn;
     @BindView(R.id.fab_verify_url)
     FloatingActionButton buttonVerifyURL;
@@ -123,6 +123,39 @@ public class LoginActivity extends AppCompatActivity {
     ProgressBar progressBar;
     TextView textViewProgress;
     FABProgressCircle fabProgressCircle;
+    private TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            // check Fields For Empty Values
+            checkFieldsForEmptyValues();
+        }
+    };
+//    private class NewTask extends AsyncTask<String,Void,String>{
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... params) {
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String s) {
+//            super.onPostExecute(s);
+//        }
+//    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,16 +172,16 @@ public class LoginActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
 // finally change the color
-        window.setStatusBarColor(ContextCompat.getColor(LoginActivity.this,R.color.faveo));
-        buttonSignIn= (CircularProgressButton) findViewById(R.id.button_signin);
-        textViewProgress= (TextView) findViewById(R.id.progresstext);
+        window.setStatusBarColor(ContextCompat.getColor(LoginActivity.this, R.color.mainActivityTopBar));
+        buttonSignIn = (CircularProgressButton) findViewById(R.id.button_signin);
+        textViewProgress = (TextView) findViewById(R.id.progresstext);
         ButterKnife.bind(this);
-        progressBar= (ProgressBar) findViewById(R.id.progress_bar);
-        fabProgressCircle= (FABProgressCircle) findViewById(R.id.fabProgressCircle);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        fabProgressCircle = (FABProgressCircle) findViewById(R.id.fabProgressCircle);
         try {
             error = Prefs.getString("NoToken", null);
 //            Log.d("NoToken",error);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
 
@@ -163,18 +196,18 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         url.setVisibility(View.GONE);
-        findHelp= (TextView) findViewById(R.id.helpUrl);
+        findHelp = (TextView) findViewById(R.id.helpUrl);
         findHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(LoginActivity.this,HelpingActivity.class);
+                Intent intent = new Intent(LoginActivity.this, HelpingActivity.class);
                 startActivity(intent);
             }
         });
         flipColor.setBackgroundColor(ContextCompat.getColor(this, R.color.grey_200));
         buttonSignIn.setEnabled(true);
-        editTextCompanyURL= (AutoCompleteTextView) findViewById(R.id.editText_company_url);
-        urlSuggestions=new ArrayList<>();
+        editTextCompanyURL = (AutoCompleteTextView) findViewById(R.id.editText_company_url);
+        urlSuggestions = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<>
                 (this, android.R.layout.simple_dropdown_item_1line, urlSuggestions);
         editTextCompanyURL.setThreshold(1);
@@ -182,7 +215,7 @@ public class LoginActivity extends AppCompatActivity {
         usernameEdittext.addTextChangedListener(mTextWatcher);
         passwordEdittext.addTextChangedListener(mTextWatcher);
         //Prefs.putString("URLneedtoshow",null);
-        editTextCompanyURL.setText(Prefs.getString("URLneedtoshow",null));
+        editTextCompanyURL.setText(Prefs.getString("URLneedtoshow", null));
 
         setUpViews();
         viewflipper.showNext();
@@ -194,7 +227,7 @@ public class LoginActivity extends AppCompatActivity {
             view = new View(this);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        animation= AnimationUtils.loadAnimation(LoginActivity.this,R.anim.shake_error);
+        animation = AnimationUtils.loadAnimation(LoginActivity.this, R.anim.shake_error);
 
         /**
          * This is only for xiaomi devices.For getting the notification
@@ -216,7 +249,7 @@ public class LoginActivity extends AppCompatActivity {
                                 Intent intent = new Intent();
                                 intent.setComponent(new ComponentName("com.miui.securitycenter", "com.miui.permcenter.autostart.AutoStartManagementActivity"));
                                 startActivity(intent);
-                            }catch (ActivityNotFoundException e){
+                            } catch (ActivityNotFoundException e) {
                                 e.printStackTrace();
                             }
                         }
@@ -258,13 +291,13 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //String companyURLUser = editTextCompanyURL.getText().toString();
                 //Prefs.putString("URL",companyURL);
-                companyURL=editTextCompanyURL.getText().toString().trim();
-                Prefs.putString("URLneedtoshow",companyURL);
-                companyURLUser=new StringBuilder(editTextCompanyURL.getText().toString().trim());
-                companyURLUser.insert(0,"https://").toString();
-                companyURLUser1=new StringBuilder(editTextCompanyURL.getText().toString().trim());
-                companyURLUser1.insert(0,"http://");
-                companyURL1=companyURLUser1.toString();
+                companyURL = editTextCompanyURL.getText().toString().trim();
+                Prefs.putString("URLneedtoshow", companyURL);
+                companyURLUser = new StringBuilder(editTextCompanyURL.getText().toString().trim());
+                companyURLUser.insert(0, "https://").toString();
+                companyURLUser1 = new StringBuilder(editTextCompanyURL.getText().toString().trim());
+                companyURLUser1.insert(0, "http://");
+                companyURL1 = companyURLUser1.toString();
                 //companyURL=companyURLUser.toString();
 
                 InputMethodManager inputManager = (InputMethodManager)
@@ -321,8 +354,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
 
 
-                String username=usernameEdittext.getText().toString();
-                String password=passwordEdittext.getText().toString();
+                String username = usernameEdittext.getText().toString();
+                String password = passwordEdittext.getText().toString();
 
 
 //                if (username.equals("")&&password.equals("")){
@@ -336,7 +369,7 @@ public class LoginActivity extends AppCompatActivity {
 //                }
 //
 //             else
-                if (username.equals("")&&password!=null){
+                if (username.equals("") && password != null) {
                     passwordError.setVisibility(View.GONE);
                     usernameEdittext.requestFocus();
                     textInputLayoutUsername.startAnimation(animation);
@@ -352,8 +385,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     //usernameEdittext.setError();
                     //Toasty.warning(LoginActivity.this, "Please provide user name", Toast.LENGTH_LONG).show();
-                }
-                else if (username!=null&&password.equals("")){
+                } else if (username != null && password.equals("")) {
                     userNameError.setVisibility(View.GONE);
                     textInputLayoutPass.startAnimation(animation);
                     passwordEdittext.requestFocus();
@@ -377,8 +409,8 @@ public class LoginActivity extends AppCompatActivity {
 //                    Toasty.warning(LoginActivity.this, "Please provide password", Toast.LENGTH_LONG).show();
 //
 //                }
-                else{
-                    if (InternetReceiver.isConnected()){
+                else {
+                    if (InternetReceiver.isConnected()) {
                         textInputLayoutUsername.setEnabled(false);
                         textInputLayoutPass.setEnabled(false);
                         //buttonSignIn.setText(R.string.signing_in);
@@ -386,8 +418,7 @@ public class LoginActivity extends AppCompatActivity {
                         icon = BitmapFactory.decodeResource(getResources(),
                                 R.drawable.ic_done_white_24dp);
                         new SignIn(LoginActivity.this, username, password).execute();
-                    }
-                    else{
+                    } else {
                         Toasty.warning(LoginActivity.this, getString(R.string.oops_no_internet), Toast.LENGTH_LONG).show();
                     }
                 }
@@ -441,25 +472,263 @@ public class LoginActivity extends AppCompatActivity {
 //        });
 
     }
-//    private class NewTask extends AsyncTask<String,Void,String>{
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//        }
-//
-//        @Override
-//        protected String doInBackground(String... params) {
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String s) {
-//            super.onPostExecute(s);
-//        }
-//    }
+
     /**
-     *Async task is for verifying the url.
+     * This method is for getting the short cut if we are
+     * holding the icon for long time.
+     */
+    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
+    void dynamicShortcut() {
+        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+
+        ShortcutInfo webShortcut = new ShortcutInfo.Builder(this, "Web app")
+                .setShortLabel("Web App")
+                .setLongLabel("Open the web app")
+                .setIcon(Icon.createWithResource(this, R.drawable.add))
+                .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(editTextCompanyURL.getText().toString())))
+                .build();
+
+        shortcutManager.setDynamicShortcuts(Collections.singletonList(webShortcut));
+    }
+
+    /**
+     * To initialize the views.Here we are initializing all
+     * the edit text,progress dialog and other views.
+     */
+    private void setUpViews() {
+
+        progressDialogVerifyURL = new ProgressDialog(this);
+        progressDialogVerifyURL.setMessage(getString(R.string.verifying_url));
+        progressDialogVerifyURL.setCancelable(false);
+
+        progressDialogSignIn = new ProgressDialog(this);
+        progressDialogSignIn.setMessage(getString(R.string.signing_in));
+        progressDialogSignIn.setCancelable(false);
+
+        progressDialogBilling = new ProgressDialog(this);
+        progressDialogBilling.setMessage(getString(R.string.access_checking));
+        progressDialogBilling.setCancelable(false);
+
+
+//        InputFilter filter = new InputFilter() {
+//            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+//                String filtered = "";
+//                for (int i = start; i < end; i++) {
+//                    char character = source.charAt(i);
+//                    if (!Character.isWhitespace(character)) {
+//                        filtered += character;
+//                    }
+//                }
+//
+//                return filtered;
+//            }
+//
+//        };
+
+        // editTextCompanyURL = (EditText) findViewById(R.id.editText_company_url);
+        // editTextCompanyURL.setFilters(new InputFilter[]{filter});
+
+//
+//            if (editTextCompanyURL != null) {
+//                editTextCompanyURL.setText("");
+//                editTextCompanyURL.append("http://");
+//            }
+
+//        String url=Prefs.getString("URL","");
+//        editTextCompanyURL.setText(url);
+//        editTextCompanyURL.requestFocus(url.length());
+
+//        Set<String> set = Prefs.getStringSet("URL_SUG", new HashSet<String>());
+//        urlSuggestions = new ArrayList<>(set);
+//
+
+
+        //viewflipper = (ViewFlipper) findViewById(R.id.viewFlipper);
+        // buttonVerifyURL = (FloatingActionButton) findViewById(R.id.fab_verify_url);
+        //buttonSignIn = (Button) findViewById(R.id.button_1);
+//        paddingTop = editTextUsername.getPaddingTop();
+//        paddingBottom = editTextUsername.getPaddingBottom();
+
+    }
+
+    /**
+     * This button will work after the url is been verified
+     * it will take the user name and password and it will check
+     * it is valid or not.
+     */
+
+
+//    @OnClick(R.id.button_signin)
+//    public void signIn() {
+//        String username = usernameEdittext.getText().toString();
+//        String password = passwordEdittext.getText().toString();
+//        if (InternetReceiver.isConnected()) {
+//            //progressDialogSignIn.show();
+//            textInputLayoutUsername.setEnabled(false);
+//            textInputLayoutPass.setEnabled(false);
+//            buttonSignIn.setText(R.string.signing_in);
+//            new SignIn(LoginActivity.this, username, password).execute();
+//        } else
+//            Toasty.warning(this, getString(R.string.oops_no_internet), Toast.LENGTH_LONG).show();
+//    }
+
+    /**
+     * While resuming it will check if the internet
+     * is available or not.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // register connection status listener
+        //FaveoApplication.getInstance().setInternetListener(this);
+        buttonVerifyURL.setEnabled(true);
+        checkConnection();
+    }
+
+//    private void setNormalStates() {
+//        textViewFieldError.setVisibility(View.INVISIBLE);
+//        editTextUsername.setBackgroundResource(R.drawable.edittext_modified_states);
+//        editTextPassword.setBackgroundResource(R.drawable.edittext_modified_states);
+//        editTextAPIkey.setBackgroundResource(R.drawable.edittext_modified_states);
+//        editTextAPIkey.setPadding(0, paddingTop, 0, paddingBottom);
+//        editTextUsername.setPadding(0, paddingTop, 0, paddingBottom);
+//        editTextPassword.setPadding(0, paddingTop, 0, paddingBottom);
+//    }
+//
+//    private void setUsernameErrorStates() {
+//        textViewFieldError.setText("Please insert username");
+//        textViewFieldError.setVisibility(View.VISIBLE);
+//        editTextUsername.setBackgroundResource(R.drawable.edittext_error_state);
+//        editTextUsername.setPadding(0, paddingTop, 0, paddingBottom);
+//    }
+//
+//    private void setPasswordErrorStates() {
+//        textViewFieldError.setText("Please insert password");
+//        textViewFieldError.setVisibility(View.VISIBLE);
+//        editTextPassword.setBackgroundResource(R.drawable.edittext_error_state);
+//        editTextPassword.setPadding(0, paddingTop, 0, paddingBottom);
+//    }
+
+    /**
+     * For checking if the internet is available or not.
+     */
+    private void checkConnection() {
+        boolean isConnected = InternetReceiver.isConnected();
+        showSnackIfNoInternet(isConnected);
+    }
+
+    /**
+     * Display the snackbar if network connection is not there.
+     *
+     * @param isConnected is a boolean value of network connection.
+     */
+    private void showSnackIfNoInternet(boolean isConnected) {
+        if (!isConnected) {
+            final Snackbar snackbar = Snackbar
+                    .make(findViewById(android.R.id.content), R.string.sry_not_connected_to_internet, Snackbar.LENGTH_INDEFINITE);
+
+            View sbView = snackbar.getView();
+            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+            textView.setTextColor(Color.RED);
+            snackbar.setAction("X", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    snackbar.dismiss();
+                }
+            });
+            snackbar.show();
+        }
+
+    }
+
+    /**
+     * Display the snackbar if network connection is there.
+     *
+     * @param isConnected is a boolean value of network connection.
+     */
+    private void showSnack(boolean isConnected) {
+
+        if (isConnected) {
+
+            Snackbar snackbar = Snackbar
+                    .make(findViewById(android.R.id.content), R.string.connected_to_internet, Snackbar.LENGTH_LONG);
+
+            View sbView = snackbar.getView();
+            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+            textView.setTextColor(Color.WHITE);
+            snackbar.show();
+        } else {
+            showSnackIfNoInternet(false);
+        }
+
+    }
+
+    /**
+     * For checking if the user related fields
+     * are empty or not.
+     */
+    void checkFieldsForEmptyValues() {
+
+        String username = usernameEdittext.getText().toString();
+        String password = passwordEdittext.getText().toString();
+//        if (username.trim().length()==0){
+//            textInputLayoutUsername.setError("Enter your full name");
+//        }
+//        else if (password.trim().length()==0){
+//            tex
+//        }
+//        if (username.trim().length() == 0 || password.trim().length() == 0) {
+//            buttonSignIn.setEnabled(false);
+//        } else {
+//            buttonSignIn.setEnabled(true);
+//        }
+
+        if (username.trim().length() == 0 && password.trim().length() == 0) {
+            buttonSignIn.setEnabled(true);
+        } else {
+            buttonSignIn.setEnabled(true);
+        }
+// else if (username.trim().length() <= 2) {
+//            textInputLayoutUsername.setError("Username must be at least 3 characters");
+//        } else {
+//            textInputLayoutUsername.setError(null);
+//            buttonSignIn.setEnabled(true);
+//        }
+    }
+
+    /**
+     * This method will be called when a MessageEvent is posted (in the UI thread for Toast).
+     */
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+
+        showSnack(event.message);
+    }
+
+//    /**
+//     * Callback will be triggered when there is change in
+//     * network connection
+//     */
+//    @Override
+//    public void onNetworkConnectionChanged(boolean isConnected) {
+//        showSnack(isConnected);
+//    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    /**
+     * Async task is for verifying the url.
      */
     private class VerifyURL extends AsyncTask<String, Void, String> {
         Context context;
@@ -492,7 +761,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toasty.info(context, getString(R.string.apiDisabled), Toast.LENGTH_LONG).show();
                     return;
                 }
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
             if (result == null) {
@@ -503,9 +772,7 @@ public class LoginActivity extends AppCompatActivity {
                 buttonVerifyURL.setEnabled(true);
                 Toasty.warning(context, getString(R.string.invalid_url), Toast.LENGTH_LONG).show();
                 return;
-            }
-
-            else if (result.contains("success")) {
+            } else if (result.contains("success")) {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
                     dynamicShortcut();
@@ -520,13 +787,13 @@ public class LoginActivity extends AppCompatActivity {
                 textViewProgress.setVisibility(View.VISIBLE);
                 //fabProgressCircle.beginFinalAnimation();
                 new VerifyBilling(LoginActivity.this, baseURL).execute();
-                Prefs.putString("companyurl",urlGivenByUser);
+                Prefs.putString("companyurl", urlGivenByUser);
                 Prefs.putString("COMPANY_URL", companyURL + "api/v1/");
                 Constants.URL = Prefs.getString("COMPANY_URL", "");
-                Constants.URL1=Prefs.getString("companyurl",null);
-                Prefs.putString("domain","https://");
-                Prefs.putString("companyUrl",companyURL);
-                Log.d("companyurl",companyURL);
+                Constants.URL1 = Prefs.getString("companyurl", null);
+                Prefs.putString("domain", "https://");
+                Prefs.putString("companyUrl", companyURL);
+                Log.d("companyurl", companyURL);
 
 //                if (BuildConfig.DEBUG) {
 //                    viewflipper.showNext();
@@ -566,23 +833,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
-    /**
-     * This method is for getting the short cut if we are
-     * holding the icon for long time.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.N_MR1)
-    void dynamicShortcut() {
-        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-
-        ShortcutInfo webShortcut = new ShortcutInfo.Builder(this, "Web app")
-                .setShortLabel("Web App")
-                .setLongLabel("Open the web app")
-                .setIcon(Icon.createWithResource(this, R.drawable.add))
-                .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(editTextCompanyURL.getText().toString())))
-                .build();
-
-        shortcutManager.setDynamicShortcuts(Collections.singletonList(webShortcut));
-    }
 
     /**
      * This async task is for verifying the url,for paid version only.
@@ -619,7 +869,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
             if (result.contains("success")) {
-                Prefs.putString("BillingUrl",baseURL);
+                Prefs.putString("BillingUrl", baseURL);
                 buttonVerifyURL.setVisibility(View.VISIBLE);
                 textViewProgress.setVisibility(View.GONE);
                 // progressBar.setVisibility(View.GONE);
@@ -653,27 +903,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
-
-    /**
-     * This button will work after the url is been verified
-     * it will take the user name and password and it will check
-     * it is valid or not.
-     */
-
-
-//    @OnClick(R.id.button_signin)
-//    public void signIn() {
-//        String username = usernameEdittext.getText().toString();
-//        String password = passwordEdittext.getText().toString();
-//        if (InternetReceiver.isConnected()) {
-//            //progressDialogSignIn.show();
-//            textInputLayoutUsername.setEnabled(false);
-//            textInputLayoutPass.setEnabled(false);
-//            buttonSignIn.setText(R.string.signing_in);
-//            new SignIn(LoginActivity.this, username, password).execute();
-//        } else
-//            Toasty.warning(this, getString(R.string.oops_no_internet), Toast.LENGTH_LONG).show();
-//    }
 
     /**
      * Post the user credentials to server. This will execute after the
@@ -762,17 +991,17 @@ public class LoginActivity extends AppCompatActivity {
             try {
 
                 JSONObject jsonObject = new JSONObject(result);
-                Log.d("camehere","true");
+                Log.d("camehere", "true");
                 Prefs.putString("BASE_URL", Constants.URL);
-                JSONObject jsonObject1=jsonObject.getJSONObject("data");
+                JSONObject jsonObject1 = jsonObject.getJSONObject("data");
                 String token = jsonObject1.getString("token");
                 JSONObject jsonObject2 = jsonObject1.getJSONObject("user");
                 String userID = jsonObject2.getString("id");
-                Prefs.putString("clientId",userID);
+                Prefs.putString("clientId", userID);
                 String profile_pic = jsonObject2.getString("profile_pic");
-                Prefs.putString("profilePicture",profile_pic);
+                Prefs.putString("profilePicture", profile_pic);
                 String role = jsonObject2.getString("role");
-                Log.d("ROLE",role);
+                Log.d("ROLE", role);
 //                if (role.equals("agent")||role.equals("admin")){
 //                    textInputLayoutUsername.setEnabled(true);
 //                    textInputLayoutPass.setEnabled(true);
@@ -783,35 +1012,35 @@ public class LoginActivity extends AppCompatActivity {
 //
 //                }
 
-                    String firstName = jsonObject2.getString("first_name");
-                    String lastName = jsonObject2.getString("last_name");
-                    String userName = jsonObject2.getString("user_name");
-                    String email=jsonObject2.getString("email");
-                    String clientname;
-                    if (firstName == null || firstName.equals(""))
-                        clientname = userName;
-                    else
-                        clientname = firstName + " " + lastName;
-                    Prefs.putString("clientNameForFeedback",clientname);
-                    Prefs.putString("emailForFeedback",email);
-                    Prefs.putString("PROFILE_NAME",clientname);
-                    SharedPreferences.Editor authenticationEditor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
-                    authenticationEditor.putString("ID", userID);
-                    authenticationEditor.putString("TOKEN", token);
-                    authenticationEditor.putString("USERNAME", username);
-                    authenticationEditor.putString("PASSWORD", password);
-                    authenticationEditor.putBoolean("LOGIN_COMPLETE", true);
-                    authenticationEditor.putString("PROFILE_PIC", profile_pic);
-                    authenticationEditor.putString("ROLE", role);
-                    authenticationEditor.putString("PROFILE_NAME", clientname);
-                    //authenticationEditor.putString("AGENT_SIGN", jsonObject1.getString("agent_sign"));
-                    authenticationEditor.apply();
+                String firstName = jsonObject2.getString("first_name");
+                String lastName = jsonObject2.getString("last_name");
+                String userName = jsonObject2.getString("user_name");
+                String email = jsonObject2.getString("email");
+                String clientname;
+                if (firstName == null || firstName.equals(""))
+                    clientname = userName;
+                else
+                    clientname = firstName + " " + lastName;
+                Prefs.putString("clientNameForFeedback", clientname);
+                Prefs.putString("emailForFeedback", email);
+                Prefs.putString("PROFILE_NAME", clientname);
+                SharedPreferences.Editor authenticationEditor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+                authenticationEditor.putString("ID", userID);
+                authenticationEditor.putString("TOKEN", token);
+                authenticationEditor.putString("USERNAME", username);
+                authenticationEditor.putString("PASSWORD", password);
+                authenticationEditor.putBoolean("LOGIN_COMPLETE", true);
+                authenticationEditor.putString("PROFILE_PIC", profile_pic);
+                authenticationEditor.putString("ROLE", role);
+                authenticationEditor.putString("PROFILE_NAME", clientname);
+                //authenticationEditor.putString("AGENT_SIGN", jsonObject1.getString("agent_sign"));
+                authenticationEditor.apply();
 //                    Prefs.putString("FCMtoken", FirebaseInstanceId.getInstance().getToken());
 //                    new SendingFCM(LoginActivity.this, FirebaseInstanceId.getInstance().getToken()).execute();
 
-                    Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
+                Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
 
             } catch (JSONException e) {
                 textInputLayoutUsername.setEnabled(true);
@@ -820,7 +1049,7 @@ public class LoginActivity extends AppCompatActivity {
                 buttonSignIn.revertAnimation();
                 buttonSignIn.setText(getString(R.string.sign_in)
                 );
-                Toasty.info(getApplicationContext(),"Please check either your account status or your credentials",Toast.LENGTH_SHORT).show();
+                Toasty.info(getApplicationContext(), "Please check either your account status or your credentials", Toast.LENGTH_SHORT).show();
                 //buttonSignIn.setText(getString(R.string.sign_in));
                 //buttonSignIn.setText(getString(R.string.sign_in));
                 //Toast.makeText(LoginActivity.this, "Wrong Credentials", Toast.LENGTH_SHORT).show();
@@ -841,167 +1070,6 @@ public class LoginActivity extends AppCompatActivity {
 
         }
     }
-
-//    private void setNormalStates() {
-//        textViewFieldError.setVisibility(View.INVISIBLE);
-//        editTextUsername.setBackgroundResource(R.drawable.edittext_modified_states);
-//        editTextPassword.setBackgroundResource(R.drawable.edittext_modified_states);
-//        editTextAPIkey.setBackgroundResource(R.drawable.edittext_modified_states);
-//        editTextAPIkey.setPadding(0, paddingTop, 0, paddingBottom);
-//        editTextUsername.setPadding(0, paddingTop, 0, paddingBottom);
-//        editTextPassword.setPadding(0, paddingTop, 0, paddingBottom);
-//    }
-//
-//    private void setUsernameErrorStates() {
-//        textViewFieldError.setText("Please insert username");
-//        textViewFieldError.setVisibility(View.VISIBLE);
-//        editTextUsername.setBackgroundResource(R.drawable.edittext_error_state);
-//        editTextUsername.setPadding(0, paddingTop, 0, paddingBottom);
-//    }
-//
-//    private void setPasswordErrorStates() {
-//        textViewFieldError.setText("Please insert password");
-//        textViewFieldError.setVisibility(View.VISIBLE);
-//        editTextPassword.setBackgroundResource(R.drawable.edittext_error_state);
-//        editTextPassword.setPadding(0, paddingTop, 0, paddingBottom);
-//    }
-
-    /**
-     * To initialize the views.Here we are initializing all
-     * the edit text,progress dialog and other views.
-     */
-    private void setUpViews() {
-
-        progressDialogVerifyURL = new ProgressDialog(this);
-        progressDialogVerifyURL.setMessage(getString(R.string.verifying_url));
-        progressDialogVerifyURL.setCancelable(false);
-
-        progressDialogSignIn = new ProgressDialog(this);
-        progressDialogSignIn.setMessage(getString(R.string.signing_in));
-        progressDialogSignIn.setCancelable(false);
-
-        progressDialogBilling = new ProgressDialog(this);
-        progressDialogBilling.setMessage(getString(R.string.access_checking));
-        progressDialogBilling.setCancelable(false);
-
-
-//        InputFilter filter = new InputFilter() {
-//            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-//                String filtered = "";
-//                for (int i = start; i < end; i++) {
-//                    char character = source.charAt(i);
-//                    if (!Character.isWhitespace(character)) {
-//                        filtered += character;
-//                    }
-//                }
-//
-//                return filtered;
-//            }
-//
-//        };
-
-        // editTextCompanyURL = (EditText) findViewById(R.id.editText_company_url);
-        // editTextCompanyURL.setFilters(new InputFilter[]{filter});
-
-//
-//            if (editTextCompanyURL != null) {
-//                editTextCompanyURL.setText("");
-//                editTextCompanyURL.append("http://");
-//            }
-
-//        String url=Prefs.getString("URL","");
-//        editTextCompanyURL.setText(url);
-//        editTextCompanyURL.requestFocus(url.length());
-
-//        Set<String> set = Prefs.getStringSet("URL_SUG", new HashSet<String>());
-//        urlSuggestions = new ArrayList<>(set);
-//
-
-
-
-        //viewflipper = (ViewFlipper) findViewById(R.id.viewFlipper);
-        // buttonVerifyURL = (FloatingActionButton) findViewById(R.id.fab_verify_url);
-        //buttonSignIn = (Button) findViewById(R.id.button_1);
-//        paddingTop = editTextUsername.getPaddingTop();
-//        paddingBottom = editTextUsername.getPaddingBottom();
-
-    }
-
-    /**
-     * While resuming it will check if the internet
-     * is available or not.
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // register connection status listener
-        //FaveoApplication.getInstance().setInternetListener(this);
-        buttonVerifyURL.setEnabled(true);
-        checkConnection();
-    }
-
-    /**
-     * For checking if the internet is available or not.
-     */
-    private void checkConnection() {
-        boolean isConnected = InternetReceiver.isConnected();
-        showSnackIfNoInternet(isConnected);
-    }
-
-    /**
-     * Display the snackbar if network connection is not there.
-     *
-     * @param isConnected is a boolean value of network connection.
-     */
-    private void showSnackIfNoInternet(boolean isConnected) {
-        if (!isConnected) {
-            final Snackbar snackbar = Snackbar
-                    .make(findViewById(android.R.id.content), R.string.sry_not_connected_to_internet, Snackbar.LENGTH_INDEFINITE);
-
-            View sbView = snackbar.getView();
-            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-            textView.setTextColor(Color.RED);
-            snackbar.setAction("X", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    snackbar.dismiss();
-                }
-            });
-            snackbar.show();
-        }
-
-    }
-
-    /**
-     * Display the snackbar if network connection is there.
-     *
-     * @param isConnected is a boolean value of network connection.
-     */
-    private void showSnack(boolean isConnected) {
-
-        if (isConnected) {
-
-            Snackbar snackbar = Snackbar
-                    .make(findViewById(android.R.id.content), R.string.connected_to_internet, Snackbar.LENGTH_LONG);
-
-            View sbView = snackbar.getView();
-            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-            textView.setTextColor(Color.WHITE);
-            snackbar.show();
-        } else {
-            showSnackIfNoInternet(false);
-        }
-
-    }
-
-//    /**
-//     * Callback will be triggered when there is change in
-//     * network connection
-//     */
-//    @Override
-//    public void onNetworkConnectionChanged(boolean isConnected) {
-//        showSnack(isConnected);
-//    }
 
     /**
      * To send the FCM token to server.This is required
@@ -1036,79 +1104,6 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("RESPONSE_FCM_FAILS", "" + result);
             }
         }
-    }
-
-    /**
-     * For checking if the user related fields
-     * are empty or not.
-     */
-    void checkFieldsForEmptyValues() {
-
-        String username = usernameEdittext.getText().toString();
-        String password = passwordEdittext.getText().toString();
-//        if (username.trim().length()==0){
-//            textInputLayoutUsername.setError("Enter your full name");
-//        }
-//        else if (password.trim().length()==0){
-//            tex
-//        }
-//        if (username.trim().length() == 0 || password.trim().length() == 0) {
-//            buttonSignIn.setEnabled(false);
-//        } else {
-//            buttonSignIn.setEnabled(true);
-//        }
-
-        if (username.trim().length() == 0 && password.trim().length() == 0) {
-            buttonSignIn.setEnabled(true);
-        }
-
-        else{
-            buttonSignIn.setEnabled(true);
-        }
-// else if (username.trim().length() <= 2) {
-//            textInputLayoutUsername.setError("Username must be at least 3 characters");
-//        } else {
-//            textInputLayoutUsername.setError(null);
-//            buttonSignIn.setEnabled(true);
-//        }
-    }
-
-    private TextWatcher mTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            // check Fields For Empty Values
-            checkFieldsForEmptyValues();
-        }
-    };
-
-    /**
-     * This method will be called when a MessageEvent is posted (in the UI thread for Toast).
-     */
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvent event) {
-
-        showSnack(event.message);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        EventBus.getDefault().unregister(this);
-        super.onStop();
     }
 
 

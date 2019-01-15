@@ -24,7 +24,7 @@ import es.dmoral.toasty.Toasty;
  * A simple {@link Fragment} subclass.
  */
 public class ConfirmationDialog extends DialogFragment {
-private Context context;
+    private Context context;
 
     public ConfirmationDialog() {
         // Required empty public constructor
@@ -34,7 +34,7 @@ private Context context;
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.confirmation);
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setMessage(R.string.sure);
@@ -45,9 +45,9 @@ private Context context;
                         (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.cancelAll();
                 //FaveoApplication.getInstance().clearApplicationData();
-                String url=Prefs.getString("URLneedtoshow",null);
+                String url = Prefs.getString("URLneedtoshow", null);
                 Prefs.clear();
-                Prefs.putString("URLneedtoshow",url);
+                Prefs.putString("URLneedtoshow", url);
                 //getActivity().getSharedPreferences(Constants.PREFERENCE, Context.MODE_PRIVATE).edit().clear().apply();
 
                 Intent intent = new Intent(getActivity(), LoginActivity.class);

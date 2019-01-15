@@ -1,116 +1,124 @@
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".activity.CreateTicketActivity"
-        tools:showIn="@layout/activity_create_ticket">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".activity.CreateTicketActivity"
+    tools:showIn="@layout/activity_create_ticket">
 
-        <android.support.v4.widget.NestedScrollView
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:overScrollMode="never">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fillViewport="true"
-            android:overScrollMode="never">
+            android:background="@color/windowBackground"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/windowBackground"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="36dp"
-                    android:background="#f2f2f2">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="17dp"
-                        android:layout_marginStart="17dp"
-                        android:text="@string/email"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginRight="8dp"
-                        android:text="@string/required"
-                        android:textSize="12sp" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="true"
-                    android:background="#F8F9F9"
-                    android:focusableInTouchMode="true"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/email_edittext"
-                        android:layout_width="350dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        android:background="@android:color/transparent"
-                        android:cursorVisible="true"
-                        android:imeOptions="actionNext"
-                        android:textColor="@drawable/edit_text_selector"
-                        android:inputType="textEmailAddress"
-                        android:nextFocusForward="@+id/editText_firstname"
-                        android:textCursorDrawable="@drawable/color_cursor"
-                        android:textSize="16sp"
-                       />
-
-
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="36dp"
-                    android:background="#f2f2f2">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="17dp"
-                    android:layout_marginStart="17dp"
-                    android:text="@string/first_name"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                android:layout_height="36dp"
+                android:background="@color/colorAccent">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
-                    android:text="@string/required"
-                    android:textSize="12sp" />
+                    android:layout_gravity="center"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginLeft="17dp"
+                    android:fontFamily="@font/hintedlainesansregular"
+                    android:text="@string/email"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_marginEnd="8dp"-->
+                <!--android:layout_marginRight="8dp"-->
+                <!--android:text="@string/required"-->
+                <!--android:textSize="12sp" />-->
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/email_edittext"
+                    android:layout_width="350dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:background="@android:color/transparent"
+                    android:cursorVisible="true"
+                    android:imeOptions="actionNext"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@drawable/edit_text_selector"
+                    android:textCursorDrawable="@drawable/color_cursor"
+                    android:textSize="16sp" />
+
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:alpha=".3"
+                android:background="@color/grey_500"></View>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:background="@color/colorAccent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="17dp"
+                    android:layout_marginLeft="17dp"
+                    android:fontFamily="@font/hintedlainesansregular"
+                    android:text="@string/first_name"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentEnd="true"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_marginEnd="8dp"-->
+                <!--android:layout_marginRight="8dp"-->
+                <!--android:text="@string/required"-->
+                <!--android:textSize="12sp" />-->
             </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
                 android:focusable="true"
-                android:background="#F8F9F9"
                 android:focusableInTouchMode="true">
 
                 <EditText
@@ -121,40 +129,48 @@
                     android:layout_marginRight="16dp"
                     android:background="@android:color/transparent"
                     android:imeOptions="actionNext"
-                    android:textColor="@drawable/edit_text_selector"
                     android:inputType="textPersonName"
                     android:nextFocusForward="@+id/lname_edittext"
+                    android:textColor="@drawable/edit_text_selector"
                     android:textCursorDrawable="@drawable/color_cursor"
-                    android:textSize="16sp"
-                    />
+                    android:textSize="16sp" />
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:alpha=".3"
+                android:background="@color/grey_500"></View>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
-                android:background="#f2f2f2">
+                android:background="@color/colorAccent">
 
                 <TextView
+                    android:id="@+id/subjectheader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="17dp"
                     android:layout_marginStart="17dp"
+                    android:layout_marginLeft="17dp"
+                    android:fontFamily="@font/hintedlainesansregular"
                     android:text="@string/subjectForCreate"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_alignTop="@+id/subjectheader"
+                    android:layout_toEndOf="@+id/subjectheader"
+                    android:fontFamily="@font/hintedlainesansregular"
+                    android:src="@drawable/ic_star_black_24dp"
                     android:text="@string/required"
                     android:textSize="12sp" />
             </RelativeLayout>
@@ -172,40 +188,52 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:background="@android:color/transparent"
+                    android:fontFamily="@font/hintedlainesansregular"
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
-                    android:nextFocusForward="@+id/msg_edittext"
                     android:nextFocusDown="@+id/spinner_pri"
+                    android:nextFocusForward="@+id/msg_edittext"
                     android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="16sp" />
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:alpha=".3"
+                android:background="@color/grey_500">
+
+            </View>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
-                android:background="#f2f2f2">
+                android:background="@color/colorAccent">
 
                 <TextView
+                    android:id="@+id/priorityheader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="17dp"
                     android:layout_marginStart="17dp"
+                    android:layout_marginLeft="17dp"
+                    android:fontFamily="@font/hintedlainesansregular"
                     android:text="@string/priority"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_alignTop="@+id/priorityheader"
+                    android:layout_toEndOf="@+id/priorityheader"
+                    android:fontFamily="@font/hintedlainesansregular"
+                    android:src="@drawable/ic_star_black_24dp"
                     android:text="@string/required"
                     android:textSize="12sp" />
             </RelativeLayout>
@@ -218,38 +246,48 @@
                     android:id="@+id/spinner_pri"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
-                    android:nextFocusForward="@+id/spinner_help"
-                    />
+                    android:layout_marginLeft="16dp"
+                    android:nextFocusForward="@+id/spinner_help" />
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:alpha=".3"
+                android:background="@color/grey_500">
+
+            </View>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
-                android:background="#f2f2f2">
+                android:background="@color/colorAccent">
 
                 <TextView
+                    android:id="@+id/helptopicheader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="17dp"
                     android:layout_marginStart="17dp"
+                    android:layout_marginLeft="17dp"
+                    android:fontFamily="@font/hintedlainesansregular"
                     android:text="@string/helptopic"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_alignTop="@+id/helptopicheader"
+                    android:layout_toEndOf="@+id/helptopicheader"
+                    android:fontFamily="@font/hintedlainesansregular"
+                    android:src="@drawable/ic_star_black_24dp"
                     android:text="@string/required"
                     android:textSize="12sp" />
             </RelativeLayout>
@@ -262,12 +300,20 @@
                     android:id="@+id/spinner_help"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
-                    android:nextFocusForward="@+id/msg_edittext"
-                    />
+                    android:layout_marginLeft="16dp"
+                    android:nextFocusForward="@+id/msg_edittext" />
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:alpha=".3"
+                android:background="@color/grey_500">
+
+            </View>
             <!--<RelativeLayout-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="36dp"-->
@@ -316,29 +362,29 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
-                android:background="#f2f2f2">
+                android:background="@color/colorAccent">
 
                 <TextView
+                    android:id="@+id/messageheader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="17dp"
                     android:layout_marginStart="17dp"
+                    android:layout_marginLeft="17dp"
                     android:text="@string/message"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_alignTop="@+id/messageheader"
+                    android:layout_toEndOf="@+id/messageheader"
+                    android:fontFamily="@font/hintedlainesansregular"
+                    android:src="@drawable/ic_star_black_24dp"
                     android:text="@string/required"
                     android:textSize="12sp" />
             </RelativeLayout>
@@ -352,19 +398,24 @@
                 <EditText
                     android:id="@+id/msg_edittext"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="70dp"
                     android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
                     android:layout_marginTop="4dp"
+                    android:layout_marginRight="16dp"
                     android:background="@android:color/transparent"
                     android:ems="10"
                     android:enabled="true"
+                    android:fontFamily="@font/hintedlainesansregular"
                     android:gravity="top"
                     android:imeOptions="actionDone"
                     android:inputType="textMultiLine"
                     android:isScrollContainer="true"
                     android:maxLines="14"
                     android:minLines="8"
+                    android:nestedScrollingEnabled="true"
+                    android:overScrollMode="always"
+                    android:scrollbarStyle="insideInset"
+                    android:scrollbars="vertical"
                     android:textCursorDrawable="@drawable/color_cursor"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -374,11 +425,10 @@
                 android:id="@+id/attachment_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_marginLeft="5dp"
-                android:visibility="gone"
+                android:layout_marginTop="16dp"
                 android:background="@color/grey_200"
-                >
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/attachment_name"
@@ -389,8 +439,8 @@
                     android:background="@color/grey_200"
                     android:ellipsize="end"
                     android:gravity="center"
-                    android:padding="5dp"
                     android:maxLines="1"
+                    android:padding="5dp"
                     android:text="@string/img_name"
                     android:textAlignment="center"
                     android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
@@ -398,16 +448,16 @@
 
 
                 <!--<TextView-->
-                    <!--android:id="@+id/attachment_size"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_below="@+id/attachment_name"-->
-                    <!--android:layout_marginEnd="17dp"-->
-                    <!--android:layout_toStartOf="@+id/attachment_close"-->
-                    <!--android:background="@color/grey_200"-->
-                    <!--android:gravity="center"-->
-                    <!--android:text="@string/_300_kb"-->
-                    <!--android:textSize="12sp" />-->
+                <!--android:id="@+id/attachment_size"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_below="@+id/attachment_name"-->
+                <!--android:layout_marginEnd="17dp"-->
+                <!--android:layout_toStartOf="@+id/attachment_close"-->
+                <!--android:background="@color/grey_200"-->
+                <!--android:gravity="center"-->
+                <!--android:text="@string/_300_kb"-->
+                <!--android:textSize="12sp" />-->
 
                 <ImageButton
                     android:id="@+id/attachment_close"

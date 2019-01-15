@@ -1,10 +1,8 @@
 package co.faveo.helpdesk.pro.client.activity;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,14 +15,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
-import android.widget.VideoView;
 
 import com.kishan.askpermission.AskPermission;
 import com.kishan.askpermission.ErrorCallback;
@@ -37,34 +33,27 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URLConnection;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import co.faveo.helpdesk.pro.client.model.AttachmentModel;
 import co.faveo.helpdesk.pro.client.R;
 import co.faveo.helpdesk.pro.client.adapter.AttachmnetAdapter;
+import co.faveo.helpdesk.pro.client.model.AttachmentModel;
 import es.dmoral.toasty.Toasty;
 
 public class ShowingAttachment extends AppCompatActivity implements PermissionCallback, ErrorCallback {
-    ImageView imageView;
-    Toolbar toolbar;
-    DecimalFormat df;
-    TextView textView;
-    WebView textViewFileShow;
-    String title, base64String;
-    Context context;
-    MediaPlayer mediaPlayer;
-    String type;
-    VideoView videoView;
-    byte[] decodedString;
-    private static final int PICKFILE_REQUEST_CODE = 1234;
-  String file;
     static final Integer WRITE_EXST = 0x3;
     static final Integer READ_EXST = 0x4;
-  AttachmnetAdapter attachmnetAdapter;
-  ArrayList<AttachmentModel> attachmentModels;
-  String multipleName,multipleFile;
-  String removeComma,removeCommaFile;
+    private static final int PICKFILE_REQUEST_CODE = 1234;
+    ImageView imageView;
+    Toolbar toolbar;
+    TextView textView;
+    String title;
+    String type;
+    String file;
+    AttachmnetAdapter attachmnetAdapter;
+    ArrayList<AttachmentModel> attachmentModels;
+    String multipleName, multipleFile;
+    String removeComma, removeCommaFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,31 +66,31 @@ public class ShowingAttachment extends AppCompatActivity implements PermissionCa
 
 // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(ContextCompat.getColor(ShowingAttachment.this,R.color.faveo));
+        window.setStatusBarColor(ContextCompat.getColor(ShowingAttachment.this, R.color.mainActivityTopBar));
         ListView listView = (ListView) findViewById(R.id.attachment_list);
         reqPermissionCamera();
 //        if (shouldAskPermissions()) {
 //            askPermissions();
 //        }
         try {
-            multipleName= Prefs.getString("multipleName",null);
-            multipleFile= Prefs.getString("multipleFile",null);
-            removeComma=multipleName.substring(0,multipleName.length()-1);
-            removeCommaFile=multipleFile.substring(0,multipleFile.length()-1);
-            attachmentModels=new ArrayList<>();
-            String[] fileArray=removeCommaFile.split(",");
+            multipleName = Prefs.getString("multipleName", null);
+            multipleFile = Prefs.getString("multipleFile", null);
+            removeComma = multipleName.substring(0, multipleName.length() - 1);
+            removeCommaFile = multipleFile.substring(0, multipleFile.length() - 1);
+            attachmentModels = new ArrayList<>();
+            String[] fileArray = removeCommaFile.split(",");
             String[] animalsArray = removeComma.split(",");
-            for (int i=0;i<animalsArray.length;i++){
-                title=animalsArray[i];
-                file=fileArray[i];
-                Log.d("title",title);
-                attachmentModels.add(new AttachmentModel(title,file));
+            for (int i = 0; i < animalsArray.length; i++) {
+                title = animalsArray[i];
+                file = fileArray[i];
+                Log.d("title", title);
+                attachmentModels.add(new AttachmentModel(title, file));
             }
-            Log.d("multipleN",removeComma);
+            Log.d("multipleN", removeComma);
             //title = Prefs.getString("fileName", null);
             //base64String = Prefs.getString("file", null);
             type = Prefs.getString("type", null);
-            file= Prefs.getString("file",null);
+            file = Prefs.getString("file", null);
             Log.d("type", type);
             Log.d("imagefile", Prefs.getString("base64Image", null));
         } catch (NullPointerException e) {
@@ -113,34 +102,31 @@ public class ShowingAttachment extends AppCompatActivity implements PermissionCa
 
         //attachmentModels.add(new AttachmentModel("second.jpg","secondfile_base64"));
 
-        attachmnetAdapter = new AttachmnetAdapter(this,attachmentModels);
+        attachmnetAdapter = new AttachmnetAdapter(this, attachmentModels);
         listView.setAdapter(attachmnetAdapter);
-
-
-
 
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                AttachmentModel attachmentModel=attachmentModels.get(i);
-                                String title;
+                AttachmentModel attachmentModel = attachmentModels.get(i);
+                String title;
                 StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
                 StrictMode.setVmPolicy(builder.build());
                 byte[] decodedString;
                 String base64String;
                 //Intent intent=new Intent(view.getContext(), ShowingAttachment.class);
-                title=attachmentModel.getName();
-                base64String=attachmentModel.getFile();
+                title = attachmentModel.getName();
+                base64String = attachmentModel.getFile();
                 decodedString = Base64.decode(base64String, Base64.DEFAULT);
 
                 try {
                     String path = Environment.getExternalStorageDirectory().getAbsolutePath();
-                    File myFile = new File(path+"/"+title);
-                    File file = new File(path+"/"+title);
+                    File myFile = new File(path + "/" + title);
+                    File file = new File(path + "/" + title);
                     Uri uri1 = Uri.fromFile(file);
-                    Log.d("URI",uri1.toString());
+                    Log.d("URI", uri1.toString());
                     myFile.createNewFile();
                     FileOutputStream fOut = new FileOutputStream(myFile);
                     fOut.write(decodedString);
@@ -150,8 +136,9 @@ public class ShowingAttachment extends AppCompatActivity implements PermissionCa
                     fOut.close();
                     Intent myIntent = new Intent(Intent.ACTION_VIEW);
                     myIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    String mime= URLConnection.guessContentTypeFromStream(new FileInputStream(myFile));
-                    if(mime==null) mime=URLConnection.guessContentTypeFromName(myFile.getName());
+                    String mime = URLConnection.guessContentTypeFromStream(new FileInputStream(myFile));
+                    if (mime == null)
+                        mime = URLConnection.guessContentTypeFromName(myFile.getName());
                     myIntent.setDataAndType(Uri.fromFile(myFile), mime);
                     view.getContext().startActivity(myIntent);
                     //view.getContext().startActivity(Intent.createChooser(myIntent, "Choose an app to open with"));
@@ -224,7 +211,7 @@ public class ShowingAttachment extends AppCompatActivity implements PermissionCa
     }
 
     private void reqPermissionCamera() {
-        new AskPermission.Builder(this).setPermissions(Manifest.permission.CAMERA,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        new AskPermission.Builder(this).setPermissions(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .setCallback(this)
                 .setErrorCallback(this)
                 .request(PICKFILE_REQUEST_CODE);
@@ -266,7 +253,7 @@ public class ShowingAttachment extends AppCompatActivity implements PermissionCa
 
     @Override
     public void onPermissionsDenied(int requestCode) {
-        Toasty.warning(ShowingAttachment.this,getString(R.string.permission_camera_denied),Toast.LENGTH_SHORT).show();
+        Toasty.warning(ShowingAttachment.this, getString(R.string.permission_camera_denied), Toast.LENGTH_SHORT).show();
         return;
     }
 

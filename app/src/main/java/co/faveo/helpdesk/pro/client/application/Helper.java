@@ -24,8 +24,9 @@ import co.faveo.helpdesk.pro.client.model.TicketOverview;
 public class Helper {
     /**
      * Tickets Page.
+     *
      * @param jsonArray refers to the array of JSON elements.
-     * @param i position of the element in array.
+     * @param i         position of the element in array.
      * @return object for ticket overview.
      */
     public static TicketOverview parseTicketOverview(JSONArray jsonArray, int i) {
@@ -40,7 +41,7 @@ public class Helper {
             String ticketNumber = jsonArray.getJSONObject(i).getString("ticket_number");
             String ID = jsonArray.getJSONObject(i).getString("id");
             //String title = jsonArray.getJSONObject(i).getString("ticket_title");
-            String title=jsonArray.getJSONObject(i).getString("title");
+            String title = jsonArray.getJSONObject(i).getString("title");
 
 //            String createdAt = jsonArray.getJSONObject(i).getString("created_at");
 //            String departmentName = jsonArray.getJSONObject(i).getString("department_name");
@@ -52,6 +53,9 @@ public class Helper {
             String updatedAt = jsonArray.getJSONObject(i).getString("updated_at");
             String priorityColor = jsonArray.getJSONObject(i).getString("priority_color");
             //String attachment = jsonArray.getJSONObject(i).getString("attachment_count");
+            String priorityname = jsonArray.getJSONObject(i).getString("priority_name");
+            String sourcename = jsonArray.getJSONObject(i).getString("source_name");
+            String departmentname = jsonArray.getJSONObject(i).getString("dept_name");
             String profilePic = null;
             //String last_replier=jsonArray.getJSONObject(i).getString("last_replier");
 //            if (jsonArray.getJSONObject(i).getJSONObject("assignee").getString("first_name").equals("")&& jsonArray.getJSONObject(i).getJSONObject("assignee").getString("last_name").equals("")){
@@ -101,16 +105,12 @@ public class Helper {
 //            }
 
 
-
-
-            if (jsonArray.getJSONObject(i).get("assignee")==JSONObject.NULL) {
-                Log.d("thisblock","5");
-                agentName="Unassigned";
+            if (jsonArray.getJSONObject(i).get("assignee") == JSONObject.NULL) {
+                Log.d("thisblock", "5");
+                agentName = "Unassigned";
                 //profilePic =jsonArray.getJSONObject(i).getJSONObject("assignee").getString("profile_pic");
 
-            }
-
-            else{
+            } else {
                 if (jsonArray.getJSONObject(i).getJSONObject("assignee").getString("first_name").equals("") && jsonArray.getJSONObject(i).getJSONObject("assignee").getString("last_name").equals("")) {
                     agentName = jsonArray.getJSONObject(i).getJSONObject("assignee").getString("user_name");
                     Log.d("thisblock", "0");
@@ -138,26 +138,22 @@ public class Helper {
             //String agentname;
 
             String agentname;
-            if (agentName.equals("null null")){
-                agentname="Unassigned";
-            }
-            else if (agentName.equals("nullnull")){
-                agentname="Unassigned";
-            }
-            else if (agentName.equals("null")){
-                agentname="Unassigned";
-            }
-            else{
-                agentname=agentName;
+            if (agentName.equals("null null")) {
+                agentname = "Unassigned";
+            } else if (agentName.equals("nullnull")) {
+                agentname = "Unassigned";
+            } else if (agentName.equals("null")) {
+                agentname = "Unassigned";
+            } else {
+                agentname = agentName;
             }
 
             if (firstName == null || firstName.equals("")) {
                 clientname = username;
-            }
-            else
+            } else
                 clientname = firstName + " " + lastName;
             return new TicketOverview(Integer.parseInt(ID),
-                    ticketNumber, clientname, title, updatedAt, ticketStatusName, clientname,agentname,priorityColor,profilePic);
+                    ticketNumber, clientname, title, updatedAt, ticketStatusName, clientname, agentname, priorityColor, profilePic, priorityname, sourcename, departmentname);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -166,6 +162,7 @@ public class Helper {
 
     /**
      * Converting UTC to local returns long timeinmillseconds.
+     *
      * @param dateToParse is the date that we have to parse.
      * @return
      */
@@ -181,7 +178,7 @@ public class Helper {
             e.printStackTrace();
         }
 
-        SimpleDateFormat output = new SimpleDateFormat("d MMM yyyy  HH:mm");
+        SimpleDateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         output.setTimeZone(TimeZone.getDefault());
 
@@ -204,6 +201,7 @@ public class Helper {
 
     /**
      * UTC time conversion to local time returns String Date.
+     *
      * @param dateToParse
      * @return
      */
@@ -231,6 +229,7 @@ public class Helper {
 
     /**
      * Comparing two dates for DUEDATE.
+     *
      * @param duedate1
      * @return
      */
@@ -240,14 +239,14 @@ public class Helper {
         Calendar calendar1 = Calendar.getInstance();
         SimpleDateFormat formatter1 = new SimpleDateFormat("dd/M/yyyy h:mm");
         String currentTime = formatter1.format(calendar1.getTime());
-        Log.d("currentTime",currentTime);
+        Log.d("currentTime", currentTime);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         sdf1.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date date = null;
-        Date date2=null;
+        Date date2 = null;
         try {
             date = sdf.parse(duedate1);
-            date2=sdf1.parse(duedate1);
+            date2 = sdf1.parse(duedate1);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -257,19 +256,19 @@ public class Helper {
         output.setTimeZone(TimeZone.getDefault());
         output1.setTimeZone(TimeZone.getDefault());
         String formattedTime = output.format(date);
-        String formattedTime1=output1.format(date2);
+        String formattedTime1 = output1.format(date2);
         Date dueDate = null;
         Date curntDate = null;
-        Date dueDate1=null;
-        Date currDate1=null;
+        Date dueDate1 = null;
+        Date currDate1 = null;
 
         String currentStringDate = new SimpleDateFormat("d MMM yyyy  HH:mm", Locale.getDefault()).format(new Date());
         String currentStringDate1 = new SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(new Date());
         try {
             dueDate = output.parse(formattedTime);
             curntDate = output.parse(currentStringDate);
-            dueDate1=output1.parse(formattedTime1);
-            currDate1=output1.parse(currentStringDate1);
+            dueDate1 = output1.parse(formattedTime1);
+            currDate1 = output1.parse(currentStringDate1);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -278,9 +277,7 @@ public class Helper {
         if (dueDate1.equals(currDate1)) {
 
             i = 2;
-        }
-
-        else if (dueDate.after(curntDate)) {
+        } else if (dueDate.after(curntDate)) {
             i = 0;
         } else if (dueDate.before(curntDate)) {
             i = 1;
@@ -309,6 +306,7 @@ public class Helper {
 
     /**
      * Email validation.
+     *
      * @param target
      * @return
      */
