@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -15,7 +16,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -37,129 +37,28 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.faveo.helpdesk.pro.client.fragments.Conversation;
-import co.faveo.helpdesk.pro.client.model.Data;
-import co.faveo.helpdesk.pro.client.fragments.Details;
-import co.faveo.helpdesk.pro.client.application.Helpdesk;
 import co.faveo.helpdesk.pro.client.R;
+import co.faveo.helpdesk.pro.client.application.Helpdesk;
+import co.faveo.helpdesk.pro.client.fragments.Conversation;
+import co.faveo.helpdesk.pro.client.fragments.Details;
+import co.faveo.helpdesk.pro.client.model.Data;
 import es.dmoral.toasty.Toasty;
 
 public class TicketDetailActivity extends AppCompatActivity implements Conversation.OnFragmentInteractionListener,
-        Details.OnFragmentInteractionListener,View.OnClickListener{
-    ImageView imageViewBack;
+        Details.OnFragmentInteractionListener, View.OnClickListener {
+    public ViewPagerAdapter adapter;
+    ImageView imageViewBack, imageViewSource;
     FloatingActionButton floatingActionButton;
     ViewPager viewPager;
-    public ViewPagerAdapter adapter;
     Conversation fragmentConversation;
     Details fragmentDetail;
-    View viewpriority,viewCollapsePriority;
+    View viewpriority, viewCollapsePriority;
     ProgressDialog progressDialog;
     String status;
-    LoaderTextView loaderTextViewusername,loaderTextViewStatus,loaderTextViewTitle,loaderTextViewNumber;
-    String ticketSubject,ticketNumberMain,userName,ticketStatus,ticketPriorityColor;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ticket_detail);
-
-        overridePendingTransition(R.anim.slide_in_from_right,R.anim.slide_in_from_right);
-        Window window = TicketDetailActivity.this.getWindow();
-
-// clear FLAG_TRANSLUCENT_STATUS flag:
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-// finally change the color
-        window.setStatusBarColor(ContextCompat.getColor(TicketDetailActivity.this,R.color.faveo));
-        AppBarLayout mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbarTicketDetail);
-        setSupportActionBar(mToolbar);
-        progressDialog=new ProgressDialog(this);
-        imageViewBack= (ImageView) findViewById(R.id.imageViewBackTicketDetail);
-        floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_add);
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        loaderTextViewusername= (LoaderTextView) mAppBarLayout.findViewById(R.id.textViewagentName);
-        loaderTextViewStatus= (LoaderTextView) mAppBarLayout.findViewById(R.id.status);
-        loaderTextViewTitle= (LoaderTextView) mToolbar.findViewById(R.id.subject);
-        loaderTextViewNumber= (LoaderTextView) mAppBarLayout.findViewById(R.id.title);
-        viewpriority=mToolbar.findViewById(R.id.viewPriority);
-        viewCollapsePriority=mAppBarLayout.findViewById(R.id.viewPriority1);
-        setupViewPager();
-        JSONObject jsonObject;
-        String json = Prefs.getString("DEPENDENCY", "");
-        try {
-            jsonObject = new JSONObject(json);
-            JSONArray jsonArrayStaffs = jsonObject.getJSONArray("status");
-
-            for (int i = 0; i < jsonArrayStaffs.length(); i++) {
-                switch (jsonArrayStaffs.getJSONObject(i).getString("name")) {
-                    case "Open":
-                        Prefs.putString("openid", jsonArrayStaffs.getJSONObject(i).getString("id"));
-                        break;
-                    case "Closed":
-                        Prefs.putString("closedid", jsonArrayStaffs.getJSONObject(i).getString("id"));
-                        break;
-                    case "Deleted":
-                        Prefs.putString("deletedId",jsonArrayStaffs.getJSONObject(i).getString("id"));
-                        break;
-                }
-
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setOnTabSelectedListener(onTabSelectedListener);
-        imageViewBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(TicketDetailActivity.this,TicketReplyActivity.class);
-                startActivity(intent);
-            }
-        });
-        final Intent intent = getIntent();
-                ticketNumberMain=intent.getStringExtra("ticket_number");
-        ticketPriorityColor=intent.getStringExtra("ticket_priority");
-        ticketSubject=intent.getStringExtra("ticket_subject");
-        ticketStatus=intent.getStringExtra("ticket_status");
-        userName=intent.getStringExtra("ticket_opened_by");
-
-            try {
-                viewpriority.setBackgroundColor(Color.parseColor(ticketPriorityColor));
-
-                Log.d("priorityColor",ticketPriorityColor);
-                viewCollapsePriority.setBackgroundColor(Color.parseColor(ticketPriorityColor));
-                loaderTextViewusername.setText(userName);
-                loaderTextViewStatus.setText(ticketStatus);
-                loaderTextViewTitle.setText(ticketSubject);
-                loaderTextViewNumber.setText(ticketNumberMain);
-            }catch (NullPointerException | IllegalArgumentException e){
-                e.printStackTrace();
-
-            }
-
-    }
-    private void setupViewPager() {
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        fragmentConversation = new Conversation();
-        fragmentDetail = new Details();
-        adapter.addFragment(fragmentConversation, getString(R.string.conversation));
-        adapter.addFragment(fragmentDetail, getString(R.string.detail));
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(onPageChangeListener);
-    }
-
+    ArrayList<Data> statusItems;
+    LoaderTextView loaderTextViewusername, loaderTextViewStatus, loaderTextViewTitle, loaderTextViewNumber, loaderTextViewDepartment;
+    String ticketSubject, ticketNumberMain, userName, ticketStatus, ticketPriorityColor, departmentname, sourcename;
+    String ticketId;
     TabLayout.OnTabSelectedListener onTabSelectedListener = new TabLayout.OnTabSelectedListener() {
         @Override
         public void onTabSelected(TabLayout.Tab tab) {
@@ -177,13 +76,13 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
 
         }
     };
-
     ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            floatingActionButton.setRotation(positionOffset * 180.0f);
+            //floatingActionButton.setRotation(positionOffset * 180.0f);
 
         }
+
         /**
          * This method is for controlling the FAB button.
          * @param position of the FAB button.
@@ -192,14 +91,14 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
         public void onPageSelected(int position) {
             switch (position) {
                 case 0:
-                    floatingActionButton.show();
+                    //floatingActionButton.show();
                     break;
 
                 case 1:
-                    floatingActionButton.hide();
+                    //floatingActionButton.hide();
                     break;
                 default:
-                    floatingActionButton.show();
+                    //floatingActionButton.show();
                     break;
             }
         }
@@ -209,6 +108,150 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
 
         }
     };
+    private int id = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_ticket_detail);
+
+        overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_in_from_right);
+        Window window = TicketDetailActivity.this.getWindow();
+
+// clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+// finally change the color
+        window.setStatusBarColor(ContextCompat.getColor(TicketDetailActivity.this, R.color.mainActivityTopBar));
+        AppBarLayout mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbarTicketDetail);
+        setSupportActionBar(mToolbar);
+        statusItems = new ArrayList<>();
+        progressDialog = new ProgressDialog(this);
+        imageViewBack = (ImageView) findViewById(R.id.imageViewBackTicketDetail);
+        imageViewSource = findViewById(R.id.imageView_default_profile);
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_add);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        loaderTextViewusername = (LoaderTextView) mAppBarLayout.findViewById(R.id.textViewagentName);
+        loaderTextViewStatus = (LoaderTextView) mAppBarLayout.findViewById(R.id.status);
+        loaderTextViewTitle = (LoaderTextView) mToolbar.findViewById(R.id.subject);
+        loaderTextViewNumber = (LoaderTextView) mAppBarLayout.findViewById(R.id.title);
+        viewpriority = mToolbar.findViewById(R.id.viewPriority);
+        loaderTextViewDepartment = findViewById(R.id.department);
+        viewCollapsePriority = mAppBarLayout.findViewById(R.id.viewPriority1);
+        setupViewPager();
+        JSONObject jsonObject1;
+        String json = Prefs.getString("DEPENDENCY", "");
+        try {
+            jsonObject1 = new JSONObject(json);
+            JSONArray jsonArrayHelpTopics = jsonObject1.getJSONArray("status");
+            for (int i = 0; i < jsonArrayHelpTopics.length(); i++) {
+                Data data1 = new Data(Integer.parseInt(jsonArrayHelpTopics.getJSONObject(i).getString("id")), jsonArrayHelpTopics.getJSONObject(i).getString("name"));
+                statusItems.add(data1);
+                //menu.add("First Menu");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setOnTabSelectedListener(onTabSelectedListener);
+        imageViewBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(TicketDetailActivity.this, TicketReplyActivity.class);
+                startActivity(intent);
+            }
+        });
+        final Intent intent = getIntent();
+        ticketId = intent.getStringExtra("ticket_id");
+        ticketNumberMain = intent.getStringExtra("ticket_number");
+        ticketPriorityColor = intent.getStringExtra("ticket_priority");
+        ticketSubject = intent.getStringExtra("ticket_subject");
+        ticketStatus = intent.getStringExtra("ticket_status");
+        userName = intent.getStringExtra("ticket_opened_by");
+        departmentname = intent.getStringExtra("department");
+        sourcename = intent.getStringExtra("source");
+        try {
+            viewpriority.setBackgroundColor(Color.parseColor(ticketPriorityColor));
+            Log.d("status", ticketStatus);
+            viewCollapsePriority.setBackgroundColor(Color.parseColor(ticketPriorityColor));
+            loaderTextViewusername.setText(userName);
+            loaderTextViewStatus.setText(ticketStatus);
+            loaderTextViewTitle.setText(ticketNumberMain);
+            loaderTextViewNumber.setText(ticketSubject);
+            loaderTextViewDepartment.setText(departmentname);
+
+        } catch (NullPointerException | IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        switch (sourcename) {
+            case "chat": {
+                int color = Color.parseColor(ticketPriorityColor);
+                imageViewSource.setImageResource(R.drawable.ic_chat_bubble_outline_black_24dp);
+                imageViewSource.setColorFilter(color);
+                break;
+            }
+            case "web": {
+                int color = Color.parseColor(ticketPriorityColor);
+                imageViewSource.setImageResource(R.drawable.web_design);
+                imageViewSource.setColorFilter(color);
+                break;
+            }
+            case "agent": {
+                int color = Color.parseColor(ticketPriorityColor);
+                imageViewSource.setImageResource(R.drawable.mail);
+                imageViewSource.setColorFilter(color);
+                break;
+            }
+            case "email": {
+                int color = Color.parseColor(ticketPriorityColor);
+                imageViewSource.setImageResource(R.drawable.mail);
+                imageViewSource.setColorFilter(color);
+                break;
+            }
+            case "facebook": {
+                int color = Color.parseColor(ticketPriorityColor);
+                imageViewSource.setImageResource(R.drawable.facebook);
+                imageViewSource.setColorFilter(color);
+                break;
+            }
+            case "twitter": {
+                int color = Color.parseColor(ticketPriorityColor);
+                imageViewSource.setImageResource(R.drawable.twitter);
+                imageViewSource.setColorFilter(color);
+                break;
+            }
+            case "call": {
+                int color = Color.parseColor(ticketPriorityColor);
+                imageViewSource.setImageResource(R.drawable.phone);
+                imageViewSource.setColorFilter(color);
+                break;
+            }
+            default:
+                imageViewSource.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    private void setupViewPager() {
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        fragmentConversation = new Conversation();
+        fragmentDetail = new Details();
+        adapter.addFragment(fragmentConversation, getString(R.string.conversation));
+        adapter.addFragment(fragmentDetail, getString(R.string.detail));
+        viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(onPageChangeListener);
+    }
 
     @Override
     public void onClick(View view) {
@@ -218,6 +261,73 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        for (int i = 0; i < statusItems.size(); i++) {
+            Data data = statusItems.get(i);
+            menu.add(data.getName());
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //int id1 = item.getItemId();
+        //int id1 = item.getItemId();
+        status = Prefs.getString("ticketstatus", null);
+        Log.d("status", status);
+
+        for (int i = 0; i < statusItems.size(); i++) {
+            Data data = statusItems.get(i);
+            if (data.getName().equals(item.toString())) {
+                id = data.getID();
+                Log.d("ID", "" + id);
+            }
+        }
+        try {
+            status = Prefs.getString("ticketstatus", null);
+            if (status.equalsIgnoreCase(item.toString())) {
+                Toasty.warning(TicketDetailActivity.this, "Ticket is already in " + item.toString() + " state", Toast.LENGTH_SHORT).show();
+            } else {
+                try {
+
+                    new BottomDialog.Builder(TicketDetailActivity.this)
+                            .setContent(getString(R.string.statusConfirmation))
+                            .setTitle("Changing status")
+                            .setPositiveText("YES")
+                            .setNegativeText("NO")
+                            .setPositiveBackgroundColorResource(R.color.white)
+                            //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                            .setPositiveTextColorResource(R.color.faveo)
+                            .setNegativeTextColor(R.color.black)
+                            //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                            .onPositive(new BottomDialog.ButtonCallback() {
+                                @Override
+                                public void onClick(BottomDialog dialog) {
+                                    progressDialog.show();
+                                    progressDialog.setMessage(getString(R.string.pleasewait));
+                                    new StatusChange(ticketId, id).execute();
+                                    Prefs.putString("tickets", null);
+                                }
+                            }).onNegative(new BottomDialog.ButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull BottomDialog bottomDialog) {
+                            bottomDialog.dismiss();
+                        }
+                    })
+                            .show();
+
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+
+                }
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -249,151 +359,14 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main_new, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //int id1 = item.getItemId();
-        status = Prefs.getString("ticketstatus", null);
-        Log.d("status",status);
-        if (item.getItemId()==R.id.action_statusOpen){
-            if (status.equals("Open")){
-                Toasty.warning(TicketDetailActivity.this, "Ticket is already in "+status+" state", Toast.LENGTH_SHORT).show();
-            }
-            else if (item.getItemId()==R.id.action_statusClosed){
-                new BottomDialog.Builder(TicketDetailActivity.this)
-                        .setContent(getString(R.string.statusConfirmation))
-                        .setPositiveText("YES")
-                        .setNegativeText("NO")
-                        .setPositiveBackgroundColorResource(R.color.white)
-                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
-                        .setPositiveTextColorResource(R.color.faveo)
-                        .setNegativeTextColor(R.color.black)
-                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
-                        .onPositive(new BottomDialog.ButtonCallback() {
-                            @Override
-                            public void onClick(BottomDialog dialog) {
-                                new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("openid",null))).execute();
-                                progressDialog.show();
-                                progressDialog.setMessage(getString(R.string.pleasewait));
-                            }
-                        }).onNegative(new BottomDialog.ButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull BottomDialog bottomDialog) {
-                        bottomDialog.dismiss();
-                    }
-                })
-                        .show();
-            }
-            else{
-                //deletedId
-                new BottomDialog.Builder(TicketDetailActivity.this)
-                        .setContent(getString(R.string.statusConfirmation))
-                        .setPositiveText("YES")
-                        .setNegativeText("NO")
-                        .setPositiveBackgroundColorResource(R.color.white)
-                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
-                        .setPositiveTextColorResource(R.color.faveo)
-                        .setNegativeTextColor(R.color.black)
-                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
-                        .onPositive(new BottomDialog.ButtonCallback() {
-                            @Override
-                            public void onClick(BottomDialog dialog) {
-                                new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("deletedId",null))).execute();
-                                progressDialog.show();
-                                progressDialog.setMessage(getString(R.string.pleasewait));
-                            }
-                        }).onNegative(new BottomDialog.ButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull BottomDialog bottomDialog) {
-                        bottomDialog.dismiss();
-                    }
-                })
-                        .show();
-
-            }
-        }
-        else if (item.getItemId()==R.id.action_statusClosed){
-            if (status.equals("Closed")){
-                Toasty.warning(TicketDetailActivity.this, "Ticket is already in "+status+" state", Toast.LENGTH_SHORT).show();
-            }
-            else if (item.getItemId()==R.id.action_statusOpen){
-
-                new BottomDialog.Builder(TicketDetailActivity.this)
-                        .setContent(getString(R.string.statusConfirmation))
-                        .setTitle("Changing status")
-                        .setPositiveText("YES")
-                        .setNegativeText("NO")
-                        .setPositiveBackgroundColorResource(R.color.white)
-                        //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
-                        .setPositiveTextColorResource(R.color.faveo)
-                        .setNegativeTextColor(R.color.black)
-                        //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
-                        .onPositive(new BottomDialog.ButtonCallback() {
-                            @Override
-                            public void onClick(BottomDialog dialog) {
-                                new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("closedid",null))).execute();
-                                progressDialog.show();
-                                progressDialog.setMessage(getString(R.string.pleasewait));
-                            }
-                        }).onNegative(new BottomDialog.ButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull BottomDialog bottomDialog) {
-                        bottomDialog.dismiss();
-                    }
-                })
-                        .show();
-
-            }
-            else{
-                //deletedId
-
-
-            }
-        }
-        else if (item.getItemId()==R.id.action_statusDeleted){
-            new BottomDialog.Builder(TicketDetailActivity.this)
-                    .setContent(getString(R.string.statusConfirmation))
-                    .setTitle("Changing status")
-                    .setPositiveText("YES")
-                    .setNegativeText("NO")
-                    .setPositiveBackgroundColorResource(R.color.white)
-                    //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
-                    .setPositiveTextColorResource(R.color.faveo)
-                    .setNegativeTextColor(R.color.black)
-                    //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
-                    .onPositive(new BottomDialog.ButtonCallback() {
-                        @Override
-                        public void onClick(BottomDialog dialog) {
-                            new StatusChange(Integer.parseInt(Prefs.getString("TICKETid",null)),Integer.parseInt(Prefs.getString("deletedId",null))).execute();
-                            progressDialog.show();
-                            progressDialog.setMessage(getString(R.string.pleasewait));
-                        }
-                    }).onNegative(new BottomDialog.ButtonCallback() {
-                @Override
-                public void onClick(@NonNull BottomDialog bottomDialog) {
-                    bottomDialog.dismiss();
-                }
-            })
-                    .show();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-
-
     /**
      * Async task for changing the status of the ticket.
      */
     private class StatusChange extends AsyncTask<String, Void, String> {
-        int ticketId, statusId;
+        String ticketId;
+        int statusId;
 
-        StatusChange(int ticketId, int statusId) {
+        StatusChange(String ticketId, int statusId) {
 
             this.ticketId = ticketId;
             this.statusId = statusId;
@@ -418,16 +391,16 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
                     Prefs.putString("403", "null");
                     return;
                 }
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
 
-            try{
-                JSONObject jsonObject=new JSONObject(result);
-                JSONArray jsonArray=jsonObject.getJSONArray("message");
-                for (int i=0;i<jsonArray.length();i++){
-                    String message=jsonArray.getString(i);
-                    if (message.contains("Permission denied")){
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                JSONArray jsonArray = jsonObject.getJSONArray("message");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    String message = jsonArray.getString(i);
+                    if (message.contains("Permission denied")) {
                         Toasty.warning(TicketDetailActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
                         Prefs.putString("403", "null");
                         return;
@@ -448,7 +421,7 @@ public class TicketDetailActivity extends AppCompatActivity implements Conversat
 //                if (message2.contains("permission denied")&&Prefs.getString("403",null).equals("403")){
 //
 //                }
-                if (!message2.equals("null")){
+                if (!message2.equals("null")) {
                     Toasty.success(TicketDetailActivity.this, getString(R.string.successfullyChanged), Toast.LENGTH_LONG).show();
                     Prefs.putString("ticketstatus", "Deleted");
                     finish();

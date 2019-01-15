@@ -17,7 +17,8 @@
     <!--<color name="blue_300">#64B5F6</color>-->
 
     <color name="theme">#3da6d7</color>
-
+    <color name="mainActivityTopBar">#081d27</color>
+    <color name="appbar">#154c66</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="dark_grey">#333333</color>

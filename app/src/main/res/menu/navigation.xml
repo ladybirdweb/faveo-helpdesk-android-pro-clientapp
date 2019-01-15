@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/imageGalley"
         android:icon="@drawable/ic_perm_media_black_24dp"
@@ -9,13 +8,12 @@
     <item
         android:id="@+id/videoGallery"
         android:icon="@drawable/ic_video_library_black_24dp"
-        android:title="@string/video"
-        />
+        android:title="@string/video" />
 
     <item
-    android:id="@+id/musicGallery"
+        android:id="@+id/musicGallery"
         android:icon="@drawable/ic_library_music_black_24dp"
-        android:title="@string/music"/>
+        android:title="@string/music" />
 
     <item
         android:id="@+id/documentGallery"

@@ -1,33 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--android:orientation="vertical" android:layout_width="match_parent"-->
-<!--android:layout_height="60dp">-->
+<?xml version="1.0" encoding="utf-8"?><!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:orientation="vertical" android:layout_width="match_parent"--><!--android:layout_height="60dp">-->
 
-<!--<RelativeLayout-->
-<!--android:layout_width="match_parent"-->
-<!--android:layout_height="wrap_content">-->
+<!--<RelativeLayout--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content">-->
 
-<!--<ImageView-->
-<!--android:layout_width="30dp"-->
-<!--android:layout_height="40dp"-->
-<!--android:id="@+id/imageView6"-->
-<!--android:src="@drawable/ic_attach_file_black_18dp"/>-->
+<!--<ImageView--><!--android:layout_width="30dp"--><!--android:layout_height="40dp"--><!--android:id="@+id/imageView6"--><!--android:src="@drawable/ic_attach_file_black_18dp"/>-->
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/label"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="40dp"
     android:layout_alignParentTop="true"
-    android:layout_marginStart="12dp"
-    android:layout_toEndOf="@+id/imageView6"
-    android:drawableLeft="@drawable/ic_attach_file_black_24dp"
-    android:drawablePadding="5dp"
-    android:padding="13dp"
+    android:fontFamily="@font/hintedlainesansregular"
+    android:gravity="left"
+    android:paddingLeft="5dp"
+    android:paddingTop="5dp"
+    android:text="images.jpg"
     android:textColor="@color/faveo"
-    android:text="@string/gallery"
-    android:textSize="16dp"
+    android:textSize="15dp"
     android:textStyle="bold">
 
-</TextView>
-    <!--</RelativeLayout>-->
-    <!--</LinearLayout>-->
+</TextView><!--</RelativeLayout>--><!--</LinearLayout>-->

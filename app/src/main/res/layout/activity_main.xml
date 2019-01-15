@@ -5,7 +5,6 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
     tools:openDrawer="start">
 
     <android.support.design.widget.CoordinatorLayout
@@ -16,24 +15,26 @@
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="4dp"
-            android:theme="@style/AppThemeOverlay.ActionBar">
+            android:layout_height="60dp">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbarMain"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?attr/colorPrimary"
+                android:layout_height="60dp"
+                android:background="@color/appbar"
+                app:collapseIcon="@drawable/ic_arrow_back_black_24dp"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
-                app:popupTheme="@style/AppThemeOverlay.ActionBar"
-                >
+                app:popupTheme="@style/AppTheme">
+
                 <TextView
                     android:id="@+id/title"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:textAllCaps="false"
-                    android:textColor="@color/theme"
+                    android:fontFamily="@font/hintedlainesansregular"
+                    android:gravity="center_vertical"
+                    android:text="INBOX"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorAccent"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -42,8 +43,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:background="@color/faveo"
-                />
+                android:background="@color/faveo" />
 
 
             <!--<android.support.design.widget.BottomNavigationView-->
@@ -58,12 +58,12 @@
             <!--android:visibility="gone"/>-->
 
 
-
             <!--<include layout="@layout/sort" />-->
         </android.support.design.widget.AppBarLayout>
 
 
         <include layout="@layout/content_main" />
+
         <io.github.yavski.fabspeeddial.FabSpeedDial
             android:id="@+id/fab_main"
             android:layout_width="wrap_content"
@@ -71,13 +71,13 @@
             android:layout_gravity="bottom|end"
             app:fabGravity="bottom_end"
             app:fabMenu="@menu/main_fab"
-            app:touchGuardDrawable="#7FFFFFFF"
+            android:visibility="gone"
+            app:itemTextAppearance="@style/MenuItems"
             app:miniFabBackgroundTint="@color/faveo"
             app:miniFabDrawableTint="@color/white"
-            app:itemTextAppearance="@style/MenuItems"
             app:miniFabTitleBackgroundTint="@color/faveo"
             app:miniFabTitleTextColor="@color/white"
-            />
+            app:touchGuardDrawable="#7FFFFFFF" />
 
     </android.support.design.widget.CoordinatorLayout>
 
@@ -90,8 +90,6 @@
         android:layout_gravity="start"
         app:layout="@layout/fragment_navigation_drawer"
         tools:layout="@layout/fragment_navigation_drawer" />
-
-
 
 
 </android.support.v4.widget.DrawerLayout>

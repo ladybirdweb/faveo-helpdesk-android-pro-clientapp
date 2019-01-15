@@ -28,12 +28,12 @@ public class HelpingActivity extends DraggerActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
 // finally change the color
-        window.setStatusBarColor(ContextCompat.getColor(HelpingActivity.this,R.color.faveo));
+        window.setStatusBarColor(ContextCompat.getColor(HelpingActivity.this, R.color.mainActivityTopBar));
         setTension(0.1f);
         //Tension of the animation. This represent with the friction, how much time the animation will be executed.
         //setFriction(1.1f);
         //Friction of the animation. This represent with the tension, how much friction is applied at the tension animation.
-        closeImage= (ImageView) findViewById(R.id.closeButton);
+        closeImage = (ImageView) findViewById(R.id.closeButton);
         closeImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

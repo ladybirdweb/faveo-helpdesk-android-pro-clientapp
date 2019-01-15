@@ -2,7 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorAccent"
     android:orientation="vertical">
 
@@ -17,16 +16,16 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#DCDCDC"
-        />
+        android:background="#DCDCDC" />
+
     <TextView
         android:id="@+id/noiternet_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_gravity="center"
-        android:drawableTint="@color/dark_translucent"
         android:drawableTop="@drawable/ic_signal_wifi_off_black_48dp"
+        android:drawableTint="@color/dark_translucent"
         android:text="@string/no_internet_connection"
         android:textColor="@color/dark_translucent"
         android:textSize="28sp"
@@ -38,13 +37,12 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_gravity="center"
-        android:drawableTint="@color/dark_translucent"
         android:drawableTop="@drawable/ic_inbox_black_48dp"
+        android:drawableTint="@color/dark_translucent"
         android:text="@string/no_records"
         android:textColor="@color/dark_translucent"
         android:textSize="28sp"
         android:visibility="gone" />
-
 
 
     <!--<android.support.design.widget.AppBarLayout-->
@@ -63,8 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="7"
-        android:clickable="true"
-        >
+        android:clickable="true">
 
         <com.cooltechworks.views.shimmer.ShimmerRecyclerView
             android:id="@+id/cardList"
@@ -74,17 +71,16 @@
             app:demo_layout="@layout/card_ticket_shimmer" />
 
 
-
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <TextView
+        android:id="@+id/totalcount"
         android:layout_width="380dp"
         android:layout_height="50dp"
-        android:text="Total Count"
-        android:id="@+id/totalcount"
-        android:textColor="@color/faveo"
         android:gravity="center"
-        android:visibility="visible"/>
+        android:text="Total Count"
+        android:textColor="@color/faveo"
+        android:visibility="visible" />
 
 </LinearLayout>
 

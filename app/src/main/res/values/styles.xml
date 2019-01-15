@@ -3,9 +3,11 @@
     <style name="MyMaterialTheme" parent="MyMaterialTheme.Base">
 
     </style>
+
     <style name="CustomDialog" parent="@android:style/Theme.Holo.Dialog">
         <item name="android:windowBackground">@color/faveo</item>
     </style>
+
     <style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
@@ -22,33 +24,46 @@
     </style>
 
     <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
-        <item name="color">@color/theme</item>
+        <item name="color">@color/colorAccent</item>
+    </style>
+
+    <style name="MyMaterialTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="actionOverflowButtonStyle">@style/MyOverflowButtonStyle</item>/>
+    </style>
+
+    <style name="MyOverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">@color/colorAccent</item>
     </style>
 
     <style name="AppThemeOverlay.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="colorControlNormal">@color/faveo</item>
-        <item name="android:textColorPrimary">@color/faveo</item>
-        <item name="android:textColorSecondary">@color/faveo</item>
+        <item name="colorControlNormal">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/colorAccent</item>
+        <item name="android:textColorSecondary">@color/colorAccent</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="actionModeCloseDrawable">@color/white</item>
+        <item name="android:actionModeCloseDrawable">@drawable/ic_arrow_back_black_24dp</item>
+        <item name="actionModeCloseDrawable">@color/faveo</item>
         <item name="actionModeCloseButtonStyle">@style/Widget.AppCompat.ActionMode</item>
     </style>
-
-
     <style name="MenuItems" parent="AppTheme">
         <item name="android:textSize">30sp</item>
         <item name="android:fontFamily">sans-serif-light</item>
     </style>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+        <item name="actionBarTheme">@style/AppTheme.ActionBarTheme</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorHint">@android:color/white</item>
+        <item name="android:textColor">@android:color/white</item>
 
     </style>
-
+    <style name="AppTheme.ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="colorControlActivated">#FFffffff</item>
+    </style>
     <!--<style name="StyledToast">-->
 
     <!--<item name="android:textColor"></item>-->

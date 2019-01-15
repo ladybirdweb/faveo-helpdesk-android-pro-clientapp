@@ -38,9 +38,9 @@
     <string name="wondering_what_will_be_your_helpdesk_url">Wondering what will be your helpdesk URL?</string>
     <string name="this_is_the_url">This is the URL where your help desk is installed.You can reach out to your IT admin to know more.</string>
     <string name="for_more_information_please_drop_a_mail_to_support_ladybirdweb_com">For more information please drop a mail to support@ladybirdweb.com</string>
-    <string name="loading">loading</string>
+    <string name="loading">please wait</string>
     <string name="oops_no_internet">Oops no Internet</string>
-    <string name="done_loading">done loading</string>
+    <string name="done_loading">Welcome to FAVEO support</string>
     <string name="userLogIn">Sorry! agent or admin can\'t log in to the app</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="error_checking_pro">Error while checking pro edition</string>
@@ -128,4 +128,7 @@
     <string name="confirmation">Confirm log out....</string>
     <string name="sure">Are you sure?</string>
     <string name="loggedout">Logged out successfully!</string>
+    <string name="due_today">Due today</string>
+    <string name="overdue">Overdue</string>
+    <string name="blue_name">blue</string>
 </resources>

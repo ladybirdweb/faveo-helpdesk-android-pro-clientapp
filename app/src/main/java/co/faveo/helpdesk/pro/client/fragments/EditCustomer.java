@@ -40,11 +40,11 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import co.faveo.helpdesk.pro.client.application.Helpdesk;
-import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
 import co.faveo.helpdesk.pro.client.R;
 import co.faveo.helpdesk.pro.client.activity.LoginActivity;
 import co.faveo.helpdesk.pro.client.activity.MainActivity;
+import co.faveo.helpdesk.pro.client.application.Helpdesk;
+import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
 import es.dmoral.toasty.Toasty;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 
@@ -59,15 +59,17 @@ public class EditCustomer extends Fragment {
     public String mParam2;
     View rootView;
     ProgressDialog progressDialog;
-    EditText editTextusername,editTextfirstname,editTextlastname,editTextemail;
-    String userName="",firstName="",lastName="";
+    EditText editTextusername, editTextfirstname, editTextlastname, editTextemail;
+    String userName = "", firstName = "", lastName = "";
     Button buttonPassword;
     Animation animation;
     FabSpeedDial fabSpeedDial;
     private OnFragmentInteractionListener mListener;
+
     public EditCustomer() {
         // Required empty public constructor
     }
+
     public static EditCustomer newInstance(String param1, String param2) {
         EditCustomer fragment = new EditCustomer();
         Bundle args = new Bundle();
@@ -76,13 +78,11 @@ public class EditCustomer extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
-    }
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
     }
 
     @Override
@@ -99,20 +99,20 @@ public class EditCustomer extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        if (rootView==null){
-            rootView=inflater.inflate(R.layout.fragment_edit_customer, container, false);
-            buttonPassword= (Button) rootView.findViewById(R.id.passwordChange);
-            animation= AnimationUtils.loadAnimation(getActivity(),R.anim.shake_error);
-            editTextusername= (EditText) rootView.findViewById(R.id.username);
-            editTextfirstname= (EditText) rootView.findViewById(R.id.firstname);
-            editTextlastname= (EditText) rootView.findViewById(R.id.lastname);
-            editTextemail= (EditText) rootView.findViewById(R.id.email);
-            fabSpeedDial= (FabSpeedDial) getActivity().findViewById(R.id.fab_main);
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.fragment_edit_customer, container, false);
+            buttonPassword = (Button) rootView.findViewById(R.id.passwordChange);
+            animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake_error);
+            editTextusername = (EditText) rootView.findViewById(R.id.username);
+            editTextfirstname = (EditText) rootView.findViewById(R.id.firstname);
+            editTextlastname = (EditText) rootView.findViewById(R.id.lastname);
+            editTextemail = (EditText) rootView.findViewById(R.id.email);
+            fabSpeedDial = (FabSpeedDial) getActivity().findViewById(R.id.fab_main);
             fabSpeedDial.setVisibility(View.GONE);
             editTextemail.setEnabled(false);
             editTextusername.setEnabled(false);
-            progressDialog=new ProgressDialog(getActivity());
-            if (InternetReceiver.isConnected()){
+            progressDialog = new ProgressDialog(getActivity());
+            if (InternetReceiver.isConnected()) {
                 progressDialog.setMessage(getString(R.string.pleasewait));
                 progressDialog.show();
                 new FetchClientTickets(getActivity()).execute();
@@ -123,7 +123,7 @@ public class EditCustomer extends Fragment {
         buttonPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-DialogCustomView();
+                DialogCustomView();
 //                MyBottomSheetDialog myBottomSheetDialog = new MyBottomSheetDialog(getActivity());
 //                myBottomSheetDialog.setCanceledOnTouchOutside(true);
 //                myBottomSheetDialog.show();
@@ -141,6 +141,7 @@ DialogCustomView();
         getActivity().getMenuInflater().inflate(R.menu.menu_inbox, menu);
 
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         try {
@@ -152,22 +153,21 @@ DialogCustomView();
         }
         int id = item.getItemId();
         if (id == R.id.actiondone) {
-            if (editTextusername.getText().toString().equals(userName)&&editTextfirstname.getText().toString().equals(firstName)&&editTextlastname.getText().toString().equals(lastName)){
+            if (editTextusername.getText().toString().equals(userName) && editTextfirstname.getText().toString().equals(firstName) && editTextlastname.getText().toString().equals(lastName)) {
                 return true;
-            }
-            else {
+            } else {
 
 
                 if (InternetReceiver.isConnected()) {
 
-                    String finalFirstName=editTextfirstname.getText().toString();
-                    String finalLastName=editTextlastname.getText().toString();
-                    String finalUserName=editTextusername.getText().toString();
+                    String finalFirstName = editTextfirstname.getText().toString();
+                    String finalLastName = editTextlastname.getText().toString();
+                    String finalUserName = editTextusername.getText().toString();
 
                     try {
                         finalFirstName = URLEncoder.encode(finalFirstName.trim(), "utf-8");
-                        finalLastName=URLEncoder.encode(finalLastName.trim(), "utf-8");
-                        finalUserName=URLEncoder.encode(finalUserName.trim(), "utf-8");
+                        finalLastName = URLEncoder.encode(finalLastName.trim(), "utf-8");
+                        finalUserName = URLEncoder.encode(finalUserName.trim(), "utf-8");
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -235,21 +235,22 @@ DialogCustomView();
 
         return super.onOptionsItemSelected(item);
     }
+
     protected void DialogCustomView() {
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         View promptView = layoutInflater.inflate(R.layout.bottom_sheet_layout, null);
-                 final AppCompatEditText appCompatEditTextold,appCompatEditTextnew,appCompatEditTextconfirm;
-         final TextView textViewOld,textViewNew,textViewConfirm;
-         final TextInputLayout textInputLayoutOld,textInputLayoutNew,textInputLayoutConfirm;
-        appCompatEditTextold= (AppCompatEditText) promptView.findViewById(R.id.inputoldpassword);
-        appCompatEditTextnew= (AppCompatEditText) promptView.findViewById(R.id.inputnewpassword);
-        appCompatEditTextconfirm= (AppCompatEditText) promptView.findViewById(R.id.input_password);
-        textViewOld= (TextView) promptView.findViewById(R.id.passwordoldError);
-        textViewNew= (TextView) promptView.findViewById(R.id.passwordErrornew);
-        textViewConfirm= (TextView) promptView.findViewById(R.id.passwordError);
-        textInputLayoutOld= (TextInputLayout) promptView.findViewById(R.id.input_layoutoldpassword);
-        textInputLayoutNew= (TextInputLayout) promptView.findViewById(R.id.input_layoutnewpassword);
-        textInputLayoutConfirm= (TextInputLayout) promptView.findViewById(R.id.input_layout_password);
+        final AppCompatEditText appCompatEditTextold, appCompatEditTextnew, appCompatEditTextconfirm;
+        final TextView textViewOld, textViewNew, textViewConfirm;
+        final TextInputLayout textInputLayoutOld, textInputLayoutNew, textInputLayoutConfirm;
+        appCompatEditTextold = (AppCompatEditText) promptView.findViewById(R.id.inputoldpassword);
+        appCompatEditTextnew = (AppCompatEditText) promptView.findViewById(R.id.inputnewpassword);
+        appCompatEditTextconfirm = (AppCompatEditText) promptView.findViewById(R.id.input_password);
+        textViewOld = (TextView) promptView.findViewById(R.id.passwordoldError);
+        textViewNew = (TextView) promptView.findViewById(R.id.passwordErrornew);
+        textViewConfirm = (TextView) promptView.findViewById(R.id.passwordError);
+        textInputLayoutOld = (TextInputLayout) promptView.findViewById(R.id.input_layoutoldpassword);
+        textInputLayoutNew = (TextInputLayout) promptView.findViewById(R.id.input_layoutnewpassword);
+        textInputLayoutConfirm = (TextInputLayout) promptView.findViewById(R.id.input_layout_password);
         final AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(promptView)
                 .setPositiveButton(android.R.string.ok, null) //Set to null. We override the onclick
@@ -359,7 +360,7 @@ DialogCustomView();
                                                     progressDialog.setMessage(getString(R.string.pleasewait));
                                                     progressDialog.show();
                                                     // Write your code here to invoke YES event
-                                                    new PasswordChange(getActivity(),finalOldPass,finalNewPass,finalConfirmPass).execute();
+                                                    new PasswordChange(getActivity(), finalOldPass, finalNewPass, finalConfirmPass).execute();
                                                 }
                                             }).onNegative(new BottomDialog.ButtonCallback() {
                                         @Override
@@ -385,25 +386,30 @@ DialogCustomView();
         dialog.show();
     }
 
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
+
     private class EditClient extends AsyncTask<String, Void, String> {
         Context context;
         String firstname;
         String lastname;
         String username1;
+
         EditClient(Context context,
                    String firstname,
                    String lastname,
                    String username1) {
             this.context = context;
-            this.firstname=firstname;
-            this.lastname=lastname;
-            this.username1=username1;
+            this.firstname = firstname;
+            this.lastname = lastname;
+            this.username1 = username1;
 
         }
 
         protected String doInBackground(String... urls) {
 
-            return new Helpdesk().saveCustomerDetails(firstname,lastname,username1);
+            return new Helpdesk().saveCustomerDetails(firstname, lastname, username1);
         }
 
         protected void onPostExecute(String result) {
@@ -414,30 +420,29 @@ DialogCustomView();
 //            if (result == null) return;
             try {
                 Log.d("depenResponse", result);
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
-            String state=Prefs.getString("403",null);
+            String state = Prefs.getString("403", null);
             try {
                 if (state.equals("403") && !state.equals("null")) {
                     Toasty.warning(getActivity(), getString(R.string.permission), Toast.LENGTH_LONG).show();
                     Prefs.putString("403", "null");
                     return;
                 }
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
 
             try {
                 JSONObject jsonObject = new JSONObject(result);
-                JSONObject jsonObject1=jsonObject.getJSONObject("data");
-                String message=jsonObject1.getString("message");
-                if (message.equals("Updated successfully")){
-                    Toasty.success(getActivity(),getString(R.string.editedcustomerdetails),Toast.LENGTH_SHORT).show();
-                    Intent intent=new Intent(getActivity(),MainActivity.class);
+                JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                String message = jsonObject1.getString("message");
+                if (message.equals("Updated successfully")) {
+                    Toasty.success(getActivity(), getString(R.string.editedcustomerdetails), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);
                 }
-
 
 
             } catch (JSONException e) {
@@ -450,12 +455,13 @@ DialogCustomView();
 
     private class FetchClientTickets extends AsyncTask<String, Void, String> {
         Context context;
+
         FetchClientTickets(Context context) {
             this.context = context;
         }
 
         protected String doInBackground(String... urls) {
-            return new Helpdesk().getTicketsByUser(Prefs.getString("clientId",null));
+            return new Helpdesk().getTicketsByUser(Prefs.getString("clientId", null));
         }
 
         protected void onPostExecute(String result) {
@@ -469,48 +475,49 @@ DialogCustomView();
                 String firstname1 = requester.getString("first_name");
                 String lastName1 = requester.getString("last_name");
                 String username1 = requester.getString("user_name");
-                String email=requester.getString("email");
+                String email = requester.getString("email");
 
-                if (!username1.equals("")||!username1.equals("null")){
-                    userName=username1;
+                if (!username1.equals("") || !username1.equals("null")) {
+                    userName = username1;
                     editTextusername.setText(username1);
                 }
-                if (!firstname1.equals("")||!firstname1.equals("null")){
-                    firstName=firstname1;
+                if (!firstname1.equals("") || !firstname1.equals("null")) {
+                    firstName = firstname1;
                     editTextfirstname.setText(firstname1);
                 }
-                if (!lastName1.equals("")||!lastName1.equals("null")){
-                    lastName=lastName1;
+                if (!lastName1.equals("") || !lastName1.equals("null")) {
+                    lastName = lastName1;
                     editTextlastname.setText(lastName1);
                 }
-                if (!email.equals("")||!email.equals("null")){
+                if (!email.equals("") || !email.equals("null")) {
                     editTextemail.setText(email);
                 }
-                } catch (JSONException e) {
+            } catch (JSONException e) {
                 Toasty.error(getActivity(), getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
 
         }
     }
-    public class MyBottomSheetDialog extends BottomSheetDialog{
 
-        private AppCompatEditText appCompatEditTextold,appCompatEditTextnew,appCompatEditTextconfirm;
+    public class MyBottomSheetDialog extends BottomSheetDialog {
+
+        private AppCompatEditText appCompatEditTextold, appCompatEditTextnew, appCompatEditTextconfirm;
         private Context context;
-        private TextView textViewOld,textViewNew,textViewConfirm;
-        private TextInputLayout textInputLayoutOld,textInputLayoutNew,textInputLayoutConfirm;
+        private TextView textViewOld, textViewNew, textViewConfirm;
+        private TextInputLayout textInputLayoutOld, textInputLayoutNew, textInputLayoutConfirm;
         //Button button;
         @SuppressLint("StaticFieldLeak")
-        private  MyBottomSheetDialog instance;
-
-        public  MyBottomSheetDialog getInstance(@NonNull Context context) {
-            return instance == null ? new MyBottomSheetDialog(context) : instance;
-        }
+        private MyBottomSheetDialog instance;
 
         public MyBottomSheetDialog(@NonNull Context context) {
             super(context);
             this.context = context;
             create();
+        }
+
+        public MyBottomSheetDialog getInstance(@NonNull Context context) {
+            return instance == null ? new MyBottomSheetDialog(context) : instance;
         }
 
         public void create() {
@@ -529,15 +536,15 @@ DialogCustomView();
                 }
             };
             //button= (Button) bottomSheetView.findViewById(R.id.updateButton);
-            appCompatEditTextold= (AppCompatEditText) bottomSheetView.findViewById(R.id.inputoldpassword);
-            appCompatEditTextnew= (AppCompatEditText) bottomSheetView.findViewById(R.id.inputnewpassword);
-            appCompatEditTextconfirm= (AppCompatEditText) bottomSheetView.findViewById(R.id.input_password);
-            textViewOld= (TextView) bottomSheetView.findViewById(R.id.passwordoldError);
-            textViewNew= (TextView) bottomSheetView.findViewById(R.id.passwordErrornew);
-            textViewConfirm= (TextView) bottomSheetView.findViewById(R.id.passwordError);
-            textInputLayoutOld= (TextInputLayout) bottomSheetView.findViewById(R.id.input_layoutoldpassword);
-            textInputLayoutNew= (TextInputLayout) bottomSheetView.findViewById(R.id.input_layoutnewpassword);
-            textInputLayoutConfirm= (TextInputLayout) bottomSheetView.findViewById(R.id.input_layout_password);
+            appCompatEditTextold = (AppCompatEditText) bottomSheetView.findViewById(R.id.inputoldpassword);
+            appCompatEditTextnew = (AppCompatEditText) bottomSheetView.findViewById(R.id.inputnewpassword);
+            appCompatEditTextconfirm = (AppCompatEditText) bottomSheetView.findViewById(R.id.input_password);
+            textViewOld = (TextView) bottomSheetView.findViewById(R.id.passwordoldError);
+            textViewNew = (TextView) bottomSheetView.findViewById(R.id.passwordErrornew);
+            textViewConfirm = (TextView) bottomSheetView.findViewById(R.id.passwordError);
+            textInputLayoutOld = (TextInputLayout) bottomSheetView.findViewById(R.id.input_layoutoldpassword);
+            textInputLayoutNew = (TextInputLayout) bottomSheetView.findViewById(R.id.input_layoutnewpassword);
+            textInputLayoutConfirm = (TextInputLayout) bottomSheetView.findViewById(R.id.input_layout_password);
 //            button.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View view) {
@@ -660,25 +667,27 @@ DialogCustomView();
         }
 
     }
+
     private class PasswordChange extends AsyncTask<String, Void, String> {
         Context context;
         String oldPass;
         String newPass;
         String confirmPass;
+
         PasswordChange(Context context,
-                   String oldPass,
-                   String newPass,
-                   String confirmPass) {
+                       String oldPass,
+                       String newPass,
+                       String confirmPass) {
             this.context = context;
-            this.oldPass=oldPass;
-            this.newPass=newPass;
-            this.confirmPass=confirmPass;
+            this.oldPass = oldPass;
+            this.newPass = newPass;
+            this.confirmPass = confirmPass;
 
         }
 
         protected String doInBackground(String... urls) {
 
-            return new Helpdesk().changePassword(oldPass,newPass,confirmPass);
+            return new Helpdesk().changePassword(oldPass, newPass, confirmPass);
         }
 
         protected void onPostExecute(String result) {
@@ -689,25 +698,25 @@ DialogCustomView();
 //            if (result == null) return;
             try {
                 Log.d("depenResponse", result);
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
-            String state=Prefs.getString("403",null);
+            String state = Prefs.getString("403", null);
             try {
                 if (state.equals("403") && !state.equals("null")) {
                     Toasty.warning(getActivity(), getString(R.string.permission), Toast.LENGTH_LONG).show();
                     Prefs.putString("403", "null");
                     return;
                 }
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
 
             try {
                 JSONObject jsonObject = new JSONObject(result);
-                String message=jsonObject.getString("message");
-                if (message.equals("Password updated successfully")){
-                    Toasty.success(getActivity(),"password changed successfully",Toast.LENGTH_SHORT).show();
+                String message = jsonObject.getString("message");
+                if (message.equals("Password updated successfully")) {
+                    Toasty.success(getActivity(), "password changed successfully", Toast.LENGTH_SHORT).show();
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
                     // Setting Dialog Message
                     alertDialog.setCancelable(false);
@@ -718,12 +727,12 @@ DialogCustomView();
                     alertDialog.setPositiveButton("ok", new DialogInterface.OnClickListener() {
                         @SuppressLint("MissingPermission")
                         public void onClick(DialogInterface dialog, int which) {
-                           Intent intent=new Intent(getActivity(),LoginActivity.class);
-                           startActivity(intent);
-                           getActivity().finish();
-                            String url=Prefs.getString("URLneedtoshow",null);
+                            Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            startActivity(intent);
+                            getActivity().finish();
+                            String url = Prefs.getString("URLneedtoshow", null);
                             Prefs.clear();
-                            Prefs.putString("URLneedtoshow",url);
+                            Prefs.putString("URLneedtoshow", url);
                         }
                     });
                     // Setting Negative "NO" Button
@@ -740,7 +749,6 @@ DialogCustomView();
                 }
 
 
-
             } catch (JSONException e) {
                 Toasty.error(getActivity(), getString(R.string.unexpected_error), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
@@ -748,8 +756,6 @@ DialogCustomView();
 
         }
     }
-
-
 
 
 }

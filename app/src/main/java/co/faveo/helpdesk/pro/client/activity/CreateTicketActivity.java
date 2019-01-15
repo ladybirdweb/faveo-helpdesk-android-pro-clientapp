@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -14,9 +15,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -81,49 +82,50 @@ import java.util.UUID;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import co.faveo.helpdesk.pro.client.R;
 import co.faveo.helpdesk.pro.client.application.Constants;
-import co.faveo.helpdesk.pro.client.model.Data;
 import co.faveo.helpdesk.pro.client.application.Helpdesk;
 import co.faveo.helpdesk.pro.client.application.Helper;
+import co.faveo.helpdesk.pro.client.model.Data;
 import co.faveo.helpdesk.pro.client.receiver.InternetReceiver;
-import co.faveo.helpdesk.pro.client.R;
 import es.dmoral.toasty.Toasty;
 
 import static com.vincent.filepicker.activity.AudioPickActivity.IS_NEED_RECORDER;
 import static com.vincent.filepicker.activity.ImagePickActivity.IS_NEED_CAMERA;
 
 public class CreateTicketActivity extends AppCompatActivity implements PermissionCallback, ErrorCallback {
-  ImageView imageViewBack;
+    private static final int PICKFILE_REQUEST_CODE = 1234;
+    public static String
+            keyDepartment = "", valueDepartment = "",
+            keySLA = "", valueSLA = "",
+            keyStatus = "", valueStatus = "",
+            keyStaff = "", valueStaff = "",
+            keyName = "",
+            keyPriority = "", valuePriority = "",
+            keyTopic = "", valueTopic = "",
+            keySource = "", valueSource = "",
+            keyType = "", valueType = "";
+    ImageView imageViewBack;
     boolean allCorrect;
     BottomSheetLayout bottomSheet;
     ProgressDialog progressDialog;
     ArrayAdapter<Data> spinnerPriArrayAdapter, spinnerHelpArrayAdapter;
     ArrayList<Data> helptopicItems, priorityItems;
     Button button;
-    int gallery,document,camera,audio=0;
-    private static final int PICKFILE_REQUEST_CODE = 1234;
+    int gallery, document, camera, audio = 0;
     String token;
     ImageButton imageButtonAttachmentClose;
     TextView attachmentFileName;
     RelativeLayout attachment_layout;
-    String path="";
-    String name,email;
-    EditText emailedittext,fnameedittext,msgedittext,subedittext;
-    Spinner spinnerpri,spinnerhelp;
+    String path = "";
+    String name, email;
+    EditText emailedittext, fnameedittext, msgedittext, subedittext;
+    Spinner spinnerpri, spinnerhelp;
     ImageButton refresh;
     Animation rotation;
     Button buttonSubmit;
-    String splChrs = "-/@#$%^&_+=()" ;
-    public static String
-            keyDepartment = "", valueDepartment = "",
-            keySLA = "", valueSLA = "",
-            keyStatus = "", valueStatus = "",
-            keyStaff = "", valueStaff = "",
-            keyName="",
-            keyPriority = "", valuePriority = "",
-            keyTopic = "", valueTopic = "",
-            keySource = "", valueSource = "",
-            keyType = "", valueType = "";
+    String splChrs = "-/@#$%^&_+=()";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,27 +141,27 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
 // finally change the color
-        window.setStatusBarColor(ContextCompat.getColor(CreateTicketActivity.this,R.color.faveo));
-        attachment_layout= (RelativeLayout) findViewById(R.id.attachment_layout);
-        attachmentFileName= (TextView) findViewById(R.id.attachment_name);
-        imageButtonAttachmentClose= (ImageButton) findViewById(R.id.attachment_close);
-        emailedittext= (EditText) findViewById(R.id.email_edittext);
-        fnameedittext= (EditText) findViewById(R.id.fname_edittext);
-        msgedittext= (EditText) findViewById(R.id.msg_edittext);
-        subedittext= (EditText) findViewById(R.id.sub_edittext);
-        spinnerpri= (Spinner) findViewById(R.id.spinner_pri);
-        spinnerhelp= (Spinner) findViewById(R.id.spinner_help);
-        refresh= (ImageButton) findViewById(R.id.imageRefresh);
-        buttonSubmit= (Button) findViewById(R.id.buttonSubmit);
+        window.setStatusBarColor(ContextCompat.getColor(CreateTicketActivity.this, R.color.mainActivityTopBar));
+        attachment_layout = (RelativeLayout) findViewById(R.id.attachment_layout);
+        attachmentFileName = (TextView) findViewById(R.id.attachment_name);
+        imageButtonAttachmentClose = (ImageButton) findViewById(R.id.attachment_close);
+        emailedittext = (EditText) findViewById(R.id.email_edittext);
+        fnameedittext = (EditText) findViewById(R.id.fname_edittext);
+        msgedittext = (EditText) findViewById(R.id.msg_edittext);
+        subedittext = (EditText) findViewById(R.id.sub_edittext);
+        spinnerpri = (Spinner) findViewById(R.id.spinner_pri);
+        spinnerhelp = (Spinner) findViewById(R.id.spinner_help);
+        refresh = (ImageButton) findViewById(R.id.imageRefresh);
+        buttonSubmit = (Button) findViewById(R.id.buttonSubmit);
         rotation = AnimationUtils.loadAnimation(this, R.anim.rotate);
-        bottomSheet= (BottomSheetLayout) findViewById(R.id.bottomsheet);
-        name=Prefs.getString("clientNameForFeedback",null);
-        email=Prefs.getString("emailForFeedback",null);
+        bottomSheet = (BottomSheetLayout) findViewById(R.id.bottomsheet);
+        name = Prefs.getString("clientNameForFeedback", null);
+        email = Prefs.getString("emailForFeedback", null);
         emailedittext.setText(email);
         fnameedittext.setText(name);
         emailedittext.setEnabled(false);
         fnameedittext.setEnabled(false);
-        button= (Button) findViewById(R.id.attachment);
+        button = (Button) findViewById(R.id.attachment);
 
 
         setUpViews();
@@ -169,11 +171,10 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                 attachment_layout.setVisibility(View.GONE);
                 attachmentFileName.setText("");
                 //attachmentFileSize.setText("");
-                path="";
+                path = "";
                 //toolbarAttachment.setVisibility(View.GONE);
             }
         });
-
 
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -181,7 +182,7 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
             public void onClick(View v) {
                 View view = CreateTicketActivity.this.getCurrentFocus();
                 if (view != null) {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
                 MenuSheetView menuSheetView =
@@ -191,23 +192,20 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                                 if (bottomSheet.isSheetShowing()) {
                                     bottomSheet.dismissSheet();
                                 }
-                                if (item.getItemId()==R.id.imageGalley){
-                                    gallery=2;
+                                if (item.getItemId() == R.id.imageGalley) {
+                                    gallery = 2;
                                     reqPermissionCamera();
                                     return true;
-                                }
-                                else if (item.getItemId()==R.id.videoGallery){
-                                    camera=3;
+                                } else if (item.getItemId() == R.id.videoGallery) {
+                                    camera = 3;
                                     reqPermissionCamera();
                                     return true;
-                                }
-                                else if (item.getItemId()==R.id.musicGallery){
-                                    audio=4;
+                                } else if (item.getItemId() == R.id.musicGallery) {
+                                    audio = 4;
                                     reqPermissionCamera();
                                     return true;
-                                }
-                                else if (item.getItemId()==R.id.documentGallery){
-                                    document=1;
+                                } else if (item.getItemId() == R.id.documentGallery) {
+                                    document = 1;
                                     reqPermissionCamera();
                                     return true;
                                 }
@@ -217,6 +215,21 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                         });
                 menuSheetView.inflateMenu(R.menu.navigation);
                 bottomSheet.showWithSheetView(menuSheetView);
+                msgedittext.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View view, MotionEvent motionEvent) {
+                        view.getParent().requestDisallowInterceptTouchEvent(true);
+                        switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                            case MotionEvent.ACTION_SCROLL:
+                                view.getParent().requestDisallowInterceptTouchEvent(false);
+                                return true;
+                            case MotionEvent.ACTION_BUTTON_PRESS:
+                                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                imm.showSoftInput(msgedittext, InputMethodManager.SHOW_IMPLICIT);
+                        }
+                        return false;
+                    }
+                });
 
 //                if (bottomNavigationView.getVisibility()==View.GONE){
 //                    bottomNavigationView.setVisibility(View.VISIBLE);
@@ -262,13 +275,13 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                         .show();
             }
         });
-        imageViewBack= (ImageView) findViewById(R.id.imageViewBack);
+        imageViewBack = (ImageView) findViewById(R.id.imageViewBack);
         imageViewBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
 
-                if (!msgedittext.getText().toString().equals("")||!subedittext.getText().toString().equals("")){
+                if (!msgedittext.getText().toString().equals("") || !subedittext.getText().toString().equals("")) {
                     new BottomDialog.Builder(CreateTicketActivity.this)
                             .setContent(getString(R.string.discard))
                             .setTitle("Are you sure")
@@ -291,8 +304,7 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                         }
                     })
                             .show();
-                }
-                else{
+                } else {
                     finish();
                 }
 
@@ -306,36 +318,33 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                 new SendPostRequest().execute();
                 final Data helpTopic = (Data) spinnerhelp.getSelectedItem();
                 final Data priority = (Data) spinnerpri.getSelectedItem();
-                String finalName=name;
-                String finalEmail=email;
-                String subject=subedittext.getText().toString();
-                String message=msgedittext.getText().toString();
+                String finalName = name;
+                String finalEmail = email;
+                String subject = subedittext.getText().toString();
+                String message = msgedittext.getText().toString();
 
                 allCorrect = true;
 
-                if (finalName.length()==0&&finalName.length()==0){
+                if (finalName.length() == 0 && finalName.length() == 0) {
                     Toasty.warning(CreateTicketActivity.this, getString(R.string.fill_firstname), Toast.LENGTH_SHORT).show();
                     allCorrect = false;
                 }
                 if (finalName.length() == 0 && finalEmail.length() == 0 && subject.length() == 0 && message.length() == 0 && helpTopic.ID == 0 && priority.ID == 0) {
                     Toasty.warning(CreateTicketActivity.this, getString(R.string.fill_all_the_details), Toast.LENGTH_SHORT).show();
                     allCorrect = false;
-                } else if (finalName.trim().length() == 0||finalName.equals("null")||finalName.equals(null)) {
+                } else if (finalName.trim().length() == 0 || finalName.equals("null") || finalName.equals(null)) {
                     Toasty.warning(CreateTicketActivity.this, getString(R.string.fill_firstname), Toast.LENGTH_SHORT).show();
                     allCorrect = false;
-                }
-                else if (finalEmail.trim().length() == 0 || !Helper.isValidEmail(finalEmail)) {
+                } else if (finalEmail.trim().length() == 0 || !Helper.isValidEmail(finalEmail)) {
                     Toasty.warning(CreateTicketActivity.this, getString(R.string.invalid_email), Toast.LENGTH_SHORT).show();
                     allCorrect = false;
                 } else if (subject.trim().length() == 0) {
                     Toasty.warning(CreateTicketActivity.this, getString(R.string.sub_must_not_be_empty), Toast.LENGTH_SHORT).show();
                     allCorrect = false;
-                }
-                else if (subject.matches("[" + splChrs + "]+")) {
+                } else if (subject.matches("[" + splChrs + "]+")) {
                     Toasty.warning(CreateTicketActivity.this, getString(R.string.only_special_characters_not_allowed_here), Toast.LENGTH_SHORT).show();
                     allCorrect = false;
-                }
-                else if (priority.ID == 0) {
+                } else if (priority.ID == 0) {
                     allCorrect = false;
                     Toasty.warning(CreateTicketActivity.this, getString(R.string.please_select_some_priority), Toast.LENGTH_SHORT).show();
                 } else if (helpTopic.ID == 0) {
@@ -347,8 +356,8 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                 }
 
 
-                if (allCorrect){
-                    if (InternetReceiver.isConnected()){
+                if (allCorrect) {
+                    if (InternetReceiver.isConnected()) {
                         if (path.equals("")) {
                             try {
                                 finalName = URLEncoder.encode(finalName.trim(), "utf-8");
@@ -387,7 +396,7 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                             } catch (UnsupportedEncodingException e) {
                                 e.printStackTrace();
                             }
-                        }else{
+                        } else {
                             final String finalSubject1 = subject;
                             final String finalMessage1 = message;
                             final String finalName2 = finalName;
@@ -454,7 +463,7 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
 //
 //                                    }
 
-                                                            if (serverResponse.getBodyAsString().contains("Permission denied")){
+                                                            if (serverResponse.getBodyAsString().contains("Permission denied")) {
                                                                 Toasty.warning(CreateTicketActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
                                                                 return;
                                                             }
@@ -547,104 +556,10 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                 }
 
 
-
             }
         });
     }
 
-
-
-    private class CreateNewTicket extends AsyncTask<File, Void, String> {
-        String fname, lname, email, code;
-        String subject;
-        public String body;
-        String phone;
-        String mobile;
-        int helpTopic;
-        // int SLA;
-        int priority;
-        //int dept;
-        int userID;
-        int staff;
-        String string;
-
-        CreateNewTicket(String subject, String body,
-                        int helpTopic, int priority, String fname, String email) {
-
-            this.subject = subject;
-            this.body = body;
-            this.helpTopic = helpTopic;
-            this.priority = priority;
-            this.fname = fname;
-            this.email = email;
-
-        }
-
-//        protected String doInBackground(String... urls) {
-//
-        //return new Helpdesk().postCreateTicket(userID, subject, body, helpTopic, priority, fname, lname, phone, email, code, staff, mobile+ collaborators, new File[]{new File(result)});
-//        }
-
-        @Override
-        protected String doInBackground(File... files) {
-
-
-            return new Helpdesk().postCreateTicket(subject, body, helpTopic, priority, fname, email);
-        }
-
-        protected void onPostExecute(String result) {
-            //Toast.makeText(CreateTicketActivity.this, "api called", Toast.LENGTH_SHORT).show();
-            progressDialog.dismiss();
-
-            if (result == null) {
-                Toasty.error(CreateTicketActivity.this, getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show();
-                return;
-            }
-
-
-//            try{
-//                JSONObject jsonObject=new JSONObject(result);
-//                JSONObject jsonObject1=jsonObject.getJSONObject("response");
-//                String message=jsonObject1.getString("message");
-//                if (message.equals("Permission denied, you do not have permission to access the requested page.")){
-//                    Toasty.warning(CreateTicketActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
-//                    Prefs.putString("403", "null");
-//                    return;
-//                }
-//
-//            }catch (JSONException e){
-//                e.printStackTrace();
-//            }
-            String state=Prefs.getString("403",null);
-////                if (message1.contains("The ticket id field is required.")){
-////                    Toasty.warning(TicketDetailActivity.this, getString(R.string.please_select_ticket), Toast.LENGTH_LONG).show();
-////                }
-////                else if (message1.contains("The status id field is required.")){
-////                    Toasty.warning(TicketDetailActivity.this, getString(R.string.please_select_status), Toast.LENGTH_LONG).show();
-////                }
-////               else
-            try {
-                if (state.equals("403") && !state.equals("null")) {
-                    Toasty.warning(CreateTicketActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
-                    Prefs.putString("403", "null");
-                    return;
-                }
-            }catch (NullPointerException e){
-                e.printStackTrace();
-            }
-
-            if (result.contains("Ticket created successfully!")) {
-                Toasty.success(CreateTicketActivity.this, getString(R.string.ticket_created_success), Toast.LENGTH_LONG).show();
-                finish();
-                Prefs.putString("newuseremail",null);
-                startActivity(new Intent(CreateTicketActivity.this, MainActivity.class));
-
-            }
-        }
-
-
-
-    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         String fileName;
@@ -751,10 +666,11 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
             e.printStackTrace();
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
             switch (requestCode) {
                 case 3:
                     break;
@@ -774,98 +690,13 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
             }
 
             Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
 
         }
 
     }
-    public class SendPostRequest extends AsyncTask<String, Void, String> {
 
-        protected void onPreExecute(){}
-
-        protected String doInBackground(String... arg0) {
-
-            try {
-
-                URL url = new URL(Constants.URL + "authenticate"); // here is your URL path
-
-                JSONObject postDataParams = new JSONObject();
-                postDataParams.put("username", Prefs.getString("USERNAME", null));
-                postDataParams.put("password", Prefs.getString("PASSWORD", null));
-                Log.e("params",postDataParams.toString());
-
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(15000 /* milliseconds */);
-                conn.setConnectTimeout(15000 /* milliseconds */);
-                //MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-                conn.setRequestMethod("POST");
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-                writer.write(getPostDataString(postDataParams));
-
-                writer.flush();
-                writer.close();
-                os.close();
-
-                int responseCode=conn.getResponseCode();
-
-                if (responseCode == HttpsURLConnection.HTTP_OK) {
-
-                    BufferedReader in=new BufferedReader(new
-                            InputStreamReader(
-                            conn.getInputStream()));
-
-                    StringBuffer sb = new StringBuffer("");
-                    String line="";
-
-                    while((line = in.readLine()) != null) {
-
-                        sb.append(line);
-                        break;
-                    }
-
-                    in.close();
-                    return sb.toString();
-
-                }
-                else {
-                    return new String("false : "+responseCode);
-                }
-            }
-            catch(Exception e){
-                return new String("Exception: " + e.getMessage());
-            }
-
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            //progressDialog.dismiss();
-            //Toast.makeText(getApplicationContext(), result,
-            //Toast.LENGTH_LONG).show();
-            Log.d("resultFromNewCall",result);
-            try {
-                JSONObject jsonObject=new JSONObject(result);
-                JSONObject jsonObject1=jsonObject.getJSONObject("data");
-                token = jsonObject1.getString("token");
-                Prefs.putString("TOKEN", token);
-                Log.d("TOKEN",token);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-//            try {
-//                uploadMultipartData();
-//            } catch (UnsupportedEncodingException e) {
-//                e.printStackTrace();
-//            }
-
-        }
-    }
     public String getPostDataString(JSONObject params) throws Exception {
 
         StringBuilder result = new StringBuilder();
@@ -873,9 +704,9 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
 
         Iterator<String> itr = params.keys();
 
-        while(itr.hasNext()){
+        while (itr.hasNext()) {
 
-            String key= itr.next();
+            String key = itr.next();
             Object value = params.get(key);
 
             if (first)
@@ -921,23 +752,23 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
 
     @Override
     public void onPermissionsGranted(int requestCode) {
-        Log.d("requestCode",""+requestCode);
+        Log.d("requestCode", "" + requestCode);
 
-        if (document==1){
+        if (document == 1) {
             Intent intent4 = new Intent(this, NormalFilePickActivity.class);
             intent4.putExtra(Constant.MAX_NUMBER, 1);
             //intent4.putExtra(IS_NEED_FOLDER_LIST, true);
             intent4.putExtra(NormalFilePickActivity.SUFFIX,
-                    new String[] {"xlsx", "xls", "doc", "dOcX", "ppt", ".pptx", "pdf"});
+                    new String[]{"xlsx", "xls", "doc", "dOcX", "ppt", ".pptx", "pdf"});
             startActivityForResult(intent4, Constant.REQUEST_CODE_PICK_FILE);
 //            new MaterialFilePicker()
 //                    .withActivity(TicketReplyActivity.this)
 //                    .withRequestCode(FILE_PICKER_REQUEST_CODE)
 //                    .withHiddenFiles(true)
 //                    .start();
-            document=0;
+            document = 0;
         }
-        if (gallery==2){
+        if (gallery == 2) {
             Intent intent1 = new Intent(this, ImagePickActivity.class);
             intent1.putExtra(IS_NEED_CAMERA, true);
             intent1.putExtra(Constant.MAX_NUMBER, 1);
@@ -945,10 +776,10 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
 //            Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 //            intent.setType("image/*");
 //            startActivityForResult(intent, PICKFILE_REQUEST_CODE);
-            gallery=0;
+            gallery = 0;
         }
 
-        if (camera==3){
+        if (camera == 3) {
             Intent intent2 = new Intent(this, VideoPickActivity.class);
             intent2.putExtra(IS_NEED_CAMERA, true);
             intent2.putExtra(Constant.MAX_NUMBER, 1);
@@ -956,25 +787,26 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
 //            Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 //
 //            startActivityForResult(intent, CAMERA_REQUEST);
-            camera=0;
+            camera = 0;
         }
-        if (audio==4){
+        if (audio == 4) {
             Intent intent3 = new Intent(this, AudioPickActivity.class);
             intent3.putExtra(IS_NEED_RECORDER, true);
             intent3.putExtra(Constant.MAX_NUMBER, 1);
             startActivityForResult(intent3, Constant.REQUEST_CODE_PICK_AUDIO);
-            audio=0;
+            audio = 0;
 
         }
     }
 
     @Override
     public void onPermissionsDenied(int requestCode) {
-        Toasty.warning(CreateTicketActivity.this,getString(R.string.permission_camera_denied),Toast.LENGTH_SHORT).show();
+        Toasty.warning(CreateTicketActivity.this, getString(R.string.permission_camera_denied), Toast.LENGTH_SHORT).show();
         return;
     }
+
     private void reqPermissionCamera() {
-        new AskPermission.Builder(this).setPermissions(Manifest.permission.CAMERA,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        new AskPermission.Builder(this).setPermissions(Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .setCallback(this)
                 .setErrorCallback(this)
                 .request(PICKFILE_REQUEST_CODE);
@@ -1035,7 +867,6 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
         }
 
 
-
         spinnerHelpArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, helptopicItems); //selected item will look like a spinner set from XML
         spinnerHelpArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerhelp.setAdapter(spinnerHelpArrayAdapter);
@@ -1048,6 +879,214 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
         spinnerpri.setDropDownWidth(1000);
 
     }
+
+    @Override
+    public void onBackPressed() {
+        if (!msgedittext.getText().toString().equals("") || !subedittext.getText().toString().equals("")) {
+            new BottomDialog.Builder(CreateTicketActivity.this)
+                    .setContent(getString(R.string.discard))
+                    .setTitle("Are you sure")
+                    .setPositiveText("YES")
+                    .setNegativeText("NO")
+                    .setPositiveBackgroundColorResource(R.color.white)
+                    //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
+                    .setPositiveTextColorResource(R.color.faveo)
+                    .setNegativeTextColor(R.color.black)
+                    //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
+                    .onPositive(new BottomDialog.ButtonCallback() {
+                        @Override
+                        public void onClick(BottomDialog dialog) {
+                            finish();
+                        }
+                    }).onNegative(new BottomDialog.ButtonCallback() {
+                @Override
+                public void onClick(@NonNull BottomDialog bottomDialog) {
+                    bottomDialog.dismiss();
+                }
+            })
+                    .show();
+        } else {
+            finish();
+        }
+    }
+
+    private class CreateNewTicket extends AsyncTask<File, Void, String> {
+        public String body;
+        String fname, lname, email, code;
+        String subject;
+        String phone;
+        String mobile;
+        int helpTopic;
+        // int SLA;
+        int priority;
+        //int dept;
+        int userID;
+        int staff;
+        String string;
+
+        CreateNewTicket(String subject, String body,
+                        int helpTopic, int priority, String fname, String email) {
+
+            this.subject = subject;
+            this.body = body;
+            this.helpTopic = helpTopic;
+            this.priority = priority;
+            this.fname = fname;
+            this.email = email;
+
+        }
+
+//        protected String doInBackground(String... urls) {
+//
+        //return new Helpdesk().postCreateTicket(userID, subject, body, helpTopic, priority, fname, lname, phone, email, code, staff, mobile+ collaborators, new File[]{new File(result)});
+//        }
+
+        @Override
+        protected String doInBackground(File... files) {
+
+
+            return new Helpdesk().postCreateTicket(subject, body, helpTopic, priority, fname, email);
+        }
+
+        protected void onPostExecute(String result) {
+            //Toast.makeText(CreateTicketActivity.this, "api called", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
+
+            if (result == null) {
+                Toasty.error(CreateTicketActivity.this, getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show();
+                return;
+            }
+
+
+//            try{
+//                JSONObject jsonObject=new JSONObject(result);
+//                JSONObject jsonObject1=jsonObject.getJSONObject("response");
+//                String message=jsonObject1.getString("message");
+//                if (message.equals("Permission denied, you do not have permission to access the requested page.")){
+//                    Toasty.warning(CreateTicketActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
+//                    Prefs.putString("403", "null");
+//                    return;
+//                }
+//
+//            }catch (JSONException e){
+//                e.printStackTrace();
+//            }
+            String state = Prefs.getString("403", null);
+////                if (message1.contains("The ticket id field is required.")){
+////                    Toasty.warning(TicketDetailActivity.this, getString(R.string.please_select_ticket), Toast.LENGTH_LONG).show();
+////                }
+////                else if (message1.contains("The status id field is required.")){
+////                    Toasty.warning(TicketDetailActivity.this, getString(R.string.please_select_status), Toast.LENGTH_LONG).show();
+////                }
+////               else
+            try {
+                if (state.equals("403") && !state.equals("null")) {
+                    Toasty.warning(CreateTicketActivity.this, getString(R.string.permission), Toast.LENGTH_LONG).show();
+                    Prefs.putString("403", "null");
+                    return;
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+
+            if (result.contains("Ticket created successfully!")) {
+                Toasty.success(CreateTicketActivity.this, getString(R.string.ticket_created_success), Toast.LENGTH_LONG).show();
+                finish();
+                Prefs.putString("newuseremail", null);
+                startActivity(new Intent(CreateTicketActivity.this, MainActivity.class));
+
+            }
+        }
+
+
+    }
+
+    public class SendPostRequest extends AsyncTask<String, Void, String> {
+
+        protected void onPreExecute() {
+        }
+
+        protected String doInBackground(String... arg0) {
+
+            try {
+
+                URL url = new URL(Constants.URL + "authenticate"); // here is your URL path
+
+                JSONObject postDataParams = new JSONObject();
+                postDataParams.put("username", Prefs.getString("USERNAME", null));
+                postDataParams.put("password", Prefs.getString("PASSWORD", null));
+                Log.e("params", postDataParams.toString());
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(15000 /* milliseconds */);
+                conn.setConnectTimeout(15000 /* milliseconds */);
+                //MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(getPostDataString(postDataParams));
+
+                writer.flush();
+                writer.close();
+                os.close();
+
+                int responseCode = conn.getResponseCode();
+
+                if (responseCode == HttpsURLConnection.HTTP_OK) {
+
+                    BufferedReader in = new BufferedReader(new
+                            InputStreamReader(
+                            conn.getInputStream()));
+
+                    StringBuffer sb = new StringBuffer("");
+                    String line = "";
+
+                    while ((line = in.readLine()) != null) {
+
+                        sb.append(line);
+                        break;
+                    }
+
+                    in.close();
+                    return sb.toString();
+
+                } else {
+                    return new String("false : " + responseCode);
+                }
+            } catch (Exception e) {
+                return new String("Exception: " + e.getMessage());
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //progressDialog.dismiss();
+            //Toast.makeText(getApplicationContext(), result,
+            //Toast.LENGTH_LONG).show();
+            Log.d("resultFromNewCall", result);
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                token = jsonObject1.getString("token");
+                Prefs.putString("TOKEN", token);
+                Log.d("TOKEN", token);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+//            try {
+//                uploadMultipartData();
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//            }
+
+        }
+    }
+
     private class FetchDependency extends AsyncTask<String, Void, String> {
         String unauthorized;
 
@@ -1060,7 +1099,7 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
         protected void onPostExecute(String result) {
             Log.d("Depen Response : ", result + "");
             refresh.clearAnimation();
-            if (result==null) {
+            if (result == null) {
 //                try {
 //                    unauthorized = Prefs.getString("unauthorized", null);
 //                    if (unauthorized.equals("true")) {
@@ -1123,11 +1162,11 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
 
                 JSONArray jsonArrayStaffs = jsonObject1.getJSONArray("staffs");
                 for (int i = 0; i < jsonArrayStaffs.length(); i++) {
-                    keyName +=jsonArrayStaffs.getJSONObject(i).getString("first_name") + jsonArrayStaffs.getJSONObject(i).getString("last_name") +",";
+                    keyName += jsonArrayStaffs.getJSONObject(i).getString("first_name") + jsonArrayStaffs.getJSONObject(i).getString("last_name") + ",";
                     keyStaff += jsonArrayStaffs.getJSONObject(i).getString("id") + ",";
                     valueStaff += jsonArrayStaffs.getJSONObject(i).getString("email") + ",";
                 }
-                Prefs.putString("keyName",keyName);
+                Prefs.putString("keyName", keyName);
                 Prefs.putString("keyStaff", keyStaff);
                 Prefs.putString("valueStaff", valueStaff);
 
@@ -1274,37 +1313,6 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
 //                    t.cancel(); // also just top the timer thread, otherwise, you may receive a crash report
 //                }
 //            }, 3000);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (!msgedittext.getText().toString().equals("")||!subedittext.getText().toString().equals("")){
-            new BottomDialog.Builder(CreateTicketActivity.this)
-                    .setContent(getString(R.string.discard))
-                    .setTitle("Are you sure")
-                    .setPositiveText("YES")
-                    .setNegativeText("NO")
-                    .setPositiveBackgroundColorResource(R.color.white)
-                    //.setPositiveBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary)
-                    .setPositiveTextColorResource(R.color.faveo)
-                    .setNegativeTextColor(R.color.black)
-                    //.setPositiveTextColor(ContextCompat.getColor(this, android.R.color.colorPrimary)
-                    .onPositive(new BottomDialog.ButtonCallback() {
-                        @Override
-                        public void onClick(BottomDialog dialog) {
-                            finish();
-                        }
-                    }).onNegative(new BottomDialog.ButtonCallback() {
-                @Override
-                public void onClick(@NonNull BottomDialog bottomDialog) {
-                    bottomDialog.dismiss();
-                }
-            })
-                    .show();
-        }
-        else{
-            finish();
         }
     }
 }

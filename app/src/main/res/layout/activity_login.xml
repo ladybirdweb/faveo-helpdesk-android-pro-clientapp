@@ -3,10 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorAccent"
     android:fillViewport="true"
     android:overScrollMode="never"
     android:scrollbars="none"
-    android:background="@color/colorAccent"
     tools:context=".activity.LoginActivity">
 
     <LinearLayout
@@ -14,16 +14,16 @@
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"
         android:orientation="vertical">
+
         <ImageButton
+            android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:src="@drawable/ic_arrow_back_black_24dp"
             android:background="#ffffff"
+            android:src="@drawable/ic_arrow_back_black_24dp"
             android:tint="#3da6d7"
-            android:visibility="invisible"
-            android:id="@+id/backButton"
-            />
+            android:visibility="invisible" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -43,9 +43,9 @@
                 android:id="@+id/view"
                 android:layout_width="142dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
                 android:layout_below="@+id/textView2"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
                 android:layout_marginTop="4dp"
                 android:orientation="horizontal">
 
@@ -67,9 +67,9 @@
                 android:id="@+id/url"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
                 android:layout_below="@+id/view"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
                 android:layout_marginTop="10dp"
                 android:text="http://www.ladybirdweb.com/support"
                 android:textSize="14sp"
@@ -93,20 +93,21 @@
             android:visibility="visible">
 
             <LinearLayout
+                android:id="@+id/animationLayout"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:layout_marginBottom="24dp"
                 android:orientation="vertical"
                 android:paddingLeft="16dp"
-                android:paddingRight="16dp"
                 android:paddingTop="8dp"
-                tools:context=".activity.LoginActivity"
-                android:id="@+id/animationLayout">
+                android:paddingRight="16dp"
+                tools:context=".activity.LoginActivity">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:alpha="0.3"
+                    android:fontFamily="@font/hintedlainesansregular"
                     android:text="@string/helpdesk_url"
                     android:textColor="@color/black"
                     android:textSize="14sp"
@@ -129,56 +130,57 @@
                         android:id="@+id/editText_company_url"
                         android:layout_width="0dp"
                         android:layout_height="60dp"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginRight="4dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_weight="1.03"
                         android:backgroundTint="@color/faveo"
+                        android:hint="eg: http://faveohelpdesk.com/public"
                         android:imeOptions="actionDone"
                         android:inputType="textUri"
-                        android:paddingBottom="12dp"
                         android:paddingTop="12dp"
-                        android:hint="eg: http://faveohelpdesk.com/public"
+                        android:paddingBottom="12dp"
                         android:textCursorDrawable="@drawable/color_cursor"
                         android:textSize="14sp" />
+
                     <com.github.jorgecastilloprz.FABProgressCircle
                         android:id="@+id/fabProgressCircle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:clipToPadding="false"
+                        android:padding="2dp"
                         app:arcColor="@color/faveo"
                         app:arcWidth="2dp"
-                        app:reusable="true"
-                        android:clipToPadding="false"
                         app:finalIcon="@drawable/ic_done_black_24dp"
-                        android:padding="2dp"
-                        >
+                        app:reusable="true">
+
                         <android.support.design.widget.FloatingActionButton
                             android:id="@+id/fab_verify_url"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:clipToPadding="false"
                             android:src="@drawable/ic_arrow_forward_black_24dp"
-                            app:fabSize="mini"
                             app:backgroundTint="@color/faveo"
-                            app:reusable="true"
-                            android:clipToPadding="false"/>
+                            app:fabSize="mini"
+                            app:reusable="true" />
 
                     </com.github.jorgecastilloprz.FABProgressCircle>
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/urlError"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/urlError"
-                    android:visibility="gone"
                     android:text="Please enter a valid url"
-                    android:textColor="#ff0000"/>
+                    android:textColor="#ff0000"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/helpUrl"
                     android:layout_width="wrap_content"
                     android:layout_height="20dp"
-                    android:layout_alignParentBottom="true"
                     android:layout_alignStart="@+id/staticView"
+                    android:layout_alignParentBottom="true"
                     android:layout_marginBottom="97dp"
                     android:autoLink="web"
                     android:background="@drawable/layer_list"
@@ -186,25 +188,28 @@
                     android:text="@string/need_help_with_your_servicedesk_url"
                     android:textColor="@color/faveo"
                     android:textSize="15sp" />
+
                 <ProgressBar
-                    android:layout_width="20dp"
                     android:id="@+id/progress_bar"
+                    android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center|top"
-                    android:visibility="gone"
-                    />
+                    android:visibility="gone" />
+
                 <TextView
                     android:id="@+id/progresstext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="@string/pleasewait"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
             </LinearLayout>
+
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -212,66 +217,72 @@
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_layout_username"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:errorEnabled="false">
-
-            <android.support.v7.widget.AppCompatEditText
-                android:id="@+id/input_username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/user_name"
-                android:imeOptions="actionNext"
-                android:inputType="textPersonName"
-                />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:id="@+id/usernameError"
-                android:visibility="gone"
-                android:text="Username is required"
-                android:textColor="#ff0000"/>
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_layout_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:errorEnabled="false"
-            app:passwordToggleEnabled="true">
-
-            <android.support.v7.widget.AppCompatEditText
-                android:id="@+id/input_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/password"
-                android:imeOptions="actionDone"
-                android:inputType="textPassword" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:id="@+id/passwordError"
-                android:visibility="gone"
-                android:text="Password is required"
-                android:textColor="#ff0000"/>
-        </android.support.design.widget.TextInputLayout>
-        <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
-                        android:layout_height="wrap_content"
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/input_layout_username"
                         android:layout_width="match_parent"
-                        app:spinning_bar_width="4dp"
-                        android:layout_margin="32dp"
+                        android:layout_height="wrap_content"
+                        app:errorEnabled="false">
+
+                        <android.support.v7.widget.AppCompatEditText
+                            android:id="@+id/input_username"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/hintedlainesansregular"
+                            android:hint="@string/user_name"
+                            android:imeOptions="actionNext"
+                            android:inputType="textPersonName" />
+
+                        <TextView
+                            android:id="@+id/usernameError"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:fontFamily="@font/hintedlainesansregular"
+                            android:text="Username is required"
+                            android:textColor="#ff0000"
+                            android:visibility="gone" />
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/input_layout_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:errorEnabled="false"
+                        app:passwordToggleEnabled="true">
+
+                        <android.support.v7.widget.AppCompatEditText
+                            android:id="@+id/input_password"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/hintedlainesansregular"
+                            android:hint="@string/password"
+                            android:imeOptions="actionDone"
+                            android:inputType="textPassword" />
+
+                        <TextView
+                            android:id="@+id/passwordError"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:fontFamily="@font/hintedlainesansregular"
+                            android:text="Password is required"
+                            android:textColor="#ff0000"
+                            android:visibility="gone" />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                        android:id="@+id/button_signin"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@string/sign_in"
+                        android:layout_margin="32dp"
                         android:background="@drawable/button_background"
+                        android:text="@string/sign_in"
                         android:textColor="@color/white"
                         android:textStyle="bold"
-                        android:id="@+id/button_signin"
                         app:spinning_bar_color="@color/white"
-                        app:spinning_bar_padding="6dp" />
+                        app:spinning_bar_padding="6dp"
+                        app:spinning_bar_width="4dp" />
 
                     <!--<Button-->
                     <!--android:id="@+id/button_signin"-->

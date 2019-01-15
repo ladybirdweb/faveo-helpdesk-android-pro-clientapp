@@ -6,7 +6,7 @@
     <solid android:color="@color/faveo" />
 
     <size
-        android:height="28dp"
-        android:width="28dp" />
+        android:width="28dp"
+        android:height="28dp" />
 
 </shape>
