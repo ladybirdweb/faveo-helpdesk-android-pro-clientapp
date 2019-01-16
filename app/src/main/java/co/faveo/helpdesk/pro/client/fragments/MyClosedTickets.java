@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -92,7 +93,7 @@ public class MyClosedTickets extends Fragment {
     private boolean loading = true;
     private android.support.v7.view.ActionMode mActionMode;
     private int id = 0;
-
+    private SearchView searchView;
     public MyClosedTickets() {
         // Required empty public constructor
     }
@@ -176,11 +177,11 @@ public class MyClosedTickets extends Fragment {
                         swipeRefreshLayout.setRefreshing(true);
                         recyclerView.setVisibility(View.VISIBLE);
                         noInternet_view.setVisibility(View.GONE);
-//                        try {
-//                            mActionMode.finish();
-//                        } catch (NullPointerException e) {
-//                            e.printStackTrace();
-//                        }
+                        try {
+                            mActionMode.finish();
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
                         View view = getActivity().getCurrentFocus();
                         if (view != null) {
                             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -205,11 +206,14 @@ public class MyClosedTickets extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.search_menu, menu);
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setSearchableInfo(searchManager
-                .getSearchableInfo(getActivity().getComponentName()));
-        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+
+        EditText txtSearch = ((EditText)searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
+        ImageView searchClose = (ImageView) searchView.findViewById(android.support.v7.appcompat.R.id.search_close_btn);
+        searchClose.setImageResource(R.drawable.ic_close_black_24dp);
+        txtSearch.setHintTextColor(getResources().getColor(R.color.colorAccent));
+        txtSearch.setTextColor(getResources().getColor(R.color.colorAccent));
+        txtSearch.setTextSize(16);
 
 
         // listening to search query text change
