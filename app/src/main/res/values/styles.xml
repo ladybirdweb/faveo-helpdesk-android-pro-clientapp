@@ -35,17 +35,17 @@
         <item name="android:tint">@color/colorAccent</item>
     </style>
 
-    <style name="AppThemeOverlay.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
-        <item name="colorControlNormal">@color/colorAccent</item>
-        <item name="android:textColorPrimary">@color/colorAccent</item>
-        <item name="android:textColorSecondary">@color/colorAccent</item>
-        <item name="windowActionModeOverlay">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:actionModeCloseDrawable">@drawable/ic_arrow_back_black_24dp</item>
-        <item name="actionModeCloseDrawable">@color/faveo</item>
-        <item name="actionModeCloseButtonStyle">@style/Widget.AppCompat.ActionMode</item>
-    </style>
+    <!--<style name="AppThemeOverlay.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">-->
+        <!--<item name="colorControlNormal">@color/colorAccent</item>-->
+        <!--<item name="android:textColorPrimary">@color/colorAccent</item>-->
+        <!--<item name="android:textColorSecondary">@color/colorAccent</item>-->
+        <!--<item name="windowActionModeOverlay">true</item>-->
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="windowNoTitle">true</item>-->
+        <!--<item name="android:actionModeCloseDrawable">@drawable/ic_arrow_back_black_24dp</item>-->
+        <!--<item name="actionModeCloseDrawable">@color/faveo</item>-->
+        <!--<item name="actionModeCloseButtonStyle">@style/Widget.AppCompat.ActionMode</item>-->
+    <!--</style>-->
     <style name="MenuItems" parent="AppTheme">
         <item name="android:textSize">30sp</item>
         <item name="android:fontFamily">sans-serif-light</item>
@@ -54,15 +54,26 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="actionBarTheme">@style/AppTheme.ActionBarTheme</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColorHint">@android:color/white</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="colorPrimary">@color/faveo</item>
+        <item name="colorPrimaryDark">@color/faveo</item>
+        <item name="colorAccent">@color/faveo</item>
+        <item name="android:textColorHint">@color/faveo</item>
+        <item name="android:textColor">@color/faveo</item>
 
     </style>
     <style name="AppTheme.ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="colorControlActivated">#FFffffff</item>
+        <item name="colorControlActivated">@color/faveo</item>
+    </style>
+
+    <style name="AppThemeOverlay.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="colorControlNormal">@color/faveo</item>
+        <item name="android:textColorPrimary">@color/faveo</item>
+        <item name="android:textColorSecondary">@color/faveo</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="actionModeCloseDrawable">@color/white</item>
+        <item name="actionModeCloseButtonStyle">@style/Widget.AppCompat.ActionMode</item>
     </style>
     <!--<style name="StyledToast">-->
 
