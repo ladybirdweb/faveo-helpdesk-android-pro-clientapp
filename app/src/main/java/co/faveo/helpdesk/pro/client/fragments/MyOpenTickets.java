@@ -164,11 +164,11 @@ public class MyOpenTickets extends Fragment {
                         swipeRefreshLayout.setRefreshing(true);
                         recyclerView.setVisibility(View.VISIBLE);
                         noInternet_view.setVisibility(View.GONE);
-//                        try {
-//                            mActionMode.finish();
-//                        } catch (NullPointerException e) {
-//                            e.printStackTrace();
-//                        }
+                        try {
+                            mActionMode.finish();
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
                         View view = getActivity().getCurrentFocus();
                         if (view != null) {
                             InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
