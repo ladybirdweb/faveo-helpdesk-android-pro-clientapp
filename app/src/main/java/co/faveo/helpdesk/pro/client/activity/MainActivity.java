@@ -318,6 +318,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         new BottomDialog.Builder(MainActivity.this)
+                .setTitle(R.string.log_out)
                 .setContent(getString(R.string.confirmMessage))
                 .setPositiveText("YES")
                 .setNegativeText("NO")

@@ -44,8 +44,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="foregroundImage" value="C:\Users\sayarSamanta\Downloads\ic_launcher_foreground.webp" />
-                                      <entry key="generateRoundIcon" value="false" />
+                                      <entry key="foregroundImage" value="C:\Users\sayarSamanta\Downloads\Webp.net-resizeimage.png" />
+                                      <entry key="legacyIconShape" value="CIRCLE" />
+                                      <entry key="webIconShape" value="CIRCLE" />
                                     </map>
                                   </option>
                                 </PersistentState>

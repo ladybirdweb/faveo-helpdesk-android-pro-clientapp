@@ -24,7 +24,8 @@
                 android:background="@color/appbar"
                 app:collapseIcon="@drawable/ic_arrow_back_black_24dp"
                 app:layout_scrollFlags="scroll|enterAlways|snap"
-                app:popupTheme="@style/AppTheme">
+                app:popupTheme="@style/AppThemes"
+                android:theme="@style/AppThemes">
 
                 <TextView
                     android:id="@+id/title"
