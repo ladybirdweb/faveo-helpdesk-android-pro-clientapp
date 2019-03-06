@@ -131,4 +131,6 @@
     <string name="due_today">Due today</string>
     <string name="overdue">Overdue</string>
     <string name="blue_name">blue</string>
+    <string name="changingStatus">Changing status</string>
+    <string name="log_out">Logging out</string>
 </resources>

@@ -93,6 +93,7 @@ public class SplashActivity extends AppCompatActivity {
         button = (Button) findViewById(R.id.clear_cache);
         buttonTryAgain = (Button) findViewById(R.id.refreshAgain);
         dotsTextView = (DotsTextView) findViewById(R.id.dots);
+        loading.setVisibility(View.GONE);
         //httpConnection=new HTTPConnection(getApplicationContext());
         //welcomeDialog=new WelcomeDialog();
         try {
@@ -418,6 +419,7 @@ public class SplashActivity extends AppCompatActivity {
                     Prefs.putString("unassignedTickets", "999+");
                 else
                     Prefs.putString("unassignedTickets", unasigned + "");
+                loading.setVisibility(View.VISIBLE);
                 loading.setText(R.string.done_loading);
 
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);
