@@ -39,7 +39,9 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
                         android:background="@color/faveo"
-                        android:visibility="gone"></View>
+                        android:visibility="gone">
+
+                    </View>
 
                     <ImageView
                         android:id="@+id/imageView_default_profile"

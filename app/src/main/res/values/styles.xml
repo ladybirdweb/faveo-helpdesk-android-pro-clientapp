@@ -35,17 +35,21 @@
         <item name="android:tint">@color/colorAccent</item>
     </style>
 
-    <!--<style name="AppThemeOverlay.ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">-->
-        <!--<item name="colorControlNormal">@color/colorAccent</item>-->
-        <!--<item name="android:textColorPrimary">@color/colorAccent</item>-->
-        <!--<item name="android:textColorSecondary">@color/colorAccent</item>-->
-        <!--<item name="windowActionModeOverlay">true</item>-->
-        <!--<item name="windowActionBar">false</item>-->
-        <!--<item name="windowNoTitle">true</item>-->
-        <!--<item name="android:actionModeCloseDrawable">@drawable/ic_arrow_back_black_24dp</item>-->
-        <!--<item name="actionModeCloseDrawable">@color/faveo</item>-->
-        <!--<item name="actionModeCloseButtonStyle">@style/Widget.AppCompat.ActionMode</item>-->
-    <!--</style>-->
+    <style name="AppThemes" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#f2f2f2</item>
+        <item name="colorPrimaryDark">#f2f2f2</item>
+        <item name="colorAccent">#f2f2f2</item>
+        <item name="actionModeBackground">@color/test_color</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_arrow_back_black_24dp</item>
+        <item name="android:actionButtonStyle">@style/myActionButtonStyle</item>
+        <item name="actionButtonStyle">@style/myActionButtonStyle</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+    </style>
+    <style name="myActionButtonStyle" parent="Widget.AppCompat.ActionButton">
+        <item name="android:minWidth">24dp</item>
+        <item name="android:maxWidth">40dp</item>
+        <item name="android:width">40dp</item>
+    </style>
     <style name="MenuItems" parent="AppTheme">
         <item name="android:textSize">30sp</item>
         <item name="android:fontFamily">sans-serif-light</item>

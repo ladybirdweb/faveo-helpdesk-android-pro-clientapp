@@ -176,6 +176,40 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
             }
         });
 
+        msgedittext.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                view.getParent().requestDisallowInterceptTouchEvent(true);
+                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_SCROLL:
+                        view.getParent().requestDisallowInterceptTouchEvent(false);
+                        return true;
+                    case MotionEvent.ACTION_BUTTON_PRESS:
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.showSoftInput(msgedittext, InputMethodManager.SHOW_IMPLICIT);
+                }
+                return false;
+            }
+        });
+
+        spinnerpri.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                InputMethodManager imm=(InputMethodManager)getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subedittext.getWindowToken(), 0);
+                return false;
+            }
+        });
+        spinnerhelp.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                InputMethodManager imm=(InputMethodManager)getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(subedittext.getWindowToken(), 0);
+                return false;
+            }
+        });
+
+
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -369,6 +403,7 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                                 final String finalName1 = finalName;
                                 final String finalEmail1 = finalEmail;
                                 new BottomDialog.Builder(CreateTicketActivity.this)
+                                        .setTitle(getString(R.string.creating_ticket))
                                         .setContent(getString(R.string.createConfirmation))
                                         .setPositiveText("Yes")
                                         .setNegativeText("No")
@@ -402,6 +437,7 @@ public class CreateTicketActivity extends AppCompatActivity implements Permissio
                             final String finalName2 = finalName;
                             final String finalEmail2 = finalEmail;
                             new BottomDialog.Builder(CreateTicketActivity.this)
+                                    .setTitle(getString(R.string.creating_ticket))
                                     .setContent(getString(R.string.createConfirmation))
                                     .setPositiveText("Yes")
                                     .setNegativeText("No")
